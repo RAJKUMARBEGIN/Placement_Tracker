@@ -1,0 +1,259 @@
+/* Home Page - Gray & Blue Theme */
+.home-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 50%, #f9fafb 100%);
+}
+
+.home-loading {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+.loader {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #2563EB;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Hero */
+.hero-section {
+  background: linear-gradient(135deg, #2563EB 0%, #1d4ed8 100%);
+  padding: 80px 20px;
+  text-align: center;
+  color: white;
+}
+
+.hero-content h1 {
+  font-size: 48px;
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+
+.hero-content p {
+  font-size: 18px;
+  opacity: 0.95;
+  margin: 0 0 30px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-btn {
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s;
+  font-size: 15px;
+}
+
+.hero-btn.primary {
+  background: white;
+  color: #2563EB;
+}
+
+.hero-btn.secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.hero-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Section Header */
+.section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-header h2 {
+  font-size: 32px;
+  color: #1f2937;
+  margin: 0 0 10px;
+}
+
+.section-header p {
+  font-size: 16px;
+  color: #6B7280;
+  margin: 0;
+}
+
+/* Departments Section */
+.departments-section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.departments-section h2 {
+  text-align: center;
+  font-size: 32px;
+  color: #1f2937;
+  margin: 0 0 40px;
+}
+
+.departments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.department-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  transition: all 0.3s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.department-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 40px rgba(37, 99, 235, 0.15);
+  border-color: #2563EB;
+}
+
+.dept-code {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2563EB;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.dept-name {
+  margin: 0;
+  color: #6B7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.exp-count {
+  display: inline-block;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #2563EB;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+/* Info Section */
+.info-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+}
+
+.info-card {
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s;
+}
+
+.info-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.12);
+}
+
+.info-icon-box {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563EB 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.info-card h3 {
+  color: #1f2937;
+  font-size: 20px;
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+.info-card p {
+  color: #6B7280;
+  font-size: 14px;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.info-link {
+  color: #2563EB;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.info-link:hover {
+  color: #1d4ed8;
+}
+
+/* No Departments */
+.no-departments {
+  text-align: center;
+  padding: 60px 20px;
+  color: #ad1457;
+}
+
+.no-departments span {
+  font-size: 64px;
+  display: block;
+  margin-bottom: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 32px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+  }
+
+  .departments-grid {
+    grid-template-columns: 1fr;
+  }
+}

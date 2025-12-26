@@ -1,0 +1,330 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FiSend, FiPlus } from 'react-icons/fi';
+import { toast } from 'react-toastify';
+import { experienceAPI, departmentAPI } from '../services/api';
+import './AddExperience.css';
+
+const AddExperience = () => {
+  const navigate = useNavigate();
+  const [departments, setDepartments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    studentName: '',
+    companyName: '',
+    position: '',
+    yearOfPlacement: new Date().getFullYear(),
+    departmentId: '',
+    totalRounds: 1,
+    roundsDescription: '',
+    questionsAsked: '',
+    problemsSolved: '',
+    inPersonInterviewTips: '',
+    crackingStrategy: '',
+    preparationDetails: '',
+    resources: '',
+    willingToMentor: false,
+    contactEmail: '',
+    contactPhone: '',
+    linkedinProfile: '',
+  });
+
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await departmentAPI.getAll();
+      setDepartments(response.data);
+    } catch (error) {
+      toast.error('Failed to fetch departments');
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.departmentId) {
+      toast.error('Please select a department');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await experienceAPI.create({
+        ...formData,
+        departmentId: parseInt(formData.departmentId),
+        yearOfPlacement: parseInt(formData.yearOfPlacement),
+        totalRounds: parseInt(formData.totalRounds),
+      });
+      toast.success('Experience shared successfully! 🎉');
+      navigate('/experiences');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to submit experience');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i + 1);
+
+  return (
+    <div className="add-experience-page">
+      <div className="page-header">
+        <h1>
+          <FiPlus className="header-icon" />
+          Share Your Experience
+        </h1>
+        <p>Help juniors by sharing your interview journey. Your insights can change someone's career.</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="experience-form">
+        {/* Basic Info Section */}
+        <section className="form-section">
+          <h2 className="section-title">Basic Information</h2>
+          <div className="form-grid">
+            <div className="form-group">
+              <label>Your Name *</label>
+              <input
+                type="text"
+                name="studentName"
+                value={formData.studentName}
+                onChange={handleChange}
+                placeholder="e.g., John Doe"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Company Name *</label>
+              <input
+                type="text"
+                name="companyName"
+                value={formData.companyName}
+                onChange={handleChange}
+                placeholder="e.g., Google, Microsoft"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Position *</label>
+              <input
+                type="text"
+                name="position"
+                value={formData.position}
+                onChange={handleChange}
+                placeholder="e.g., Software Engineer"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Year of Placement *</label>
+              <select
+                name="yearOfPlacement"
+                value={formData.yearOfPlacement}
+                onChange={handleChange}
+                required
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Department *</label>
+              <select
+                name="departmentId"
+                value={formData.departmentId}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Department</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.departmentName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Total Interview Rounds *</label>
+              <input
+                type="number"
+                name="totalRounds"
+                value={formData.totalRounds}
+                onChange={handleChange}
+                min="1"
+                max="20"
+                required
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Interview Details Section */}
+        <section className="form-section">
+          <h2 className="section-title">Interview Details</h2>
+          <div className="form-group">
+            <label>Describe Each Round *</label>
+            <textarea
+              name="roundsDescription"
+              value={formData.roundsDescription}
+              onChange={handleChange}
+              placeholder="Describe each round in detail. E.g., Round 1: Online coding test with 3 DSA problems (Medium-Hard). Round 2: Technical interview focusing on System Design..."
+              rows={5}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Questions Asked *</label>
+            <textarea
+              name="questionsAsked"
+              value={formData.questionsAsked}
+              onChange={handleChange}
+              placeholder="List the technical and HR questions you were asked. E.g., Explain your projects, What is OOP, Tell me about yourself..."
+              rows={4}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Problems Solved *</label>
+            <textarea
+              name="problemsSolved"
+              value={formData.problemsSolved}
+              onChange={handleChange}
+              placeholder="Describe the coding problems you solved. E.g., Two Sum, Binary Tree traversal, LRU Cache implementation..."
+              rows={4}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>In-Person Interview Tips</label>
+            <textarea
+              name="inPersonInterviewTips"
+              value={formData.inPersonInterviewTips}
+              onChange={handleChange}
+              placeholder="Tips for in-person interviews. E.g., Dress formally, arrive 15 mins early, maintain eye contact..."
+              rows={3}
+            />
+          </div>
+        </section>
+
+        {/* Preparation Section */}
+        <section className="form-section highlight">
+          <h2 className="section-title">🎯 Preparation Strategy</h2>
+          <div className="form-group">
+            <label>How Did You Crack It? *</label>
+            <textarea
+              name="crackingStrategy"
+              value={formData.crackingStrategy}
+              onChange={handleChange}
+              placeholder="Share your winning strategy. E.g., Solved 300+ LeetCode problems focusing on arrays, strings, and trees. Practiced system design for 2 months..."
+              rows={5}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Preparation Details *</label>
+            <textarea
+              name="preparationDetails"
+              value={formData.preparationDetails}
+              onChange={handleChange}
+              placeholder="How long did you prepare? What was your daily routine? E.g., Started 6 months before, 4 hours daily coding, weekends for mock interviews..."
+              rows={4}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Resources Used</label>
+            <textarea
+              name="resources"
+              value={formData.resources}
+              onChange={handleChange}
+              placeholder="Share helpful resources. E.g., LeetCode, GeeksforGeeks, Striver's SDE Sheet, YouTube channels like Take U Forward..."
+              rows={3}
+            />
+          </div>
+        </section>
+
+        {/* Contact Section */}
+        <section className="form-section">
+          <h2 className="section-title">Mentorship & Contact</h2>
+          <div className="checkbox-group">
+            <input
+              type="checkbox"
+              id="willingToMentor"
+              name="willingToMentor"
+              checked={formData.willingToMentor}
+              onChange={handleChange}
+            />
+            <label htmlFor="willingToMentor">
+              I'm willing to mentor juniors and help them prepare
+            </label>
+          </div>
+          
+          {formData.willingToMentor && (
+            <div className="form-grid contact-fields">
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  name="contactEmail"
+                  value={formData.contactEmail}
+                  onChange={handleChange}
+                  placeholder="your.email@example.com"
+                />
+              </div>
+              <div className="form-group">
+                <label>Phone Number</label>
+                <input
+                  type="tel"
+                  name="contactPhone"
+                  value={formData.contactPhone}
+                  onChange={handleChange}
+                  placeholder="+91-9876543210"
+                />
+              </div>
+              <div className="form-group full-width">
+                <label>LinkedIn Profile</label>
+                <input
+                  type="url"
+                  name="linkedinProfile"
+                  value={formData.linkedinProfile}
+                  onChange={handleChange}
+                  placeholder="https://linkedin.com/in/yourprofile"
+                />
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* Submit Button */}
+        <div className="form-actions">
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? (
+              <>
+                <span className="spinner"></span>
+                Submitting...
+              </>
+            ) : (
+              <>
+                <FiSend />
+                Share Experience
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default AddExperience;

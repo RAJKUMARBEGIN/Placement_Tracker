@@ -1,0 +1,250 @@
+package com.quizapplication.placement_tracker.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDateTime;
+
+@Schema(description = "Interview Experience Data Transfer Object")
+public class InterviewExperienceDTO {
+
+    @Schema(description = "Experience ID", example = "1")
+    private Long id;
+
+    @NotBlank(message = "Student name is required")
+    @Schema(description = "Student name", example = "John Doe")
+    private String studentName;
+
+    @NotBlank(message = "Company name is required")
+    @Schema(description = "Company name", example = "Google")
+    private String companyName;
+
+    @NotBlank(message = "Position is required")
+    @Schema(description = "Position applied for", example = "Software Engineer")
+    private String position;
+
+    @NotNull(message = "Year of placement is required")
+    @Min(value = 2000, message = "Year must be after 2000")
+    @Max(value = 2100, message = "Year must be before 2100")
+    @Schema(description = "Year of placement", example = "2025")
+    private Integer yearOfPlacement;
+
+    @NotNull(message = "Department ID is required")
+    @Schema(description = "Department ID", example = "1")
+    private Long departmentId;
+
+    @Schema(description = "Department name", example = "Computer Science Engineering")
+    private String departmentName;
+
+    @NotNull(message = "Total rounds is required")
+    @Min(value = 1, message = "Total rounds must be at least 1")
+    @Schema(description = "Total number of interview rounds", example = "4")
+    private Integer totalRounds;
+
+    @NotBlank(message = "Rounds description is required")
+    @Schema(description = "Description of each round", example = "Round 1: Online Test, Round 2: Technical Interview...")
+    private String roundsDescription;
+
+    @NotBlank(message = "Questions asked is required")
+    @Schema(description = "Questions asked in the interview", example = "Data structures, algorithms, system design...")
+    private String questionsAsked;
+
+    @NotBlank(message = "Problems solved is required")
+    @Schema(description = "Problems solved during interview", example = "Binary tree traversal, sorting algorithms...")
+    private String problemsSolved;
+
+    @Schema(description = "Tips for in-person interview", example = "Be confident, maintain eye contact...")
+    private String inPersonInterviewTips;
+
+    @NotBlank(message = "Cracking strategy is required")
+    @Schema(description = "Strategy used to crack the interview", example = "Practiced 300+ DSA problems...")
+    private String crackingStrategy;
+
+    @NotBlank(message = "Preparation details is required")
+    @Schema(description = "Preparation details", example = "Started preparation 6 months before...")
+    private String preparationDetails;
+
+    @Schema(description = "Resources used for preparation", example = "LeetCode, GeeksforGeeks, YouTube channels...")
+    private String resources;
+
+    @Schema(description = "Willing to mentor juniors", example = "true")
+    private Boolean willingToMentor;
+
+    @Email(message = "Invalid email format")
+    @Schema(description = "Contact email (optional)", example = "john.doe@example.com")
+    private String contactEmail;
+
+    @Schema(description = "Contact phone (optional)", example = "+91-9876543210")
+    private String contactPhone;
+
+    @Schema(description = "LinkedIn profile (optional)", example = "https://linkedin.com/in/johndoe")
+    private String linkedinProfile;
+
+    @Schema(description = "Submission timestamp", example = "2025-12-25T10:30:00")
+    private LocalDateTime submittedAt;
+
+    // Constructors
+    public InterviewExperienceDTO() {
+    }
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public Integer getYearOfPlacement() {
+        return yearOfPlacement;
+    }
+
+    public void setYearOfPlacement(Integer yearOfPlacement) {
+        this.yearOfPlacement = yearOfPlacement;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public String getDepartmentName() {
+        return departmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
+    }
+
+    public Integer getTotalRounds() {
+        return totalRounds;
+    }
+
+    public void setTotalRounds(Integer totalRounds) {
+        this.totalRounds = totalRounds;
+    }
+
+    public String getRoundsDescription() {
+        return roundsDescription;
+    }
+
+    public void setRoundsDescription(String roundsDescription) {
+        this.roundsDescription = roundsDescription;
+    }
+
+    public String getQuestionsAsked() {
+        return questionsAsked;
+    }
+
+    public void setQuestionsAsked(String questionsAsked) {
+        this.questionsAsked = questionsAsked;
+    }
+
+    public String getProblemsSolved() {
+        return problemsSolved;
+    }
+
+    public void setProblemsSolved(String problemsSolved) {
+        this.problemsSolved = problemsSolved;
+    }
+
+    public String getInPersonInterviewTips() {
+        return inPersonInterviewTips;
+    }
+
+    public void setInPersonInterviewTips(String inPersonInterviewTips) {
+        this.inPersonInterviewTips = inPersonInterviewTips;
+    }
+
+    public String getCrackingStrategy() {
+        return crackingStrategy;
+    }
+
+    public void setCrackingStrategy(String crackingStrategy) {
+        this.crackingStrategy = crackingStrategy;
+    }
+
+    public String getPreparationDetails() {
+        return preparationDetails;
+    }
+
+    public void setPreparationDetails(String preparationDetails) {
+        this.preparationDetails = preparationDetails;
+    }
+
+    public String getResources() {
+        return resources;
+    }
+
+    public void setResources(String resources) {
+        this.resources = resources;
+    }
+
+    public Boolean getWillingToMentor() {
+        return willingToMentor;
+    }
+
+    public void setWillingToMentor(Boolean willingToMentor) {
+        this.willingToMentor = willingToMentor;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+
+    public String getContactPhone() {
+        return contactPhone;
+    }
+
+    public void setContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone;
+    }
+
+    public String getLinkedinProfile() {
+        return linkedinProfile;
+    }
+
+    public void setLinkedinProfile(String linkedinProfile) {
+        this.linkedinProfile = linkedinProfile;
+    }
+
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(LocalDateTime submittedAt) {
+        this.submittedAt = submittedAt;
+    }
+}
