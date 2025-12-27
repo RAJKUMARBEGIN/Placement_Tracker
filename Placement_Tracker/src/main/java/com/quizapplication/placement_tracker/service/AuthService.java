@@ -8,6 +8,7 @@ import com.quizapplication.placement_tracker.exception.ResourceAlreadyExistsExce
 import com.quizapplication.placement_tracker.exception.ResourceNotFoundException;
 import com.quizapplication.placement_tracker.repository.DepartmentRepository;
 import com.quizapplication.placement_tracker.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +22,12 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository, DepartmentRepository departmentRepository) {
+    public AuthService(UserRepository userRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.departmentRepository = departmentRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -37,7 +40,7 @@ public class AuthService {
         // Create user
         User user = new User();
         user.setEmail(registerDTO.getEmail());
-        user.setPassword(registerDTO.getPassword()); // In production, use password encoder
+        user.setPassword(passwordEncoder.encode(registerDTO.getPassword())); // Encrypt password with BCrypt
         user.setFullName(registerDTO.getFullName());
         user.setRole(registerDTO.getRole());
         
@@ -67,8 +70,8 @@ public class AuthService {
         User user = userRepository.findByEmail(loginDTO.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + loginDTO.getEmail()));
 
-        // Simple password check (in production, use password encoder)
-        if (!user.getPassword().equals(loginDTO.getPassword())) {
+        // Verify password using BCrypt
+        if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Invalid password");
         }
 

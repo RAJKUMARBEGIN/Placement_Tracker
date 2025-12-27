@@ -1,13 +1,13 @@
-﻿/* Student Dashboard - Cream & Mauve Theme */
+﻿/* Student Dashboard - Professional Design */
 .dashboard {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #fdfbf7 0%, #f5f0e8 50%, #faf8f4 100%);
+  min-height: calc(100vh - 72px);
+  background: var(--bg-primary);
 }
 
 .dashboard-container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 40px 24px;
 }
 
 .dashboard-header {
@@ -16,36 +16,58 @@
 
 .welcome-text {
   font-size: 16px;
-  color: #8b7a80;
+  color: var(--text-secondary);
   margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .dashboard-title {
-  font-size: 32px;
-  font-weight: 700;
-  color: #5c3d4e;
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text-primary);
   margin: 0;
+  letter-spacing: -1px;
 }
 
 .dashboard-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
 }
 
 .stat-card {
-  background: #fffcf8;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 4px 15px rgba(139, 90, 124, 0.08);
-  border: 1px solid #e8d5e0;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .stat-card.primary {
-  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
   color: white;
   border: none;
+}
+
+.stat-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.stat-card .value {
+  font-size: 36px;
+  font-weight: 800;
 }
 
 .stat-card.primary .stat-value,

@@ -5,23 +5,23 @@
 }
 
 :root {
-  /* Cream & Mauve Color Palette */
-  --primary: #8b5a7c;
-  --primary-light: #a06b8a;
-  --primary-dark: #6d4560;
-  --secondary: #f5e6ee;
-  --accent: #8b5a7c;
-  --accent-light: #a06b8a;
+  /* Modern Professional Color Palette - Indigo & Slate */
+  --primary: #4f46e5;
+  --primary-light: #6366f1;
+  --primary-dark: #4338ca;
+  --secondary: #f1f5f9;
+  --accent: #06b6d4;
+  --accent-light: #22d3ee;
 
-  /* Neutral Colors - Cream Theme */
-  --bg-primary: #fdfbf7;
-  --bg-secondary: #fffcf8;
-  --bg-tertiary: #f5f0e8;
+  /* Neutral Colors - Modern Slate & White */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
 
-  /* Text Colors - Mauve Theme */
-  --text-primary: #5c3d4e;
-  --text-secondary: #8b7a80;
-  --text-muted: #a89a9f;
+  /* Text Colors - Slate Theme */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 
   /* Status Colors */
   --success: #10b981;
@@ -29,19 +29,26 @@
   --error: #ef4444;
   --info: #3b82f6;
 
-  /* Shadows */
+  /* Shadows - Enhanced */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
   /* Border Radius */
-  --radius-sm: 6px;
+  --radius-sm: 4px;
   --radius: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
+  
+  /* Border Colors */
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+
+  /* Transitions */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
@@ -82,12 +89,18 @@ select {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--text-muted);
+  background: var(--primary-light);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+  background: var(--primary);
+}
+
+/* Selection Color */
+::selection {
+  background: var(--primary-light);
+  color: white;
 }
 
 /* Toast Customization */

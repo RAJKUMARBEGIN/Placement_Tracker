@@ -1,19 +1,24 @@
+/* Add Experience - Professional Design */
 .add-experience-page {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
+  padding: 40px 24px;
 }
 
 .page-header {
-  margin-bottom: 2rem;
+  margin-bottom: 40px;
+  text-align: center;
 }
 
 .page-header h1 {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 2rem;
-  font-weight: 700;
+  justify-content: center;
+  gap: 12px;
+  font-size: 32px;
+  font-weight: 800;
   color: var(--text-primary);
+  letter-spacing: -0.5px;
 }
 
 .header-icon {
@@ -22,51 +27,56 @@
 
 .page-header p {
   color: var(--text-secondary);
-  margin-top: 0.5rem;
+  margin-top: 12px;
+  font-size: 16px;
 }
 
 /* Form */
 .experience-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 32px;
 }
 
 .form-section {
   background: var(--bg-secondary);
   border-radius: var(--radius-lg);
-  padding: 2rem;
-  box-shadow: var(--shadow);
+  padding: 40px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
 }
 
 .form-section.highlight {
-  border: 2px solid var(--primary-light);
+  border: 1px solid var(--primary);
   background: linear-gradient(
     to bottom,
-    rgba(99, 102, 241, 0.03),
+    rgba(79, 70, 229, 0.02),
     var(--bg-secondary)
   );
 }
 
 .section-title {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--bg-tertiary);
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
+  gap: 24px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .form-group.full-width {
@@ -74,21 +84,21 @@
 }
 
 .form-group label {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--bg-tertiary);
+  padding: 12px 16px;
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  font-size: 0.95rem;
+  font-size: 15px;
   color: var(--text-primary);
   background: var(--bg-primary);
-  transition: all 0.2s ease;
+  transition: var(--transition);
   width: 100%;
 }
 
@@ -97,7 +107,7 @@
 .form-group textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
 }
 
 .form-group input::placeholder,
