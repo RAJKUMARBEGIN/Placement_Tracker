@@ -1,7 +1,7 @@
-/* Home Page - Gray & Blue Theme */
+/* Home Page - Cream & Mauve Theme */
 .home-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 50%, #f9fafb 100%);
+  background: linear-gradient(135deg, #fdfbf7 0%, #f5f0e8 50%, #faf8f4 100%);
 }
 
 .home-loading {
@@ -10,26 +10,30 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  background: linear-gradient(135deg, #fdfbf7 0%, #f5f0e8 100%);
 }
 
 .loader {
   width: 50px;
   height: 50px;
-  border: 4px solid #e5e7eb;
-  border-top: 4px solid #2563EB;
+  border: 4px solid #e8d5e0;
+  border-top: 4px solid #8b5a7c;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Hero */
 .hero-section {
-  background: linear-gradient(135deg, #2563EB 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #8b5a7c 0%, #6d4560 100%);
   padding: 80px 20px;
   text-align: center;
   color: white;
@@ -67,19 +71,19 @@
 }
 
 .hero-btn.primary {
-  background: white;
-  color: #2563EB;
+  background: #fdfbf7;
+  color: #8b5a7c;
 }
 
 .hero-btn.secondary {
   background: transparent;
-  color: white;
-  border: 2px solid white;
+  color: #fdfbf7;
+  border: 2px solid #fdfbf7;
 }
 
 .hero-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 /* Section Header */
@@ -90,13 +94,13 @@
 
 .section-header h2 {
   font-size: 32px;
-  color: #1f2937;
+  color: #5c3d4e;
   margin: 0 0 10px;
 }
 
 .section-header p {
   font-size: 16px;
-  color: #6B7280;
+  color: #8b7a80;
   margin: 0;
 }
 
@@ -110,7 +114,7 @@
 .departments-section h2 {
   text-align: center;
   font-size: 32px;
-  color: #1f2937;
+  color: #5c3d4e;
   margin: 0 0 40px;
 }
 
@@ -121,7 +125,7 @@
 }
 
 .department-card {
-  background: white;
+  background: #fffcf8;
   border-radius: 16px;
   padding: 32px 24px;
   text-align: center;
@@ -129,35 +133,35 @@
   cursor: pointer;
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 20px rgba(139, 90, 124, 0.1);
+  border: 1px solid #e8d5e0;
 }
 
 .department-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 15px 40px rgba(37, 99, 235, 0.15);
-  border-color: #2563EB;
+  box-shadow: 0 15px 40px rgba(139, 90, 124, 0.2);
+  border-color: #8b5a7c;
 }
 
 .dept-code {
   font-size: 28px;
   font-weight: 700;
-  color: #2563EB;
+  color: #8b5a7c;
   margin-bottom: 8px;
   letter-spacing: 1px;
 }
 
 .dept-name {
   margin: 0;
-  color: #6B7280;
+  color: #6b5a60;
   font-size: 14px;
   font-weight: 500;
 }
 
 .exp-count {
   display: inline-block;
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  color: #2563EB;
+  background: linear-gradient(135deg, #f5e6ee 0%, #e8d5e0 100%);
+  color: #8b5a7c;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 13px;
@@ -173,27 +177,27 @@
   padding: 60px 20px;
   max-width: 1200px;
   margin: 0 auto;
-  background: white;
+  background: #fffcf8;
 }
 
 .info-card {
-  background: #f9fafb;
+  background: #fdfbf7;
   border-radius: 16px;
   padding: 32px;
   text-align: center;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e8d5e0;
   transition: all 0.3s;
 }
 
 .info-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 10px 30px rgba(139, 90, 124, 0.15);
 }
 
 .info-icon-box {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -205,21 +209,21 @@
 }
 
 .info-card h3 {
-  color: #1f2937;
+  color: #5c3d4e;
   font-size: 20px;
   margin: 0 0 10px;
   font-weight: 600;
 }
 
 .info-card p {
-  color: #6B7280;
+  color: #8b7a80;
   font-size: 14px;
   margin: 0 0 20px;
   line-height: 1.5;
 }
 
 .info-link {
-  color: #2563EB;
+  color: #8b5a7c;
   text-decoration: none;
   font-weight: 600;
   font-size: 14px;
@@ -227,7 +231,7 @@
 }
 
 .info-link:hover {
-  color: #1d4ed8;
+  color: #6d4560;
 }
 
 /* No Departments */

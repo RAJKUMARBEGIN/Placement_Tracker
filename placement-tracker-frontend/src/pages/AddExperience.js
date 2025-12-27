@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FiSend, FiPlus } from 'react-icons/fi';
-import { toast } from 'react-toastify';
-import { experienceAPI, departmentAPI } from '../services/api';
-import './AddExperience.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { FiSend, FiPlus } from "react-icons/fi";
+import { toast } from "react-toastify";
+import { experienceAPI, departmentAPI } from "../services/api";
+import "./AddExperience.css";
 
 const AddExperience = () => {
   const navigate = useNavigate();
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    studentName: '',
-    companyName: '',
-    position: '',
+    studentName: "",
+    companyName: "",
+    position: "",
     yearOfPlacement: new Date().getFullYear(),
-    departmentId: '',
+    departmentId: "",
     totalRounds: 1,
-    roundsDescription: '',
-    questionsAsked: '',
-    problemsSolved: '',
-    inPersonInterviewTips: '',
-    crackingStrategy: '',
-    preparationDetails: '',
-    resources: '',
+    roundsDescription: "",
+    questionsAsked: "",
+    problemsSolved: "",
+    inPersonInterviewTips: "",
+    crackingStrategy: "",
+    preparationDetails: "",
+    resources: "",
     willingToMentor: false,
-    contactEmail: '',
-    contactPhone: '',
-    linkedinProfile: '',
+    contactEmail: "",
+    contactPhone: "",
+    linkedinProfile: "",
   });
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const AddExperience = () => {
       const response = await departmentAPI.getAll();
       setDepartments(response.data);
     } catch (error) {
-      toast.error('Failed to fetch departments');
+      toast.error("Failed to fetch departments");
     }
   };
 
@@ -46,15 +46,15 @@ const AddExperience = () => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.departmentId) {
-      toast.error('Please select a department');
+      toast.error("Please select a department");
       return;
     }
 
@@ -66,16 +66,21 @@ const AddExperience = () => {
         yearOfPlacement: parseInt(formData.yearOfPlacement),
         totalRounds: parseInt(formData.totalRounds),
       });
-      toast.success('Experience shared successfully! 🎉');
-      navigate('/experiences');
+      toast.success("Experience shared successfully! 🎉");
+      navigate("/experiences");
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to submit experience');
+      toast.error(
+        error.response?.data?.message || "Failed to submit experience"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i + 1);
+  const years = Array.from(
+    { length: 10 },
+    (_, i) => new Date().getFullYear() - i + 1
+  );
 
   return (
     <div className="add-experience-page">
@@ -84,7 +89,10 @@ const AddExperience = () => {
           <FiPlus className="header-icon" />
           Share Your Experience
         </h1>
-        <p>Help juniors by sharing your interview journey. Your insights can change someone's career.</p>
+        <p>
+          Help juniors by sharing your interview journey. Your insights can
+          change someone's career.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="experience-form">
@@ -134,7 +142,9 @@ const AddExperience = () => {
                 required
               >
                 {years.map((year) => (
-                  <option key={year} value={year}>{year}</option>
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
                 ))}
               </select>
             </div>
@@ -269,7 +279,7 @@ const AddExperience = () => {
               I'm willing to mentor juniors and help them prepare
             </label>
           </div>
-          
+
           {formData.willingToMentor && (
             <div className="form-grid contact-fields">
               <div className="form-group">

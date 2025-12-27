@@ -1,12 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { 
-  FiArrowLeft, FiCalendar, FiMapPin, FiUser, FiMail, FiPhone, 
-  FiLinkedin, FiBook, FiTarget, FiLayers, FiMessageCircle, FiEdit2, FiTrash2
-} from 'react-icons/fi';
-import { toast } from 'react-toastify';
-import { experienceAPI } from '../services/api';
-import './ExperienceDetail.css';
+import React, { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import {
+  FiArrowLeft,
+  FiCalendar,
+  FiMapPin,
+  FiUser,
+  FiMail,
+  FiPhone,
+  FiLinkedin,
+  FiBook,
+  FiTarget,
+  FiLayers,
+  FiMessageCircle,
+  FiEdit2,
+  FiTrash2,
+} from "react-icons/fi";
+import { toast } from "react-toastify";
+import { experienceAPI } from "../services/api";
+import "./ExperienceDetail.css";
 
 const ExperienceDetail = () => {
   const { id } = useParams();
@@ -23,21 +34,21 @@ const ExperienceDetail = () => {
       const response = await experienceAPI.getById(id);
       setExperience(response.data);
     } catch (error) {
-      toast.error('Failed to fetch experience');
-      navigate('/experiences');
+      toast.error("Failed to fetch experience");
+      navigate("/experiences");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this experience?')) {
+    if (window.confirm("Are you sure you want to delete this experience?")) {
       try {
         await experienceAPI.delete(id);
-        toast.success('Experience deleted successfully!');
-        navigate('/experiences');
+        toast.success("Experience deleted successfully!");
+        navigate("/experiences");
       } catch (error) {
-        toast.error('Failed to delete experience');
+        toast.error("Failed to delete experience");
       }
     }
   };
@@ -55,16 +66,18 @@ const ExperienceDetail = () => {
     return (
       <div className="error-container">
         <h2>Experience not found</h2>
-        <Link to="/experiences" className="btn btn-primary">Back to Experiences</Link>
+        <Link to="/experiences" className="btn btn-primary">
+          Back to Experiences
+        </Link>
       </div>
     );
   }
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -82,10 +95,18 @@ const ExperienceDetail = () => {
           <div className="company-badge">{experience.companyName}</div>
           <h1>{experience.position}</h1>
           <div className="header-meta">
-            <span><FiUser /> {experience.studentName}</span>
-            <span><FiMapPin /> {experience.departmentName}</span>
-            <span><FiCalendar /> {experience.yearOfPlacement}</span>
-            <span><FiLayers /> {experience.totalRounds} Rounds</span>
+            <span>
+              <FiUser /> {experience.studentName}
+            </span>
+            <span>
+              <FiMapPin /> {experience.departmentName}
+            </span>
+            <span>
+              <FiCalendar /> {experience.yearOfPlacement}
+            </span>
+            <span>
+              <FiLayers /> {experience.totalRounds} Rounds
+            </span>
           </div>
         </div>
         <div className="header-actions">
@@ -190,19 +211,30 @@ const ExperienceDetail = () => {
           </div>
           <div className="contact-info">
             {experience.contactEmail && (
-              <a href={`mailto:${experience.contactEmail}`} className="contact-item">
+              <a
+                href={`mailto:${experience.contactEmail}`}
+                className="contact-item"
+              >
                 <FiMail />
                 {experience.contactEmail}
               </a>
             )}
             {experience.contactPhone && (
-              <a href={`tel:${experience.contactPhone}`} className="contact-item">
+              <a
+                href={`tel:${experience.contactPhone}`}
+                className="contact-item"
+              >
                 <FiPhone />
                 {experience.contactPhone}
               </a>
             )}
             {experience.linkedinProfile && (
-              <a href={experience.linkedinProfile} target="_blank" rel="noopener noreferrer" className="contact-item">
+              <a
+                href={experience.linkedinProfile}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-item"
+              >
                 <FiLinkedin />
                 LinkedIn Profile
               </a>

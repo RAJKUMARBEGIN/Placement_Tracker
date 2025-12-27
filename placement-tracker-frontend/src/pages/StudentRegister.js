@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { authAPI, departmentAPI } from '../services/api';
-import { useAuth } from '../context/AuthContext';
-import './Register.css';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { authAPI, departmentAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import "./Register.css";
 
 const StudentRegister = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  
+
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    fullName: '',
-    departmentId: '',
-    rollNumber: '',
-    yearOfStudy: '',
-    phoneNumber: ''
+    email: "",
+    password: "",
+    confirmPassword: "",
+    fullName: "",
+    departmentId: "",
+    rollNumber: "",
+    yearOfStudy: "",
+    phoneNumber: "",
   });
-  
+
   const [departments, setDepartments] = useState([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
 
@@ -33,18 +33,18 @@ const StudentRegister = () => {
       const response = await departmentAPI.getAll();
       setDepartments(response.data);
     } catch (err) {
-      console.error('Error fetching departments:', err);
+      console.error("Error fetching departments:", err);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
-    if (name === 'password') {
+    if (name === "password") {
       calculatePasswordStrength(value);
     }
   };
@@ -60,31 +60,31 @@ const StudentRegister = () => {
   };
 
   const validateEmail = (email) => {
-    return email.endsWith('@gct.ac.in');
+    return email.endsWith("@gct.ac.in");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Validations
     if (!validateEmail(formData.email)) {
-      setError('Only @gct.ac.in email addresses are allowed');
+      setError("Only @gct.ac.in email addresses are allowed");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long');
+      setError("Password must be at least 8 characters long");
       return;
     }
 
     if (!formData.departmentId) {
-      setError('Please select your department');
+      setError("Please select your department");
       return;
     }
 
@@ -95,33 +95,37 @@ const StudentRegister = () => {
         email: formData.email,
         password: formData.password,
         fullName: formData.fullName,
-        role: 'STUDENT',
+        role: "STUDENT",
         departmentId: parseInt(formData.departmentId),
         rollNumber: formData.rollNumber,
-        yearOfStudy: formData.yearOfStudy ? parseInt(formData.yearOfStudy) : null,
-        phoneNumber: formData.phoneNumber
+        yearOfStudy: formData.yearOfStudy
+          ? parseInt(formData.yearOfStudy)
+          : null,
+        phoneNumber: formData.phoneNumber,
       };
 
       const response = await authAPI.register(registerData);
       login(response.data);
-      navigate('/student/dashboard');
+      navigate("/student/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setError(
+        err.response?.data?.message || "Registration failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const getStrengthColor = () => {
-    if (passwordStrength <= 2) return '#e74c3c';
-    if (passwordStrength <= 3) return '#f39c12';
-    return '#27ae60';
+    if (passwordStrength <= 2) return "#e74c3c";
+    if (passwordStrength <= 3) return "#f39c12";
+    return "#27ae60";
   };
 
   const getStrengthText = () => {
-    if (passwordStrength <= 2) return 'Weak';
-    if (passwordStrength <= 3) return 'Medium';
-    return 'Strong';
+    if (passwordStrength <= 2) return "Weak";
+    if (passwordStrength <= 3) return "Medium";
+    return "Strong";
   };
 
   return (
@@ -169,7 +173,9 @@ const StudentRegister = () => {
                 placeholder="yourname@gct.ac.in"
                 required
               />
-              <small className="email-hint">Only @gct.ac.in emails are accepted</small>
+              <small className="email-hint">
+                Only @gct.ac.in emails are accepted
+              </small>
             </div>
           </div>
 
@@ -186,14 +192,16 @@ const StudentRegister = () => {
               />
               {formData.password && (
                 <div className="password-strength">
-                  <div 
+                  <div
                     className="strength-bar"
-                    style={{ 
+                    style={{
                       width: `${(passwordStrength / 5) * 100}%`,
-                      backgroundColor: getStrengthColor()
+                      backgroundColor: getStrengthColor(),
                     }}
                   />
-                  <span style={{ color: getStrengthColor() }}>{getStrengthText()}</span>
+                  <span style={{ color: getStrengthColor() }}>
+                    {getStrengthText()}
+                  </span>
                 </div>
               )}
             </div>
@@ -220,7 +228,7 @@ const StudentRegister = () => {
                 required
               >
                 <option value="">Select Department</option>
-                {departments.map(dept => (
+                {departments.map((dept) => (
                   <option key={dept.id} value={dept.id}>
                     {dept.departmentName}
                   </option>
@@ -266,14 +274,23 @@ const StudentRegister = () => {
             </div>
           </div>
 
-          <button type="submit" className="register-btn student-btn" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Create Student Account'}
+          <button
+            type="submit"
+            className="register-btn student-btn"
+            disabled={loading}
+          >
+            {loading ? "Creating Account..." : "Create Student Account"}
           </button>
         </form>
 
         <div className="register-footer">
-          <p>Already have an account? <Link to="/login">Sign in</Link></p>
-          <p>Are you a mentor? <Link to="/register/mentor">Register as Mentor</Link></p>
+          <p>
+            Already have an account? <Link to="/login">Sign in</Link>
+          </p>
+          <p>
+            Are you a mentor?{" "}
+            <Link to="/register/mentor">Register as Mentor</Link>
+          </p>
         </div>
       </div>
     </div>

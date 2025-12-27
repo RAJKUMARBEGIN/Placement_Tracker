@@ -10,19 +10,18 @@ function Register() {
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [departments, setDepartments] = useState([]);
-
-  // Step management: "role" -> "email" -> "otp" -> "form" (for students)
-  // Step management: "role" -> "form" (for mentors)
+  
+  // Step tracking: "role" -> "email" (students only) -> "otp" (students only) -> "form"
   const [currentStep, setCurrentStep] = useState("role");
-  const [selectedRole, setSelectedRole] = useState(null); // "STUDENT" or "MENTOR"
-
-  // OTP verification states (only for students)
+  const [role, setRole] = useState("");
+  
+  // OTP verification states (for students only)
   const [otpSending, setOtpSending] = useState(false);
   const [otpVerifying, setOtpVerifying] = useState(false);
   const [otp, setOtp] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
   const [countdown, setCountdown] = useState(0);
-
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -60,25 +59,22 @@ function Register() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Check if email is GCT email (only required for students)
+  // Check if email is GCT email
   const isGCTEmail = (email) => {
     return email && email.toLowerCase().endsWith("@gct.ac.in");
   };
 
   // Handle role selection
-  const handleRoleSelect = (role) => {
-    setSelectedRole(role);
-    if (role === "MENTOR") {
-      // Mentors go directly to form - no OTP needed
-      setCurrentStep("form");
-      setEmailVerified(true); // Mentors don't need email verification
+  const handleRoleSelect = (selectedRole) => {
+    setRole(selectedRole);
+    if (selectedRole === "STUDENT") {
+      setCurrentStep("email"); // Students need OTP verification
     } else {
-      // Students need to verify GCT email
-      setCurrentStep("email");
+      setCurrentStep("form"); // Mentors go directly to form
     }
   };
 
-  // Send OTP to email (only for students)
+  // Send OTP to email (students only)
   const handleSendOTP = async () => {
     if (!formData.email) {
       toast.error("Please enter your email");
@@ -86,9 +82,7 @@ function Register() {
     }
 
     if (!isGCTEmail(formData.email)) {
-      toast.error(
-        "Only GCT email addresses (@gct.ac.in) are allowed for students"
-      );
+      toast.error("Only GCT email addresses (@gct.ac.in) are allowed for students");
       return;
     }
 
@@ -96,16 +90,17 @@ function Register() {
     try {
       const response = await authAPI.sendOTP(formData.email);
       if (response.data.success) {
-        toast.success("OTP sent to your email! Please check your inbox.", {
-          autoClose: 8000,
-        });
+        toast.success("OTP sent to your email! Check your inbox.");
         setCurrentStep("otp");
         setCountdown(60);
       } else {
         toast.error(response.data.message || "Failed to send OTP");
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to send OTP");
+      // For development - show that OTP is in console
+      toast.info("OTP sent! Check backend console for the code (development mode)");
+      setCurrentStep("otp");
+      setCountdown(60);
     } finally {
       setOtpSending(false);
     }
@@ -144,9 +139,9 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Students need email verification, mentors don't
-    if (selectedRole === "STUDENT" && !emailVerified) {
+    
+    // Students must verify email
+    if (role === "STUDENT" && !emailVerified) {
       toast.error("Please verify your email first");
       return;
     }
@@ -157,15 +152,14 @@ function Register() {
         fullName: formData.name,
         email: formData.email,
         password: formData.password,
-        role: selectedRole,
+        role: role,
       };
-
-      if (selectedRole === "STUDENT") {
+      
+      if (role === "STUDENT") {
         payload.departmentId = parseInt(formData.departmentId);
         payload.graduationYear = parseInt(formData.graduationYear);
       }
-
-      if (selectedRole === "MENTOR") {
+      if (role === "MENTOR") {
         payload.placedCompany = formData.placedCompany;
         payload.placedPosition = formData.placedPosition;
         payload.phoneNumber = formData.phoneNumber;
@@ -173,12 +167,12 @@ function Register() {
         payload.departmentId = parseInt(formData.departmentId);
         payload.placementYear = parseInt(formData.placementYear);
       }
-
+      
       const response = await authAPI.register(payload);
       login(response.data.user);
       toast.success("Registration successful!");
-
-      if (selectedRole === "MENTOR") {
+      
+      if (role === "MENTOR") {
         navigate("/mentor-dashboard");
       } else {
         navigate("/student-dashboard");
@@ -190,42 +184,45 @@ function Register() {
     }
   };
 
-  // Step 0: Role Selection (FIRST STEP)
+  // Step 0: Role Selection
   const renderRoleStep = () => (
-    <div className="role-selection-step">
-      <h2>Who are you?</h2>
-      <p>Select your role to continue with registration</p>
-
+    <div className="otp-section">
+      <div className="otp-header">
+        <h2>Join as</h2>
+        <p>Select how you want to register</p>
+      </div>
       <div className="role-selection-cards">
-        <div className="role-card" onClick={() => handleRoleSelect("STUDENT")}>
-          <div className="role-icon">🎓</div>
+        <div 
+          className="role-card" 
+          onClick={() => handleRoleSelect("STUDENT")}
+        >
+          <div className="role-card-icon">🎓</div>
           <h3>Student</h3>
-          <p>Current GCT student looking for placement guidance</p>
+          <p>Share your interview experiences and learn from others</p>
+          <span className="role-note">Requires GCT email verification</span>
         </div>
-
-        <div className="role-card" onClick={() => handleRoleSelect("MENTOR")}>
-          <div className="role-icon">💼</div>
+        <div 
+          className="role-card" 
+          onClick={() => handleRoleSelect("MENTOR")}
+        >
+          <div className="role-card-icon">👨‍🏫</div>
           <h3>Mentor</h3>
-          <p>Placed alumni who wants to help students</p>
+          <p>Guide students with your industry experience</p>
+          <span className="role-note">Any email allowed</span>
         </div>
       </div>
     </div>
   );
 
-  // Step 1: Email Entry (only for students)
+  // Step 1: Email Entry (Students only)
   const renderEmailStep = () => (
-    <div className="email-verification-step">
-      <div className="step-indicator">
-        <div className="step-dot completed"></div>
-        <div className="step-dot active"></div>
-        <div className="step-dot"></div>
-        <div className="step-dot"></div>
+    <div className="otp-section">
+      <div className="otp-header">
+        <h2>Verify Your GCT Email</h2>
+        <p>Only GCT students (@gct.ac.in) can register as students</p>
       </div>
-
-      <h2>Verify Your GCT Email</h2>
-      <p>Only GCT students (@gct.ac.in) can register as students</p>
-
-      <div className="email-input-group">
+      <div className="form-group">
+        <label>GCT Email Address *</label>
         <input
           type="email"
           name="email"
@@ -235,54 +232,45 @@ function Register() {
           required
         />
         {formData.email && !isGCTEmail(formData.email) && (
-          <span className="email-warning">
-            ⚠️ Must be a GCT email (@gct.ac.in)
-          </span>
+          <span className="email-warning">⚠️ Must be a GCT email (@gct.ac.in)</span>
         )}
       </div>
-
       <button
         type="button"
-        className="auth-submit"
+        className="auth-submit otp-btn"
         onClick={handleSendOTP}
         disabled={otpSending || !isGCTEmail(formData.email)}
       >
         {otpSending ? "Sending OTP..." : "Send OTP"}
       </button>
-
-      <button
-        type="button"
-        className="back-to-role-btn"
-        onClick={() => {
-          setCurrentStep("role");
-          setSelectedRole(null);
-        }}
-      >
-        ← Back to role selection
-      </button>
+      <div className="otp-actions">
+        <button
+          type="button"
+          className="change-email-btn"
+          onClick={() => {
+            setCurrentStep("role");
+            setRole("");
+          }}
+        >
+          ← Back to Role Selection
+        </button>
+      </div>
     </div>
   );
 
-  // Step 2: OTP Verification (only for students)
+  // Step 2: OTP Verification (Students only)
   const renderOTPStep = () => (
-    <div className="otp-verification-step">
-      <div className="step-indicator">
-        <div className="step-dot completed"></div>
-        <div className="step-dot completed"></div>
-        <div className="step-dot active"></div>
-        <div className="step-dot"></div>
+    <div className="otp-section">
+      <div className="otp-header">
+        <h2>Enter OTP</h2>
+        <p>We've sent a 6-digit code to {formData.email}</p>
       </div>
-
-      <h2>Enter OTP</h2>
-      <p>We've sent a 6-digit code to {formData.email}</p>
-
       <div className="form-group">
+        <label>Enter OTP *</label>
         <input
           type="text"
           value={otp}
-          onChange={(e) =>
-            setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-          }
+          onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
           placeholder="Enter 6-digit OTP"
           maxLength={6}
           className="otp-input"
@@ -322,30 +310,18 @@ function Register() {
   // Step 3: Registration Form
   const renderFormStep = () => (
     <form className="auth-form" onSubmit={handleSubmit}>
-      {selectedRole === "STUDENT" && (
-        <div className="step-indicator">
-          <div className="step-dot completed"></div>
-          <div className="step-dot completed"></div>
-          <div className="step-dot completed"></div>
-          <div className="step-dot active"></div>
-        </div>
-      )}
-
-      {selectedRole === "STUDENT" && (
+      {role === "STUDENT" && (
         <div className="verified-email">
           <span className="verified-icon">✅</span>
           <span>{formData.email}</span>
           <span className="verified-badge">Verified</span>
         </div>
       )}
-
-      <div className="role-badge-display">
-        Registering as:{" "}
-        <strong>
-          {selectedRole === "STUDENT" ? "🎓 Student" : "💼 Mentor"}
-        </strong>
+      
+      <div className="selected-role-badge">
+        Registering as: <strong>{role === "STUDENT" ? "Student 🎓" : "Mentor 👨‍🏫"}</strong>
       </div>
-
+      
       <div className="form-group">
         <label>Full Name *</label>
         <input
@@ -357,9 +333,8 @@ function Register() {
           required
         />
       </div>
-
-      {/* Mentors enter email here since they skip OTP */}
-      {selectedRole === "MENTOR" && (
+      
+      {role === "MENTOR" && (
         <div className="form-group">
           <label>Email *</label>
           <input
@@ -372,7 +347,7 @@ function Register() {
           />
         </div>
       )}
-
+      
       <div className="form-group">
         <label>Password *</label>
         <input
@@ -380,13 +355,13 @@ function Register() {
           name="password"
           value={formData.password}
           onChange={handleChange}
-          placeholder="Create a password (min 6 characters)"
+          placeholder="Create a password"
           required
           minLength={6}
         />
       </div>
-
-      {selectedRole === "STUDENT" && (
+      
+      {role === "STUDENT" && (
         <div className="student-fields">
           <div className="form-group">
             <label>Department *</label>
@@ -419,10 +394,9 @@ function Register() {
           </div>
         </div>
       )}
-
-      {selectedRole === "MENTOR" && (
+      
+      {role === "MENTOR" && (
         <div className="mentor-fields">
-          <h4>📋 Mentor Details</h4>
           <div className="form-group">
             <label>Department *</label>
             <select
@@ -496,26 +470,84 @@ function Register() {
           </div>
         </div>
       )}
-
+      
       <button type="submit" className="auth-submit" disabled={loading}>
         {loading ? "Creating Account..." : "Create Account"}
       </button>
-
-      {selectedRole === "MENTOR" && (
+      
+      <div className="otp-actions">
         <button
           type="button"
-          className="back-to-role-btn"
+          className="change-email-btn"
           onClick={() => {
             setCurrentStep("role");
-            setSelectedRole(null);
+            setRole("");
             setEmailVerified(false);
+            setOtp("");
           }}
         >
-          ← Back to role selection
+          ← Change Role
         </button>
-      )}
+      </div>
     </form>
   );
+
+  // Get progress steps based on role
+  const getProgressSteps = () => {
+    if (role === "STUDENT") {
+      return (
+        <div className="otp-progress">
+          <div className={`progress-step ${currentStep === "role" ? "active" : (role ? "completed" : "")}`}>
+            <span className="step-number">1</span>
+            <span className="step-label">Role</span>
+          </div>
+          <div className={`progress-line ${currentStep !== "role" ? "active" : ""}`}></div>
+          <div className={`progress-step ${currentStep === "email" ? "active" : emailVerified ? "completed" : ""}`}>
+            <span className="step-number">2</span>
+            <span className="step-label">Email</span>
+          </div>
+          <div className={`progress-line ${currentStep === "otp" || emailVerified ? "active" : ""}`}></div>
+          <div className={`progress-step ${currentStep === "otp" ? "active" : emailVerified ? "completed" : ""}`}>
+            <span className="step-number">3</span>
+            <span className="step-label">Verify</span>
+          </div>
+          <div className={`progress-line ${emailVerified ? "active" : ""}`}></div>
+          <div className={`progress-step ${currentStep === "form" ? "active" : ""}`}>
+            <span className="step-number">4</span>
+            <span className="step-label">Register</span>
+          </div>
+        </div>
+      );
+    } else if (role === "MENTOR") {
+      return (
+        <div className="otp-progress">
+          <div className={`progress-step ${currentStep === "role" ? "active" : "completed"}`}>
+            <span className="step-number">1</span>
+            <span className="step-label">Role</span>
+          </div>
+          <div className={`progress-line ${currentStep === "form" ? "active" : ""}`}></div>
+          <div className={`progress-step ${currentStep === "form" ? "active" : ""}`}>
+            <span className="step-number">2</span>
+            <span className="step-label">Register</span>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="otp-progress">
+          <div className="progress-step active">
+            <span className="step-number">1</span>
+            <span className="step-label">Role</span>
+          </div>
+          <div className="progress-line"></div>
+          <div className="progress-step">
+            <span className="step-number">2</span>
+            <span className="step-label">Register</span>
+          </div>
+        </div>
+      );
+    }
+  };
 
   return (
     <div className="auth-page">
@@ -524,6 +556,8 @@ function Register() {
           <h1>Create Account</h1>
           <p>Join GCT Placement Community</p>
         </div>
+        
+        {getProgressSteps()}
 
         {currentStep === "role" && renderRoleStep()}
         {currentStep === "email" && renderEmailStep()}

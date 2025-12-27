@@ -1,7 +1,7 @@
-﻿/* Mentor Dashboard - Gray & Blue Theme */
+﻿/* Mentor Dashboard - Cream & Mauve Theme */
 .mentor-dashboard {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 50%, #f9fafb 100%);
+  background: linear-gradient(135deg, #fdfbf7 0%, #f5f0e8 50%, #faf8f4 100%);
 }
 
 .mentor-dashboard-loading {
@@ -10,26 +10,30 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  background: linear-gradient(135deg, #fdfbf7 0%, #f5f0e8 100%);
 }
 
 .loader {
   width: 50px;
   height: 50px;
-  border: 4px solid #e5e7eb;
-  border-top: 4px solid #2563EB;
+  border: 4px solid #e8d5e0;
+  border-top: 4px solid #8b5a7c;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Header */
 .mentor-header {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
   padding: 32px;
   color: white;
 }
@@ -67,16 +71,16 @@
 }
 
 .dashboard-card {
-  background: white;
+  background: #fffcf8;
   border-radius: 16px;
   padding: 28px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 15px rgba(139, 90, 124, 0.1);
+  border: 1px solid #e8d5e0;
   text-align: center;
 }
 
 .dashboard-card:hover {
-  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 8px 25px rgba(139, 90, 124, 0.15);
 }
 
 .card-icon {
@@ -86,12 +90,12 @@
 
 .dashboard-card h3 {
   font-size: 20px;
-  color: #1f2937;
+  color: #5c3d4e;
   margin: 0 0 12px 0;
 }
 
 .dashboard-card p {
-  color: #6B7280;
+  color: #8b7a80;
   font-size: 14px;
   margin: 0 0 20px 0;
   line-height: 1.5;
@@ -99,7 +103,7 @@
 
 .card-link {
   display: inline-block;
-  color: #2563EB;
+  color: #8b5a7c;
   font-weight: 600;
   text-decoration: none;
   font-size: 14px;
@@ -111,7 +115,7 @@
 
 /* Profile Card */
 .profile-card {
-  border-top: 4px solid #2563EB;
+  border-top: 4px solid #8b5a7c;
 }
 
 .profile-info {
@@ -123,7 +127,7 @@
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e8d5e0;
   margin: 0;
   font-size: 14px;
 }
@@ -133,21 +137,21 @@
 }
 
 .profile-info strong {
-  color: #1f2937;
+  color: #5c3d4e;
 }
 
 .profile-info span {
-  color: #6B7280;
+  color: #8b7a80;
 }
 
 /* Section Styles */
 .mentor-section {
-  background: white;
+  background: #fffcf8;
   border-radius: 16px;
   padding: 28px;
   margin-bottom: 24px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 15px rgba(139, 90, 124, 0.1);
+  border: 1px solid #e8d5e0;
 }
 
 .section-header {
@@ -160,12 +164,12 @@
 .section-title {
   font-size: 20px;
   font-weight: 600;
-  color: #1f2937;
+  color: #5c3d4e;
   margin: 0;
 }
 
 .add-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -180,7 +184,7 @@
 
 .add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 20px rgba(139, 90, 124, 0.4);
 }
 
 /* Experience List */
@@ -191,19 +195,19 @@
 }
 
 .experience-item {
-  background: #f9fafb;
+  background: #fdfbf7;
   border-radius: 12px;
   padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  border-left: 4px solid #2563EB;
+  border-left: 4px solid #8b5a7c;
 }
 
 .experience-info h4 {
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: #5c3d4e;
   margin: 0 0 8px 0;
 }
 
@@ -215,7 +219,7 @@
 
 .meta-item {
   font-size: 14px;
-  color: #6B7280;
+  color: #8b7a80;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -227,8 +231,8 @@
 }
 
 .edit-btn {
-  background: #dbeafe;
-  color: #2563EB;
+  background: #f5e6ee;
+  color: #8b5a7c;
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
@@ -238,7 +242,7 @@
 }
 
 .edit-btn:hover {
-  background: #bfdbfe;
+  background: #e8d5e0;
 }
 
 .delete-btn {
@@ -260,13 +264,13 @@
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #6B7280;
+  color: #8b7a80;
 }
 
 .empty-icon-box {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -279,7 +283,7 @@
 
 .empty-state h3 {
   font-size: 20px;
-  color: #1f2937;
+  color: #5c3d4e;
   margin-bottom: 8px;
 }
 
@@ -318,7 +322,7 @@
 .form-title {
   font-size: 24px;
   font-weight: 700;
-  color: #1f2937;
+  color: #5c3d4e;
   margin: 0;
 }
 
@@ -327,11 +331,11 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #6B7280;
+  color: #8b7a80;
 }
 
 .close-btn:hover {
-  color: #1f2937;
+  color: #5c3d4e;
 }
 
 .form-group {
@@ -351,19 +355,20 @@
 .form-textarea {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid #e8d5e0;
   border-radius: 10px;
   font-size: 16px;
   transition: all 0.2s;
   box-sizing: border-box;
+  background: #fdfbf7;
 }
 
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: #2563EB;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #8b5a7c;
+  box-shadow: 0 0 0 3px rgba(139, 90, 124, 0.1);
 }
 
 .form-textarea {
@@ -379,7 +384,7 @@
 
 .submit-btn {
   width: 100%;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
   color: white;
   border: none;
   padding: 14px 24px;
@@ -392,7 +397,7 @@
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 20px rgba(139, 90, 124, 0.4);
 }
 
 .submit-btn:disabled {

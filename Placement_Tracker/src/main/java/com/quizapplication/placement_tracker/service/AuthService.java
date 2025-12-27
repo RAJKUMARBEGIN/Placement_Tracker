@@ -129,6 +129,45 @@ public class AuthService {
         return convertToDTO(updatedUser);
     }
 
+    @Transactional
+    public UserDTO convertToMentor(Long id, ConvertToMentorDTO convertDTO) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        // Check if user is currently a student
+        if (user.getRole() != UserRole.STUDENT) {
+            throw new IllegalArgumentException("Only students can be converted to mentors");
+        }
+
+        // Update user role to MENTOR
+        user.setRole(UserRole.MENTOR);
+        user.setPlacedCompany(convertDTO.getPlacedCompany());
+        user.setPlacedPosition(convertDTO.getPlacedPosition());
+        
+        if (convertDTO.getPhoneNumber() != null) {
+            user.setPhoneNumber(convertDTO.getPhoneNumber());
+        }
+        if (convertDTO.getLinkedinProfile() != null) {
+            user.setLinkedinProfile(convertDTO.getLinkedinProfile());
+        }
+        if (convertDTO.getDepartmentId() != null) {
+            Department department = departmentRepository.findById(convertDTO.getDepartmentId())
+                    .orElse(null);
+            if (department != null) {
+                user.setDepartment(department);
+            }
+        }
+        if (convertDTO.getPlacementYear() != null) {
+            user.setPlacementYear(convertDTO.getPlacementYear());
+        } else if (user.getGraduationYear() != null) {
+            // Default to graduation year if not provided
+            user.setPlacementYear(user.getGraduationYear());
+        }
+
+        User updatedUser = userRepository.save(user);
+        return convertToDTO(updatedUser);
+    }
+
     private UserDTO convertToDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());

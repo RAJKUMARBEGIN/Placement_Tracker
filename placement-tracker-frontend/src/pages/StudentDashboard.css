@@ -1,7 +1,7 @@
-﻿/* Student Dashboard - Gray & Blue Theme */
+﻿/* Student Dashboard - Cream & Mauve Theme */
 .dashboard {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 50%, #f9fafb 100%);
+  background: linear-gradient(135deg, #fdfbf7 0%, #f5f0e8 50%, #faf8f4 100%);
 }
 
 .dashboard-container {
@@ -16,14 +16,14 @@
 
 .welcome-text {
   font-size: 16px;
-  color: #6B7280;
+  color: #8b7a80;
   margin-bottom: 8px;
 }
 
 .dashboard-title {
   font-size: 32px;
   font-weight: 700;
-  color: #1f2937;
+  color: #5c3d4e;
   margin: 0;
 }
 
@@ -35,15 +35,15 @@
 }
 
 .stat-card {
-  background: white;
+  background: #fffcf8;
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 15px rgba(139, 90, 124, 0.08);
+  border: 1px solid #e8d5e0;
 }
 
 .stat-card.primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
   color: white;
   border: none;
 }
@@ -61,22 +61,22 @@
 .stat-value {
   font-size: 28px;
   font-weight: 700;
-  color: #1f2937;
+  color: #5c3d4e;
 }
 
 .stat-label {
   font-size: 14px;
-  color: #6B7280;
+  color: #8b7a80;
   margin-top: 4px;
 }
 
 .dashboard-section {
-  background: white;
+  background: #fffcf8;
   border-radius: 16px;
   padding: 32px;
   margin-bottom: 32px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 15px rgba(139, 90, 124, 0.08);
+  border: 1px solid #e8d5e0;
 }
 
 .section-header {
@@ -89,12 +89,12 @@
 .section-title {
   font-size: 20px;
   font-weight: 600;
-  color: #1f2937;
+  color: #5c3d4e;
   margin: 0;
 }
 
 .add-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -109,7 +109,7 @@
 
 .add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 20px rgba(139, 90, 124, 0.4);
 }
 
 .experience-list {
@@ -119,19 +119,19 @@
 }
 
 .experience-item {
-  background: #f9fafb;
+  background: #fdfbf7;
   border-radius: 12px;
   padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  border-left: 4px solid #2563EB;
+  border-left: 4px solid #8b5a7c;
 }
 
 .experience-info h4 {
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937;
+  color: #5c3d4e;
   margin: 0 0 8px 0;
 }
 
@@ -143,7 +143,7 @@
 
 .meta-item {
   font-size: 14px;
-  color: #6B7280;
+  color: #8b7a80;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -188,13 +188,13 @@
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #6B7280;
+  color: #8b7a80;
 }
 
 .empty-icon-box {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -207,7 +207,7 @@
 
 .empty-state h3 {
   font-size: 20px;
-  color: #1f2937;
+  color: #5c3d4e;
   margin-bottom: 8px;
 }
 
@@ -218,7 +218,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -290,8 +290,8 @@
 .form-select:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: #2563EB;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #8b5a7c;
+  box-shadow: 0 0 0 3px rgba(139, 90, 124, 0.1);
 }
 
 .form-textarea {
@@ -307,7 +307,7 @@
 
 .submit-btn {
   width: 100%;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
   color: white;
   border: none;
   padding: 14px 24px;
@@ -320,7 +320,7 @@
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 20px rgba(139, 90, 124, 0.4);
 }
 
 .submit-btn:disabled {

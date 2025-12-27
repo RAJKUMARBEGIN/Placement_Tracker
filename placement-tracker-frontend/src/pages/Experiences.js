@@ -1,17 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { FiSearch, FiFilter, FiFileText, FiCalendar, FiMapPin, FiChevronRight } from 'react-icons/fi';
-import { toast } from 'react-toastify';
-import { experienceAPI, departmentAPI } from '../services/api';
-import './Experiences.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  FiSearch,
+  FiFilter,
+  FiFileText,
+  FiCalendar,
+  FiMapPin,
+  FiChevronRight,
+} from "react-icons/fi";
+import { toast } from "react-toastify";
+import { experienceAPI, departmentAPI } from "../services/api";
+import "./Experiences.css";
 
 const Experiences = () => {
   const [experiences, setExperiences] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [selectedYear, setSelectedYear] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -26,7 +33,7 @@ const Experiences = () => {
       setExperiences(expResponse.data);
       setDepartments(deptResponse.data);
     } catch (error) {
-      toast.error('Failed to fetch data');
+      toast.error("Failed to fetch data");
     } finally {
       setLoading(false);
     }
@@ -42,7 +49,7 @@ const Experiences = () => {
       const response = await experienceAPI.searchByCompany(searchTerm);
       setExperiences(response.data);
     } catch (error) {
-      toast.error('Search failed');
+      toast.error("Search failed");
     } finally {
       setLoading(false);
     }
@@ -52,9 +59,12 @@ const Experiences = () => {
     try {
       setLoading(true);
       let response;
-      
+
       if (selectedDepartment && selectedYear) {
-        response = await experienceAPI.getByDepartmentAndYear(selectedDepartment, selectedYear);
+        response = await experienceAPI.getByDepartmentAndYear(
+          selectedDepartment,
+          selectedYear
+        );
       } else if (selectedDepartment) {
         response = await experienceAPI.getByDepartment(selectedDepartment);
       } else if (selectedYear) {
@@ -62,38 +72,41 @@ const Experiences = () => {
       } else {
         response = await experienceAPI.getAll();
       }
-      
+
       setExperiences(response.data);
     } catch (error) {
-      toast.error('Filter failed');
+      toast.error("Filter failed");
     } finally {
       setLoading(false);
     }
   };
 
   const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedDepartment('');
-    setSelectedYear('');
+    setSearchTerm("");
+    setSelectedDepartment("");
+    setSelectedYear("");
     fetchData();
   };
 
-  const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
+  const years = Array.from(
+    { length: 10 },
+    (_, i) => new Date().getFullYear() - i
+  );
 
   const getCompanyColor = (company) => {
     const colors = {
-      'google': 'linear-gradient(135deg, #4285f4, #34a853)',
-      'microsoft': 'linear-gradient(135deg, #00a4ef, #7fba00)',
-      'amazon': 'linear-gradient(135deg, #ff9900, #146eb4)',
-      'meta': 'linear-gradient(135deg, #1877f2, #42b72a)',
-      'apple': 'linear-gradient(135deg, #555555, #000000)',
-      'netflix': 'linear-gradient(135deg, #e50914, #b81d24)',
+      google: "linear-gradient(135deg, #4285f4, #34a853)",
+      microsoft: "linear-gradient(135deg, #00a4ef, #7fba00)",
+      amazon: "linear-gradient(135deg, #ff9900, #146eb4)",
+      meta: "linear-gradient(135deg, #1877f2, #42b72a)",
+      apple: "linear-gradient(135deg, #555555, #000000)",
+      netflix: "linear-gradient(135deg, #e50914, #b81d24)",
     };
     const lowerCompany = company.toLowerCase();
     for (const [key, value] of Object.entries(colors)) {
       if (lowerCompany.includes(key)) return value;
     }
-    return 'linear-gradient(135deg, var(--primary), var(--primary-dark))';
+    return "linear-gradient(135deg, var(--primary), var(--primary-dark))";
   };
 
   if (loading) {
@@ -126,11 +139,13 @@ const Experiences = () => {
             placeholder="Search by company name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            onKeyPress={(e) => e.key === "Enter" && handleSearch()}
           />
-          <button className="search-btn" onClick={handleSearch}>Search</button>
+          <button className="search-btn" onClick={handleSearch}>
+            Search
+          </button>
         </div>
-        
+
         <div className="filters">
           <div className="filter-group">
             <FiFilter className="filter-icon" />
@@ -146,7 +161,7 @@ const Experiences = () => {
               ))}
             </select>
           </div>
-          
+
           <div className="filter-group">
             <FiCalendar className="filter-icon" />
             <select
@@ -155,19 +170,28 @@ const Experiences = () => {
             >
               <option value="">All Years</option>
               {years.map((year) => (
-                <option key={year} value={year}>{year}</option>
+                <option key={year} value={year}>
+                  {year}
+                </option>
               ))}
             </select>
           </div>
-          
-          <button className="filter-btn" onClick={handleFilter}>Apply</button>
-          <button className="clear-btn" onClick={clearFilters}>Clear</button>
+
+          <button className="filter-btn" onClick={handleFilter}>
+            Apply
+          </button>
+          <button className="clear-btn" onClick={clearFilters}>
+            Clear
+          </button>
         </div>
       </div>
 
       {/* Results Count */}
       <div className="results-info">
-        <span>{experiences.length} experience{experiences.length !== 1 ? 's' : ''} found</span>
+        <span>
+          {experiences.length} experience{experiences.length !== 1 ? "s" : ""}{" "}
+          found
+        </span>
       </div>
 
       {/* Experiences Grid */}
@@ -183,23 +207,28 @@ const Experiences = () => {
       ) : (
         <div className="experiences-grid">
           {experiences.map((exp) => (
-            <Link to={`/experiences/${exp.id}`} key={exp.id} className="experience-card">
-              <div className="card-header" style={{ background: getCompanyColor(exp.companyName) }}>
+            <Link
+              to={`/experiences/${exp.id}`}
+              key={exp.id}
+              className="experience-card"
+            >
+              <div
+                className="card-header"
+                style={{ background: getCompanyColor(exp.companyName) }}
+              >
                 <span className="company-name">{exp.companyName}</span>
                 <span className="year-badge">{exp.yearOfPlacement}</span>
               </div>
               <div className="card-body">
                 <h3 className="position">{exp.position}</h3>
                 <p className="student-name">by {exp.studentName}</p>
-                
+
                 <div className="card-meta">
                   <span className="meta-item">
                     <FiMapPin />
                     {exp.departmentName}
                   </span>
-                  <span className="meta-item">
-                    {exp.totalRounds} Rounds
-                  </span>
+                  <span className="meta-item">{exp.totalRounds} Rounds</span>
                 </div>
 
                 <p className="preview-text">

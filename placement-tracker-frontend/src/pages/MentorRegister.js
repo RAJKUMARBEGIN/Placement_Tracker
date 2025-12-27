@@ -1,30 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { authAPI, departmentAPI, companyAPI } from '../services/api';
-import { useAuth } from '../context/AuthContext';
-import './Register.css';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { authAPI, departmentAPI, companyAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import "./Register.css";
 
 const MentorRegister = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  
+
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    fullName: '',
-    departmentId: '',
-    graduationYear: '',
-    phoneNumber: '',
-    linkedinProfile: '',
-    placedCompany: '',
-    placedPosition: '',
-    placementYear: ''
+    email: "",
+    password: "",
+    confirmPassword: "",
+    fullName: "",
+    departmentId: "",
+    graduationYear: "",
+    phoneNumber: "",
+    linkedinProfile: "",
+    placedCompany: "",
+    placedPosition: "",
+    placementYear: "",
   });
-  
+
   const [departments, setDepartments] = useState([]);
   const [companies, setCompanies] = useState([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
 
@@ -38,7 +38,7 @@ const MentorRegister = () => {
       const response = await departmentAPI.getAll();
       setDepartments(response.data);
     } catch (err) {
-      console.error('Error fetching departments:', err);
+      console.error("Error fetching departments:", err);
     }
   };
 
@@ -47,18 +47,18 @@ const MentorRegister = () => {
       const response = await companyAPI.getAll();
       setCompanies(response.data);
     } catch (err) {
-      console.error('Error fetching companies:', err);
+      console.error("Error fetching companies:", err);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
-    if (name === 'password') {
+    if (name === "password") {
       calculatePasswordStrength(value);
     }
   };
@@ -74,36 +74,36 @@ const MentorRegister = () => {
   };
 
   const validateEmail = (email) => {
-    return email.endsWith('@gct.ac.in');
+    return email.endsWith("@gct.ac.in");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Validations
     if (!validateEmail(formData.email)) {
-      setError('Only @gct.ac.in email addresses are allowed');
+      setError("Only @gct.ac.in email addresses are allowed");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long');
+      setError("Password must be at least 8 characters long");
       return;
     }
 
     if (!formData.departmentId) {
-      setError('Please select your department');
+      setError("Please select your department");
       return;
     }
 
     if (!formData.placedCompany) {
-      setError('Please enter the company where you were placed');
+      setError("Please enter the company where you were placed");
       return;
     }
 
@@ -114,36 +114,42 @@ const MentorRegister = () => {
         email: formData.email,
         password: formData.password,
         fullName: formData.fullName,
-        role: 'MENTOR',
+        role: "MENTOR",
         departmentId: parseInt(formData.departmentId),
-        graduationYear: formData.graduationYear ? parseInt(formData.graduationYear) : null,
+        graduationYear: formData.graduationYear
+          ? parseInt(formData.graduationYear)
+          : null,
         phoneNumber: formData.phoneNumber,
         linkedinProfile: formData.linkedinProfile,
         placedCompany: formData.placedCompany,
         placedPosition: formData.placedPosition,
-        placementYear: formData.placementYear ? parseInt(formData.placementYear) : null
+        placementYear: formData.placementYear
+          ? parseInt(formData.placementYear)
+          : null,
       };
 
       const response = await authAPI.register(registerData);
       login(response.data);
-      navigate('/mentor/dashboard');
+      navigate("/mentor/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setError(
+        err.response?.data?.message || "Registration failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const getStrengthColor = () => {
-    if (passwordStrength <= 2) return '#e74c3c';
-    if (passwordStrength <= 3) return '#f39c12';
-    return '#27ae60';
+    if (passwordStrength <= 2) return "#e74c3c";
+    if (passwordStrength <= 3) return "#f39c12";
+    return "#27ae60";
   };
 
   const getStrengthText = () => {
-    if (passwordStrength <= 2) return 'Weak';
-    if (passwordStrength <= 3) return 'Medium';
-    return 'Strong';
+    if (passwordStrength <= 2) return "Weak";
+    if (passwordStrength <= 3) return "Medium";
+    return "Strong";
   };
 
   const currentYear = new Date().getFullYear();
@@ -171,7 +177,7 @@ const MentorRegister = () => {
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-section">
             <h3 className="section-title">Personal Information</h3>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label>Full Name *</label>
@@ -197,7 +203,9 @@ const MentorRegister = () => {
                   placeholder="yourname@gct.ac.in"
                   required
                 />
-                <small className="email-hint">Only @gct.ac.in emails are accepted</small>
+                <small className="email-hint">
+                  Only @gct.ac.in emails are accepted
+                </small>
               </div>
             </div>
 
@@ -214,14 +222,16 @@ const MentorRegister = () => {
                 />
                 {formData.password && (
                   <div className="password-strength">
-                    <div 
+                    <div
                       className="strength-bar"
-                      style={{ 
+                      style={{
                         width: `${(passwordStrength / 5) * 100}%`,
-                        backgroundColor: getStrengthColor()
+                        backgroundColor: getStrengthColor(),
                       }}
                     />
-                    <span style={{ color: getStrengthColor() }}>{getStrengthText()}</span>
+                    <span style={{ color: getStrengthColor() }}>
+                      {getStrengthText()}
+                    </span>
                   </div>
                 )}
               </div>
@@ -248,7 +258,7 @@ const MentorRegister = () => {
                   required
                 >
                   <option value="">Select Department</option>
-                  {departments.map(dept => (
+                  {departments.map((dept) => (
                     <option key={dept.id} value={dept.id}>
                       {dept.departmentName}
                     </option>
@@ -263,8 +273,10 @@ const MentorRegister = () => {
                   onChange={handleChange}
                 >
                   <option value="">Select Year</option>
-                  {graduationYears.map(year => (
-                    <option key={year} value={year}>{year}</option>
+                  {graduationYears.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -296,7 +308,7 @@ const MentorRegister = () => {
 
           <div className="form-section">
             <h3 className="section-title">Placement Information</h3>
-            
+
             <div className="form-row two-col">
               <div className="form-group">
                 <label>Company Name *</label>
@@ -310,7 +322,7 @@ const MentorRegister = () => {
                   required
                 />
                 <datalist id="companies-list">
-                  {companies.map(company => (
+                  {companies.map((company) => (
                     <option key={company.id} value={company.companyName} />
                   ))}
                 </datalist>
@@ -336,22 +348,33 @@ const MentorRegister = () => {
                   onChange={handleChange}
                 >
                   <option value="">Select Year</option>
-                  {graduationYears.map(year => (
-                    <option key={year} value={year}>{year}</option>
+                  {graduationYears.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
                   ))}
                 </select>
               </div>
             </div>
           </div>
 
-          <button type="submit" className="register-btn mentor-btn" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Create Mentor Account'}
+          <button
+            type="submit"
+            className="register-btn mentor-btn"
+            disabled={loading}
+          >
+            {loading ? "Creating Account..." : "Create Mentor Account"}
           </button>
         </form>
 
         <div className="register-footer">
-          <p>Already have an account? <Link to="/login">Sign in</Link></p>
-          <p>Are you a student? <Link to="/register/student">Register as Student</Link></p>
+          <p>
+            Already have an account? <Link to="/login">Sign in</Link>
+          </p>
+          <p>
+            Are you a student?{" "}
+            <Link to="/register/student">Register as Student</Link>
+          </p>
         </div>
       </div>
     </div>
