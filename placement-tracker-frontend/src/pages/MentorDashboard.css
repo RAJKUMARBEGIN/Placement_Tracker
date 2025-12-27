@@ -1,4 +1,4 @@
-﻿/* Mentor Dashboard - Professional Design */
+﻿/* Mentor Dashboard - Professional Tech Design */
 .mentor-dashboard {
   min-height: calc(100vh - 72px);
   background: var(--bg-primary);
@@ -6,46 +6,47 @@
 
 /* Header */
 .mentor-header {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-  padding: 48px 24px;
+  background: var(--secondary);
+  padding: 60px 24px;
   color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .mentor-header-content {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .mentor-header h1 {
-  font-size: 36px;
-  margin: 0 0 8px 0;
+  font-size: 40px;
+  margin: 0 0 12px 0;
   font-weight: 800;
-  letter-spacing: -1px;
+  letter-spacing: -1.5px;
 }
 
 .mentor-header p {
   font-size: 18px;
-  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.6);
   margin: 0;
 }
 
 /* Content */
 .mentor-content {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 40px 24px;
+  padding: 48px 24px;
 }
 
 .dashboard-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 24px;
 }
 
 .dashboard-card {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  padding: 32px;
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
   transition: var(--transition);
@@ -53,25 +54,29 @@
 
 .dashboard-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-light);
 }
 
 .card-icon {
-  width: 56px;
-  height: 56px;
-  background: var(--secondary);
-  border-radius: var(--radius-md);
+  width: 64px;
+  height: 64px;
+  background: #f0f9ff;
+  color: var(--primary);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
+  font-size: 24px;
 }
 
 .dashboard-card h3 {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--secondary);
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
 }
 
 .profile-info {
@@ -92,17 +97,11 @@
   font-weight: 600;
 }
 
-.mentor-header p {
-  margin: 0;
-  opacity: 0.9;
-  font-size: 16px;
-}
-
 /* Main Content */
 .mentor-content {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 32px 20px;
+  padding: 48px 24px;
 }
 
 /* Dashboard Cards */
@@ -114,11 +113,12 @@
 }
 
 .dashboard-card {
-  background: #fffcf8;
-  border-radius: 16px;
-  padding: 28px;
-  box-shadow: 0 4px 15px rgba(139, 90, 124, 0.1);
-  border: 1px solid #e8d5e0;
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
   text-align: center;
 }
 

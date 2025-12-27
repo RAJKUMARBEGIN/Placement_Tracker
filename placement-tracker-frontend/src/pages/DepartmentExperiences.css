@@ -1,4 +1,4 @@
-/* Department Experiences - Professional Design */
+/* Department Experiences - Professional Tech Design */
 .dept-experiences-page {
   min-height: calc(100vh - 72px);
   background: var(--bg-primary);
@@ -6,63 +6,64 @@
 
 /* Header */
 .dept-header {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-  padding: 64px 24px;
+  background: var(--secondary);
+  padding: 80px 24px;
   text-align: center;
   color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .dept-header h1 {
-  font-size: 40px;
+  font-size: 48px;
   font-weight: 800;
-  margin-bottom: 12px;
-  letter-spacing: -1px;
+  margin-bottom: 16px;
+  letter-spacing: -1.5px;
 }
 
 .dept-header p {
-  font-size: 18px;
-  opacity: 0.9;
-  margin-bottom: 24px;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 32px;
 }
 
 .back-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.15);
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
   color: white;
-  padding: 10px 20px;
-  border-radius: var(--radius);
+  padding: 12px 24px;
+  border-radius: 8px;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
   transition: var(--transition);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
   transform: translateX(-4px);
 }
 
 /* Content */
 .dept-content {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 48px 24px;
+  padding: 60px 24px;
 }
 
 .experiences-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 32px;
 }
 
 .experience-card {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  padding: 32px;
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
   transition: var(--transition);
@@ -73,7 +74,7 @@
 
 .experience-card:hover {
   transform: translateY(-8px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
   border-color: var(--primary-light);
 }
 
@@ -81,26 +82,25 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .company-info {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   align-items: center;
 }
 
 .company-logo {
-  width: 48px;
-  height: 48px;
-  background: var(--secondary);
+  width: 56px;
+  height: 56px;
+  background: #f0f9ff;
   color: var(--primary);
-  border-radius: var(--radius);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 24px;
 }
 
 .company-info h3 {

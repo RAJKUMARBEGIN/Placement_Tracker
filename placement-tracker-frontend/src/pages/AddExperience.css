@@ -1,12 +1,12 @@
-/* Add Experience - Professional Design */
+/* Add Experience - Professional Tech Design */
 .add-experience-page {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 40px 24px;
+  padding: 60px 24px;
 }
 
 .page-header {
-  margin-bottom: 40px;
+  margin-bottom: 60px;
   text-align: center;
 }
 
@@ -14,11 +14,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  font-size: 32px;
+  gap: 16px;
+  font-size: 40px;
   font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -0.5px;
+  color: var(--secondary);
+  letter-spacing: -1.5px;
 }
 
 .header-icon {
@@ -27,44 +27,40 @@
 
 .page-header p {
   color: var(--text-secondary);
-  margin-top: 12px;
-  font-size: 16px;
+  margin-top: 16px;
+  font-size: 18px;
 }
 
 /* Form */
 .experience-form {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 40px;
 }
 
 .form-section {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  padding: 40px;
-  box-shadow: var(--shadow-lg);
+  background: white;
+  border-radius: 12px;
+  padding: 48px;
+  box-shadow: var(--shadow);
   border: 1px solid var(--border);
 }
 
 .form-section.highlight {
   border: 1px solid var(--primary);
-  background: linear-gradient(
-    to bottom,
-    rgba(79, 70, 229, 0.02),
-    var(--bg-secondary)
-  );
+  background: #f0f9ff;
 }
 
 .section-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--secondary);
   margin-bottom: 32px;
   padding-bottom: 16px;
   border-bottom: 2px solid var(--border-light);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .form-grid {

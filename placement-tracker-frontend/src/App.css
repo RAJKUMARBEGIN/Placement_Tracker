@@ -24,25 +24,25 @@
 
 .page-header {
   text-align: center;
-  padding: 80px 32px 60px;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border);
+  padding: 100px 32px 80px;
+  background: var(--secondary);
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .page-header h1 {
-  font-size: 48px;
-  margin: 0 0 16px;
+  font-size: 56px;
+  margin: 0 0 20px;
   font-weight: 800;
-  letter-spacing: -1.5px;
-  color: var(--text-primary);
+  letter-spacing: -2px;
+  color: white;
 }
 
 .page-header p {
-  font-size: 18px;
+  font-size: 20px;
   margin: 0;
-  color: var(--text-secondary);
-  max-width: 600px;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 700px;
   margin: 0 auto;
 }
 

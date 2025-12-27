@@ -1,18 +1,16 @@
-/* Navbar - Professional Design */
+/* Navbar - Professional Tech Design */
 .navbar {
-  background: var(--bg-secondary);
+  background: var(--secondary);
   padding: 0 24px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   position: sticky;
   top: 0;
   z-index: 1000;
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-  background: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .nav-container {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -29,49 +27,47 @@
   transition: var(--transition);
 }
 
-.nav-logo:hover {
-  opacity: 0.9;
-}
-
 .logo-img {
-  height: 40px;
-  width: 40px;
+  height: 36px;
+  width: 36px;
   object-fit: cover;
-  border-radius: var(--radius);
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .logo-text {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--primary);
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
   letter-spacing: -0.5px;
+  text-transform: uppercase;
 }
 
 /* Nav Links */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .nav-link {
   padding: 8px 16px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  font-size: 15px;
-  border-radius: var(--radius);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 6px;
   transition: var(--transition);
   text-decoration: none;
 }
 
 .nav-link:hover {
-  color: var(--primary);
-  background: var(--bg-tertiary);
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-link.active {
-  color: var(--primary);
-  background: var(--secondary);
+  color: white;
+  background: var(--primary);
 }
 
 /* User Menu */
@@ -79,9 +75,9 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding-left: 16px;
-  border-left: 1px solid var(--border);
-  margin-left: 8px;
+  padding-left: 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  margin-left: 12px;
 }
 
 .user-info {
@@ -99,9 +95,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-name {
   font-weight: 600;
   font-size: 14px;
-  box-shadow: var(--shadow-sm);
+  color: white;
 }
 
 .user-details {
