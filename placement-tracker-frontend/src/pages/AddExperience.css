@@ -98,6 +98,92 @@
   width: 100%;
 }
 
+.field-hint {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.file-upload-area {
+  margin-top: 8px;
+}
+
+.file-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  color: white;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+
+.file-upload-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+}
+
+.file-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f0f9ff;
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-top: 8px;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.file-info svg {
+  color: var(--primary);
+  font-size: 24px;
+}
+
+.file-name {
+  font-weight: 600;
+  color: var(--secondary);
+  font-size: 14px;
+}
+
+.file-size {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.remove-file-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #e2e8f0;
+  color: #64748b;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.remove-file-btn:hover {
+  background: #ef4444;
+  color: white;
+  transform: translateY(-2px);
+}
+
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {

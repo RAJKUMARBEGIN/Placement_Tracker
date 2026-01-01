@@ -14,9 +14,11 @@ import {
   FiMessageCircle,
   FiEdit2,
   FiTrash2,
+  FiDownload,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { experienceAPI } from "../services/api";
+import jsPDF from "jspdf";
 import "./ExperienceDetail.css";
 
 const ExperienceDetail = () => {
@@ -51,6 +53,84 @@ const ExperienceDetail = () => {
         toast.error("Failed to delete experience");
       }
     }
+  };
+
+  const handleDownloadPDF = () => {
+    const pdf = new jsPDF();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 20;
+    const maxWidth = pageWidth - 2 * margin;
+    let yPosition = margin;
+
+    // Helper function to add text with word wrap
+    const addText = (text, fontSize = 12, isBold = false) => {
+      pdf.setFontSize(fontSize);
+      if (isBold) pdf.setFont(undefined, "bold");
+      else pdf.setFont(undefined, "normal");
+
+      const lines = pdf.splitTextToSize(text, maxWidth);
+      lines.forEach((line) => {
+        if (yPosition > pageHeight - margin) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+        pdf.text(line, margin, yPosition);
+        yPosition += fontSize * 0.5;
+      });
+      yPosition += 5;
+    };
+
+    // Title
+    addText(`${experience.companyName} - ${experience.position}`, 18, true);
+    yPosition += 5;
+
+    // Basic Info
+    addText(`Student: ${experience.studentName}`, 12);
+    addText(`Department: ${experience.departmentName}`, 12);
+    addText(`Year: ${experience.yearOfPlacement}`, 12);
+    addText(`Total Rounds: ${experience.totalRounds}`, 12);
+    yPosition += 5;
+
+    // Interview Details
+    addText("Interview Rounds:", 14, true);
+    addText(experience.roundsDescription || "N/A", 11);
+    yPosition += 5;
+
+    addText("Questions Asked:", 14, true);
+    addText(experience.questionsAsked || "N/A", 11);
+    yPosition += 5;
+
+    addText("Problems Solved:", 14, true);
+    addText(experience.problemsSolved || "N/A", 11);
+    yPosition += 5;
+
+    addText("Cracking Strategy:", 14, true);
+    addText(experience.crackingStrategy || "N/A", 11);
+    yPosition += 5;
+
+    addText("Preparation Details:", 14, true);
+    addText(experience.preparationDetails || "N/A", 11);
+    yPosition += 5;
+
+    if (experience.inPersonInterviewTips) {
+      addText("In-Person Interview Tips:", 14, true);
+      addText(experience.inPersonInterviewTips, 11);
+      yPosition += 5;
+    }
+
+    if (experience.resources) {
+      addText("Resources Used:", 14, true);
+      addText(experience.resources, 11);
+    }
+
+    // Save PDF
+    const fileName = `${experience.companyName.replace(
+      /[^a-z0-9]/gi,
+      "_"
+    )}_${experience.studentName.replace(/[^a-z0-9]/gi, "_")}_Experience.pdf`;
+    pdf.save(fileName);
+    toast.success("PDF downloaded successfully!");
   };
 
   if (loading) {
@@ -110,6 +190,10 @@ const ExperienceDetail = () => {
           </div>
         </div>
         <div className="header-actions">
+          <button className="action-btn download" onClick={handleDownloadPDF}>
+            <FiDownload />
+            Download PDF
+          </button>
           <button className="action-btn delete" onClick={handleDelete}>
             <FiTrash2 />
             Delete

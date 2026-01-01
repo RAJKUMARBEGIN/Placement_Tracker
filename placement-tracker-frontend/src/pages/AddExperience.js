@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiSend, FiPlus } from "react-icons/fi";
+import { FiSend, FiPlus, FiUpload, FiFile, FiX } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { experienceAPI, departmentAPI } from "../services/api";
 import "./AddExperience.css";
@@ -9,6 +9,7 @@ const AddExperience = () => {
   const navigate = useNavigate();
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [resourceFile, setResourceFile] = useState(null);
   const [formData, setFormData] = useState({
     studentName: "",
     companyName: "",
@@ -50,6 +51,29 @@ const AddExperience = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("File size must be less than 10MB");
+        return;
+      }
+      // Check file type (only zip files)
+      if (!file.name.endsWith(".zip")) {
+        toast.error("Only ZIP files are allowed");
+        return;
+      }
+      setResourceFile(file);
+      toast.success(`File "${file.name}" selected`);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setResourceFile(null);
+    toast.info("File removed");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -60,13 +84,22 @@ const AddExperience = () => {
 
     setLoading(true);
     try {
-      await experienceAPI.create({
+      // Note: File upload functionality will be implemented in backend
+      // For now, we're just tracking if a file was selected
+      const submissionData = {
         ...formData,
         departmentId: parseInt(formData.departmentId),
         yearOfPlacement: parseInt(formData.yearOfPlacement),
         totalRounds: parseInt(formData.totalRounds),
-      });
+        hasResourceFile: resourceFile !== null,
+        resourceFileName: resourceFile?.name || null,
+      };
+
+      await experienceAPI.create(submissionData);
       toast.success("Experience shared successfully! 🎉");
+      if (resourceFile) {
+        toast.info("Note: File upload feature will be available soon!");
+      }
       navigate("/experiences");
     } catch (error) {
       toast.error(
@@ -261,6 +294,44 @@ const AddExperience = () => {
               placeholder="Share helpful resources. E.g., LeetCode, GeeksforGeeks, Striver's SDE Sheet, YouTube channels like Take U Forward..."
               rows={3}
             />
+          </div>
+          <div className="form-group">
+            <label>Upload Resources (ZIP file)</label>
+            <p className="field-hint">
+              Upload study materials, notes, or code as a ZIP file (max 10MB)
+            </p>
+            {!resourceFile ? (
+              <div className="file-upload-area">
+                <input
+                  type="file"
+                  id="resourceFile"
+                  accept=".zip"
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                />
+                <label htmlFor="resourceFile" className="file-upload-btn">
+                  <FiUpload />
+                  Choose ZIP File
+                </label>
+              </div>
+            ) : (
+              <div className="file-selected">
+                <div className="file-info">
+                  <FiFile />
+                  <span className="file-name">{resourceFile.name}</span>
+                  <span className="file-size">
+                    ({(resourceFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="remove-file-btn"
+                  onClick={handleRemoveFile}
+                >
+                  <FiX /> Remove
+                </button>
+              </div>
+            )}
           </div>
         </section>
 

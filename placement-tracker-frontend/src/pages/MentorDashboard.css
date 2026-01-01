@@ -1,4 +1,4 @@
-﻿/* Mentor Dashboard - Professional Tech Design */
+/* Mentor Dashboard - Professional Tech Design */
 .mentor-dashboard {
   min-height: calc(100vh - 72px);
   background: var(--bg-primary);
@@ -123,7 +123,7 @@
 }
 
 .dashboard-card:hover {
-  box-shadow: 0 8px 25px rgba(139, 90, 124, 0.15);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
 }
 
 .card-icon {
@@ -133,12 +133,12 @@
 
 .dashboard-card h3 {
   font-size: 20px;
-  color: #5c3d4e;
+  color: var(--secondary);
   margin: 0 0 12px 0;
 }
 
 .dashboard-card p {
-  color: #8b7a80;
+  color: #64748b;
   font-size: 14px;
   margin: 0 0 20px 0;
   line-height: 1.5;
@@ -146,7 +146,7 @@
 
 .card-link {
   display: inline-block;
-  color: #8b5a7c;
+  color: var(--primary);
   font-weight: 600;
   text-decoration: none;
   font-size: 14px;
@@ -158,7 +158,7 @@
 
 /* Profile Card */
 .profile-card {
-  border-top: 4px solid #8b5a7c;
+  border-top: 4px solid var(--primary);
 }
 
 .profile-info {
@@ -170,7 +170,7 @@
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px solid #e8d5e0;
+  border-bottom: 1px solid #dbeafe;
   margin: 0;
   font-size: 14px;
 }
@@ -180,11 +180,11 @@
 }
 
 .profile-info strong {
-  color: #5c3d4e;
+  color: var(--secondary);
 }
 
 .profile-info span {
-  color: #8b7a80;
+  color: #64748b;
 }
 
 /* Section Styles */
@@ -193,8 +193,8 @@
   border-radius: 16px;
   padding: 28px;
   margin-bottom: 24px;
-  box-shadow: 0 4px 15px rgba(139, 90, 124, 0.1);
-  border: 1px solid #e8d5e0;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1);
+  border: 1px solid #dbeafe;
 }
 
 .section-header {
@@ -207,12 +207,12 @@
 .section-title {
   font-size: 20px;
   font-weight: 600;
-  color: #5c3d4e;
+  color: var(--secondary);
   margin: 0;
 }
 
 .add-btn {
-  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -227,7 +227,7 @@
 
 .add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 90, 124, 0.4);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
 /* Experience List */
@@ -244,13 +244,13 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  border-left: 4px solid #8b5a7c;
+  border-left: 4px solid var(--primary);
 }
 
 .experience-info h4 {
   font-size: 18px;
   font-weight: 600;
-  color: #5c3d4e;
+  color: var(--secondary);
   margin: 0 0 8px 0;
 }
 
@@ -262,7 +262,7 @@
 
 .meta-item {
   font-size: 14px;
-  color: #8b7a80;
+  color: #64748b;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -274,8 +274,8 @@
 }
 
 .edit-btn {
-  background: #f5e6ee;
-  color: #8b5a7c;
+  background: #eff6ff;
+  color: var(--primary);
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
@@ -285,11 +285,11 @@
 }
 
 .edit-btn:hover {
-  background: #e8d5e0;
+  background: #dbeafe;
 }
 
 .delete-btn {
-  background: #fee2e2;
+  background: #e2e8f0;
   color: #dc2626;
   border: none;
   padding: 8px 16px;
@@ -307,13 +307,13 @@
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #8b7a80;
+  color: #64748b;
 }
 
 .empty-icon-box {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -326,7 +326,7 @@
 
 .empty-state h3 {
   font-size: 20px;
-  color: #5c3d4e;
+  color: var(--secondary);
   margin-bottom: 8px;
 }
 
@@ -365,7 +365,7 @@
 .form-title {
   font-size: 24px;
   font-weight: 700;
-  color: #5c3d4e;
+  color: var(--secondary);
   margin: 0;
 }
 
@@ -374,11 +374,11 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #8b7a80;
+  color: #64748b;
 }
 
 .close-btn:hover {
-  color: #5c3d4e;
+  color: var(--secondary);
 }
 
 .form-group {
@@ -398,7 +398,7 @@
 .form-textarea {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid #e8d5e0;
+  border: 2px solid #dbeafe;
   border-radius: 10px;
   font-size: 16px;
   transition: all 0.2s;
@@ -410,8 +410,8 @@
 .form-select:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: #8b5a7c;
-  box-shadow: 0 0 0 3px rgba(139, 90, 124, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .form-textarea {
@@ -427,7 +427,7 @@
 
 .submit-btn {
   width: 100%;
-  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%);
   color: white;
   border: none;
   padding: 14px 24px;
@@ -440,7 +440,7 @@
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 90, 124, 0.4);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
 .submit-btn:disabled {

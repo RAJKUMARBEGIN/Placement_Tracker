@@ -14,6 +14,7 @@ function StudentDashboard() {
   const [showModal, setShowModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [editing, setEditing] = useState(null);
+  const [resourceFile, setResourceFile] = useState(null);
 
   const createEmptyRound = (roundNumber) => ({
     roundNumber,
@@ -273,8 +274,6 @@ function StudentDashboard() {
     return true;
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -352,9 +351,9 @@ function StudentDashboard() {
                 <div className="exp-header">
                   <div className="exp-company">
                     <div className="company-logo">
-                      {exp.companyName?.charAt(0) || "C"}
+                      {exp.companyName?.charAt(0).toUpperCase() || "C"}
                     </div>
-                    <div>
+                    <div className="company-info">
                       <h3>{exp.companyName}</h3>
                       <p className="company-type">{exp.companyType || "IT"}</p>
                     </div>
@@ -365,31 +364,50 @@ function StudentDashboard() {
                     {exp.finalResult}
                   </span>
                 </div>
+
                 <div className="exp-details">
-                  <span className="exp-detail">
-                    Salary: {exp.salary || "N/A"}
-                  </span>
-                  <span className="exp-detail">Rounds: {exp.totalRounds}</span>
-                  <span className="exp-detail">Dept: {exp.department}</span>
+                  {exp.salary && (
+                    <div className="detail-item">
+                      <span className="detail-label">Salary:</span>
+                      <span className="detail-value">{exp.salary}</span>
+                    </div>
+                  )}
+                  <div className="detail-item">
+                    <span className="detail-label">Rounds:</span>
+                    <span className="detail-value">{exp.totalRounds}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Department:</span>
+                    <span className="detail-value">{exp.department}</span>
+                  </div>
                 </div>
+
                 {exp.internOffered && (
-                  <span className="intern-badge">Intern Offered</span>
+                  <div className="intern-badge">
+                    <span>✓</span> Intern Offered
+                  </div>
                 )}
-                <p className="exp-description">
-                  {exp.overallExperience?.substring(0, 120)}...
-                </p>
+
+                {exp.overallExperience && (
+                  <p className="exp-description">
+                    {exp.overallExperience.length > 150
+                      ? exp.overallExperience.substring(0, 150) + "..."
+                      : exp.overallExperience}
+                  </p>
+                )}
+
                 <div className="exp-actions">
                   <button
                     className="edit-btn"
                     onClick={() => openEditModal(exp)}
                   >
-                    Edit
+                    <span>✎</span> Edit
                   </button>
                   <button
                     className="delete-btn"
                     onClick={() => handleDelete(exp.id)}
                   >
-                    Delete
+                    <span>✕</span> Delete
                   </button>
                 </div>
               </div>
@@ -996,6 +1014,65 @@ function StudentDashboard() {
                       rows={3}
                     />
                   </div>
+
+                  <div className="form-group">
+                    <label>Upload Resources (ZIP file)</label>
+                    <p className="field-hint">
+                      Upload study materials, notes, or code as a ZIP file (max
+                      10MB)
+                    </p>
+                    {!resourceFile ? (
+                      <div className="file-upload-area">
+                        <input
+                          type="file"
+                          id="resourceFile"
+                          accept=".zip"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              if (file.size > 10 * 1024 * 1024) {
+                                toast.error("File size must be less than 10MB");
+                                return;
+                              }
+                              if (!file.name.endsWith(".zip")) {
+                                toast.error("Only ZIP files are allowed");
+                                return;
+                              }
+                              setResourceFile(file);
+                              toast.success(`File "${file.name}" selected`);
+                            }
+                          }}
+                          style={{ display: "none" }}
+                        />
+                        <label
+                          htmlFor="resourceFile"
+                          className="file-upload-btn"
+                        >
+                          📁 Choose ZIP File
+                        </label>
+                      </div>
+                    ) : (
+                      <div className="file-selected">
+                        <div className="file-info">
+                          <span className="file-icon">📄</span>
+                          <span className="file-name">{resourceFile.name}</span>
+                          <span className="file-size">
+                            ({(resourceFile.size / 1024 / 1024).toFixed(2)} MB)
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className="remove-file-btn"
+                          onClick={() => {
+                            setResourceFile(null);
+                            toast.info("File removed");
+                          }}
+                        >
+                          × Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -1019,8 +1096,6 @@ function StudentDashboard() {
           </div>
         </div>
       )}
-
-
     </div>
   );
 }

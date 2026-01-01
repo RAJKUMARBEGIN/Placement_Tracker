@@ -13,8 +13,9 @@ const DepartmentExperiences = () => {
   const [loading, setLoading] = useState(true);
   const [selectedExp, setSelectedExp] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCompany, setSelectedCompany] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedYears, setSelectedYears] = useState({}); // Store selected year for each company
+  const [expandedCompanies, setExpandedCompanies] = useState({}); // Track which companies are expanded
+  const [expandedExperiences, setExpandedExperiences] = useState({}); // Track which experiences are expanded
   const [activeTab, setActiveTab] = useState("experiences"); // experiences or mentors
 
   useEffect(() => {
@@ -43,34 +44,97 @@ const DepartmentExperiences = () => {
     }
   };
 
-  // Get unique companies and years for filter
-  const companies = [
-    ...new Set(experiences.map((e) => e.companyName).filter(Boolean)),
-  ].sort();
-  const years = [
-    ...new Set(
-      experiences
-        .map((e) => e.placementYear || new Date(e.createdAt).getFullYear())
-        .filter(Boolean)
-    ),
-  ].sort((a, b) => b - a);
+  // Group experiences by company (case-insensitive)
+  const groupedByCompany = experiences.reduce((acc, exp) => {
+    const rawCompany = exp.companyName || "Other";
+    // Normalize company name: capitalize first letter, lowercase the rest
+    const company =
+      rawCompany.charAt(0).toUpperCase() + rawCompany.slice(1).toLowerCase();
+    if (!acc[company]) {
+      acc[company] = [];
+    }
+    acc[company].push(exp);
+    return acc;
+  }, {});
 
-  const filteredExperiences = experiences.filter((exp) => {
-    const search = searchTerm.toLowerCase();
-    const matchesSearch =
-      exp.companyName?.toLowerCase().includes(search) ||
-      exp.studentName?.toLowerCase().includes(search);
-    const matchesCompany =
-      !selectedCompany || exp.companyName === selectedCompany;
-    const expYear = exp.placementYear || new Date(exp.createdAt).getFullYear();
-    const matchesYear = !selectedYear || expYear?.toString() === selectedYear;
-    return matchesSearch && matchesCompany && matchesYear;
-  });
+  // Get unique companies from grouped data
+  const companies = Object.keys(groupedByCompany).sort();
 
-  const clearFilters = () => {
-    setSearchTerm("");
-    setSelectedCompany("");
-    setSelectedYear("");
+  const filteredCompanies = companies.filter((company) =>
+    company.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getYearsForCompany = (companyName) => {
+    const companyExps = groupedByCompany[companyName] || [];
+    const years = [
+      ...new Set(
+        companyExps.map(
+          (exp) => exp.placementYear || new Date(exp.createdAt).getFullYear()
+        )
+      ),
+    ].sort((a, b) => b - a);
+    return years;
+  };
+
+  const handleYearSelect = (company, year) => {
+    setSelectedYears((prev) => ({
+      ...prev,
+      [company]: year,
+    }));
+  };
+
+  const toggleCompany = (companyName) => {
+    setExpandedCompanies((prev) => ({
+      ...prev,
+      [companyName]: !prev[companyName],
+    }));
+  };
+
+  const toggleExperience = (expId, e) => {
+    e.stopPropagation();
+    setExpandedExperiences((prev) => ({
+      ...prev,
+      [expId]: !prev[expId],
+    }));
+  };
+
+  const getFilteredExperiencesForCompany = (companyName) => {
+    const companyExps = groupedByCompany[companyName] || [];
+    const selectedYear = selectedYears[companyName];
+    const years = getYearsForCompany(companyName);
+
+    if (!selectedYear && years.length > 0) {
+      return companyExps.filter((exp) => {
+        const expYear =
+          exp.placementYear || new Date(exp.createdAt).getFullYear();
+        return expYear.toString() === years[0].toString();
+      });
+    }
+
+    return companyExps.filter((exp) => {
+      const expYear =
+        exp.placementYear || new Date(exp.createdAt).getFullYear();
+      return expYear.toString() === selectedYear;
+    });
+  };
+
+  const getCompanyInitial = (companyName) => {
+    return companyName.charAt(0).toUpperCase();
+  };
+
+  const getCompanyColor = (companyName) => {
+    const colors = [
+      "#10b981",
+      "#ec4899",
+      "#f59e0b",
+      "#8b5cf6",
+      "#06b6d4",
+      "#3b82f6",
+      "#ef4444",
+      "#14b8a6",
+    ];
+    const index = companyName.charCodeAt(0) % colors.length;
+    return colors[index];
   };
 
   if (loading) {
@@ -84,7 +148,7 @@ const DepartmentExperiences = () => {
 
   return (
     <div className="dept-page">
-      <div className="dept-header">
+      <div className="page-header">
         <Link to="/" className="back-btn">
           ← Back to Home
         </Link>
@@ -92,26 +156,38 @@ const DepartmentExperiences = () => {
           {department?.departmentCode} - {department?.departmentName}
         </h1>
         <p>{experiences.length} interview experiences shared</p>
+        {department?.departmentCode === "IT" && (
+          <div className="github-section">
+            <a
+              href="https://github.com/GCT-Open-Source-Community/Interview-Experience-2021.git"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="github-link"
+            >
+              📚 View Previous Year Experiences (2021) on GitHub
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Tab Navigation */}
       <div className="tab-navigation">
-        <button 
-          className={`tab-btn ${activeTab === 'experiences' ? 'active' : ''}`}
-          onClick={() => setActiveTab('experiences')}
+        <button
+          className={`tab-btn ${activeTab === "experiences" ? "active" : ""}`}
+          onClick={() => setActiveTab("experiences")}
         >
           Experiences ({experiences.length})
         </button>
-        <button 
-          className={`tab-btn ${activeTab === 'mentors' ? 'active' : ''}`}
-          onClick={() => setActiveTab('mentors')}
+        <button
+          className={`tab-btn ${activeTab === "mentors" ? "active" : ""}`}
+          onClick={() => setActiveTab("mentors")}
         >
           Mentors ({mentors.length})
         </button>
       </div>
 
       {/* Mentors Section */}
-      {activeTab === 'mentors' && (
+      {activeTab === "mentors" && (
         <div className="mentors-section">
           {mentors.length === 0 ? (
             <div className="no-data">
@@ -119,7 +195,7 @@ const DepartmentExperiences = () => {
             </div>
           ) : (
             <div className="mentors-grid">
-              {mentors.map(mentor => (
+              {mentors.map((mentor) => (
                 <div key={mentor.id} className="mentor-card">
                   <div className="mentor-avatar">
                     {mentor.fullName.charAt(0).toUpperCase()}
@@ -131,28 +207,39 @@ const DepartmentExperiences = () => {
                       <p className="mentor-position">{mentor.placedPosition}</p>
                     )}
                     {mentor.placementYear && (
-                      <p className="mentor-year">Batch of {mentor.placementYear}</p>
+                      <p className="mentor-year">
+                        Batch of {mentor.placementYear}
+                      </p>
                     )}
                     <div className="mentor-contact">
                       {mentor.email && (
-                        <a href={`mailto:${mentor.email}`} className="contact-link">
+                        <a
+                          href={`mailto:${mentor.email}`}
+                          className="contact-link"
+                        >
                           📧 Email
                         </a>
                       )}
                       {mentor.linkedinProfile && (
-                        <a href={mentor.linkedinProfile} target="_blank" rel="noopener noreferrer" className="contact-link">
+                        <a
+                          href={mentor.linkedinProfile}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="contact-link"
+                        >
                           💼 LinkedIn
                         </a>
                       )}
                     </div>
                     {mentor.departments && mentor.departments.length > 1 && (
                       <div className="mentor-depts">
-                        <small>Also mentoring: {
-                          mentor.departments
-                            .filter(d => d.id !== parseInt(id))
-                            .map(d => d.departmentCode)
-                            .join(', ')
-                        }</small>
+                        <small>
+                          Also mentoring:{" "}
+                          {mentor.departments
+                            .filter((d) => d.id !== parseInt(id))
+                            .map((d) => d.departmentCode)
+                            .join(", ")}
+                        </small>
                       </div>
                     )}
                   </div>
@@ -164,91 +251,153 @@ const DepartmentExperiences = () => {
       )}
 
       {/* Experiences Section */}
-      {activeTab === 'experiences' && (
+      {activeTab === "experiences" && (
         <>
-      {experiences.length > 0 && (
-        <div className="filters-section">
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Search by company or student name..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="filter-controls">
-            <select
-              className="company-filter"
-              value={selectedCompany}
-              onChange={(e) => setSelectedCompany(e.target.value)}
-            >
-              <option value="">All Companies</option>
-              {companies.map((company) => (
-                <option key={company} value={company}>
-                  {company}
-                </option>
-              ))}
-            </select>
-            <select
-              className="year-filter"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-            >
-              <option value="">All Years</option>
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-            {(searchTerm || selectedCompany || selectedYear) && (
-              <button className="clear-btn" onClick={clearFilters}>
-                Clear Filters
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {filteredExperiences.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-icon-box">+</div>
-          <h3>No experiences yet</h3>
-          <p>Be the first to share your interview experience!</p>
-          <Link to="/login" className="share-btn">
-            Login to Share
-          </Link>
-        </div>
-      ) : (
-        <div className="experiences-grid">
-          {filteredExperiences.map((exp) => (
-            <div
-              key={exp.id}
-              className="exp-card"
-              onClick={() => setSelectedExp(exp)}
-            >
-              <div className="exp-header">
-                <h3>{exp.companyName}</h3>
-                <span
-                  className={`result ${exp.finalResult
-                    ?.toLowerCase()
-                    .replace(" ", "-")}`}
-                >
-                  {exp.finalResult}
-                </span>
+          {experiences.length > 0 && (
+            <div className="search-section">
+              <div className="search-box">
+                <input
+                  type="text"
+                  placeholder="Search by company name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-              <p className="student-name">By {exp.studentName}</p>
-              <div className="exp-meta">
-                <span>Type: {exp.companyType || "Company"}</span>
-                <span>Salary: {exp.salary || "Not disclosed"}</span>
-              </div>
-              <p className="exp-preview">
-                {exp.overallExperience?.substring(0, 100)}...
-              </p>
-              <button className="view-btn">View Details</button>
             </div>
-          ))}
-        </div>
+          )}
+
+          {filteredCompanies.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon-box">+</div>
+              <h3>No experiences yet</h3>
+              <p>Be the first to share your interview experience!</p>
+              <Link to="/login" className="share-btn">
+                Login to Share
+              </Link>
+            </div>
+          ) : (
+            <div className="companies-grid-dept">
+              {filteredCompanies.map((companyName) => {
+                const companyExps = groupedByCompany[companyName];
+                const years = getYearsForCompany(companyName);
+                const selectedYear =
+                  selectedYears[companyName] || years[0]?.toString();
+                const filteredExps =
+                  getFilteredExperiencesForCompany(companyName);
+                const isExpanded = expandedCompanies[companyName] === true;
+
+                return (
+                  <div key={companyName} className="company-card-dept">
+                    <div
+                      className="company-card-header"
+                      onClick={() => toggleCompany(companyName)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <div
+                        className="company-avatar"
+                        style={{ background: getCompanyColor(companyName) }}
+                      >
+                        {getCompanyInitial(companyName)}
+                      </div>
+                      <div className="company-info">
+                        <h2>{companyName}</h2>
+                        <p>
+                          {companyExps.length} experience(s) across{" "}
+                          {years.length} year(s)
+                        </p>
+                      </div>
+                      <div className="arrow-icon">{isExpanded ? "▼" : "▶"}</div>
+                    </div>
+
+                    {isExpanded && (
+                      <>
+                        {/* Year Filter */}
+                        <div className="year-filter">
+                          {years.map((year) => (
+                            <button
+                              key={year}
+                              className={`year-btn ${
+                                selectedYear === year.toString() ? "active" : ""
+                              }`}
+                              onClick={() =>
+                                handleYearSelect(companyName, year.toString())
+                              }
+                            >
+                              {year}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Experiences List */}
+                        <div className="company-experiences-list">
+                          {filteredExps.length === 0 ? (
+                            <div className="no-exp">
+                              No experiences for selected year
+                            </div>
+                          ) : (
+                            filteredExps.map((exp) => {
+                              const isExpanded =
+                                expandedExperiences[exp.id] || false;
+                              return (
+                                <div key={exp.id} className="exp-item">
+                                  <div
+                                    className="exp-header"
+                                    onClick={(e) => toggleExperience(exp.id, e)}
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <div className="exp-student">
+                                      <h4>{exp.studentName}</h4>
+                                      <span className="exp-roll">
+                                        {exp.rollNumber}
+                                      </span>
+                                    </div>
+                                    <span
+                                      className={`result-badge ${exp.finalResult?.toLowerCase()}`}
+                                    >
+                                      {exp.finalResult}
+                                    </span>
+                                  </div>
+                                  {isExpanded && (
+                                    <div className="exp-details">
+                                      <div className="exp-meta">
+                                        {exp.salary && (
+                                          <span className="meta-item">
+                                            Salary: {exp.salary}
+                                          </span>
+                                        )}
+                                        {exp.companyType && (
+                                          <span className="meta-item">
+                                            Type: {exp.companyType}
+                                          </span>
+                                        )}
+                                        <span className="meta-item">
+                                          Rounds: {exp.totalRounds}
+                                        </span>
+                                      </div>
+                                      <button
+                                        className="view-full-btn"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedExp(exp);
+                                        }}
+                                      >
+                                        View Full Details →
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
       )}
 
       {selectedExp && (
@@ -519,8 +668,6 @@ const DepartmentExperiences = () => {
             )}
           </div>
         </div>
-      )}
-        </>
       )}
     </div>
   );

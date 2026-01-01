@@ -13,13 +13,13 @@ function Navbar() {
   };
 
   const handleAdminLogout = () => {
-    localStorage.removeItem('adminUser');
-    localStorage.removeItem('userRole');
+    localStorage.removeItem("adminUser");
+    localStorage.removeItem("userRole");
     navigate("/");
   };
 
   const isLoggedIn = isAuthenticated();
-  const isAdmin = localStorage.getItem('userRole') === 'ADMIN';
+  const isAdmin = localStorage.getItem("userRole") === "ADMIN";
 
   return (
     <nav className="navbar">
@@ -79,9 +79,6 @@ function Navbar() {
               </Link>
               <Link to="/register" className="nav-btn register">
                 Get Started
-              </Link>
-              <Link to="/admin-login" className="nav-link admin-link">
-                Admin
               </Link>
             </div>
           )}

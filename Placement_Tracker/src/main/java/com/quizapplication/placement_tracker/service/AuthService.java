@@ -203,7 +203,7 @@ public class AuthService {
      */
     public void sendPasswordResetOTP(String email) {
         // Check if user exists
-        User user = userRepository.findByEmail(email)
+        userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
         // Send OTP via email
