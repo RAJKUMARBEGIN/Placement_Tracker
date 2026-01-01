@@ -159,6 +159,18 @@
   box-shadow: var(--shadow);
 }
 
+.nav-link.admin-link {
+  color: #fbbf24;
+  font-weight: 700;
+  background: rgba(251, 191, 36, 0.1);
+  padding: 8px 16px;
+  border-radius: 6px;
+}
+
+.nav-link.admin-link:hover {
+  background: rgba(251, 191, 36, 0.2);
+}
+
 .logout-btn {
   background: transparent;
   color: var(--error);

@@ -1,18 +1,27 @@
 package com.quizapplication.placement_tracker.config;
 
+import com.quizapplication.placement_tracker.entity.Admin;
 import com.quizapplication.placement_tracker.entity.Department;
 import com.quizapplication.placement_tracker.entity.DepartmentGroup;
+import com.quizapplication.placement_tracker.repository.AdminRepository;
 import com.quizapplication.placement_tracker.repository.DepartmentRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     private final DepartmentRepository departmentRepository;
+    private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(DepartmentRepository departmentRepository) {
+    public DataInitializer(DepartmentRepository departmentRepository, 
+                          AdminRepository adminRepository,
+                          PasswordEncoder passwordEncoder) {
         this.departmentRepository = departmentRepository;
+        this.adminRepository = adminRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -20,6 +29,11 @@ public class DataInitializer implements CommandLineRunner {
         // Initialize departments if they don't exist
         if (departmentRepository.count() == 0) {
             initializeDepartments();
+        }
+        
+        // Initialize default admin if no admin exists
+        if (adminRepository.count() == 0) {
+            initializeDefaultAdmin();
         }
     }
 
@@ -65,5 +79,15 @@ public class DataInitializer implements CommandLineRunner {
             departmentRepository.save(dept);
             System.out.println("Created department: " + code + " - " + name);
         }
+    }
+
+    private void initializeDefaultAdmin() {
+        Admin defaultAdmin = new Admin();
+        defaultAdmin.setUsername("admin");
+        defaultAdmin.setPassword(passwordEncoder.encode("admin123"));
+        defaultAdmin.setFullName("System Administrator");
+        defaultAdmin.setEmail("admin@gct.ac.in");
+        adminRepository.save(defaultAdmin);
+        System.out.println("✅ Default admin created - Username: admin, Password: admin123");
     }
 }

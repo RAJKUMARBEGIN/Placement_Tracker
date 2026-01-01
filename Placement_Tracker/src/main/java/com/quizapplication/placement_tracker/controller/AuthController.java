@@ -188,4 +188,29 @@ public class AuthController {
         UserDTO updatedUser = authService.convertToMentor(id, convertDTO);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Request password reset", description = "Send OTP to user's email for password reset")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OTP sent successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<String> forgotPassword(
+            @Parameter(description = "Email address") @RequestBody ForgotPasswordDTO forgotPasswordDTO) {
+        authService.sendPasswordResetOTP(forgotPasswordDTO.getEmail());
+        return ResponseEntity.ok("OTP sent to your email successfully");
+    }
+
+    @PostMapping("/reset-password")
+    @Operation(summary = "Reset password with OTP", description = "Verify OTP and reset user password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password reset successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid OTP or password validation failed"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<String> resetPassword(
+            @Parameter(description = "Reset password details") @RequestBody ResetPasswordDTO resetPasswordDTO) {
+        authService.resetPassword(resetPasswordDTO);
+        return ResponseEntity.ok("Password reset successfully");
+    }
 }

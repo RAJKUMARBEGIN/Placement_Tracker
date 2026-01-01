@@ -32,6 +32,9 @@ public class PlacementExperience {
 
     private String companyType; // IT, Core, etc.
 
+    @Column
+    private Integer placementYear; // Year when student was placed
+
     private String salary; // e.g., "15000(Intern Stipend) + 8 LPA(FTE)"
 
     private Boolean internOffered;
@@ -251,5 +254,13 @@ public class PlacementExperience {
 
     public void setAcademicYear(String academicYear) {
         this.academicYear = academicYear;
+    }
+
+    public Integer getPlacementYear() {
+        return placementYear;
+    }
+
+    public void setPlacementYear(Integer placementYear) {
+        this.placementYear = placementYear;
     }
 }

@@ -67,6 +67,11 @@ function Login() {
               required
             />
           </div>
+          
+          <p className="auth-link" style={{ textAlign: 'right', marginTop: '-8px', marginBottom: '12px' }}>
+            <Link to="/forgot-password">Forgot Password?</Link>
+          </p>
+
           <button type="submit" className="auth-submit" disabled={loading}>
             {loading ? "Signing in..." : "Sign In"}
           </button>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { placementAPI, departmentAPI } from "../services/api";
+import { placementAPI, departmentAPI, adminAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import "./DepartmentExperiences.css";
 
@@ -9,11 +9,13 @@ const DepartmentExperiences = () => {
   const { user, isAuthenticated } = useAuth();
   const [department, setDepartment] = useState(null);
   const [experiences, setExperiences] = useState([]);
+  const [mentors, setMentors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedExp, setSelectedExp] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCompany, setSelectedCompany] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+  const [activeTab, setActiveTab] = useState("experiences"); // experiences or mentors
 
   useEffect(() => {
     fetchData();
@@ -21,9 +23,10 @@ const DepartmentExperiences = () => {
 
   const fetchData = async () => {
     try {
-      const [deptRes, expRes] = await Promise.all([
+      const [deptRes, expRes, mentorsRes] = await Promise.all([
         departmentAPI.getById(id),
         placementAPI.getAll(),
+        adminAPI.getMentorsByDepartment(id),
       ]);
       setDepartment(deptRes.data);
       const deptExperiences = expRes.data.filter(
@@ -32,6 +35,7 @@ const DepartmentExperiences = () => {
           exp.department === deptRes.data.departmentName
       );
       setExperiences(deptExperiences);
+      setMentors(mentorsRes.data);
     } catch (err) {
       console.error("Error:", err);
     } finally {
@@ -90,6 +94,78 @@ const DepartmentExperiences = () => {
         <p>{experiences.length} interview experiences shared</p>
       </div>
 
+      {/* Tab Navigation */}
+      <div className="tab-navigation">
+        <button 
+          className={`tab-btn ${activeTab === 'experiences' ? 'active' : ''}`}
+          onClick={() => setActiveTab('experiences')}
+        >
+          Experiences ({experiences.length})
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'mentors' ? 'active' : ''}`}
+          onClick={() => setActiveTab('mentors')}
+        >
+          Mentors ({mentors.length})
+        </button>
+      </div>
+
+      {/* Mentors Section */}
+      {activeTab === 'mentors' && (
+        <div className="mentors-section">
+          {mentors.length === 0 ? (
+            <div className="no-data">
+              <p>No mentors assigned to this department yet.</p>
+            </div>
+          ) : (
+            <div className="mentors-grid">
+              {mentors.map(mentor => (
+                <div key={mentor.id} className="mentor-card">
+                  <div className="mentor-avatar">
+                    {mentor.fullName.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="mentor-info">
+                    <h3>{mentor.fullName}</h3>
+                    <p className="mentor-company">{mentor.placedCompany}</p>
+                    {mentor.placedPosition && (
+                      <p className="mentor-position">{mentor.placedPosition}</p>
+                    )}
+                    {mentor.placementYear && (
+                      <p className="mentor-year">Batch of {mentor.placementYear}</p>
+                    )}
+                    <div className="mentor-contact">
+                      {mentor.email && (
+                        <a href={`mailto:${mentor.email}`} className="contact-link">
+                          📧 Email
+                        </a>
+                      )}
+                      {mentor.linkedinProfile && (
+                        <a href={mentor.linkedinProfile} target="_blank" rel="noopener noreferrer" className="contact-link">
+                          💼 LinkedIn
+                        </a>
+                      )}
+                    </div>
+                    {mentor.departments && mentor.departments.length > 1 && (
+                      <div className="mentor-depts">
+                        <small>Also mentoring: {
+                          mentor.departments
+                            .filter(d => d.id !== parseInt(id))
+                            .map(d => d.departmentCode)
+                            .join(', ')
+                        }</small>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Experiences Section */}
+      {activeTab === 'experiences' && (
+        <>
       {experiences.length > 0 && (
         <div className="filters-section">
           <div className="search-box">
@@ -443,6 +519,8 @@ const DepartmentExperiences = () => {
             )}
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

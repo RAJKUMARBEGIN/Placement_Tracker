@@ -116,12 +116,12 @@
 .section-title {
   font-size: 20px;
   font-weight: 600;
-  color: #5c3d4e;
+  color: var(--secondary);
   margin: 0;
 }
 
 .add-btn {
-  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -136,7 +136,7 @@
 
 .add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 90, 124, 0.4);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .experience-list {
@@ -146,19 +146,19 @@
 }
 
 .experience-item {
-  background: #fdfbf7;
+  background: white;
   border-radius: 12px;
   padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  border-left: 4px solid #8b5a7c;
+  border-left: 4px solid #667eea;
 }
 
 .experience-info h4 {
   font-size: 18px;
   font-weight: 600;
-  color: #5c3d4e;
+  color: var(--secondary);
   margin: 0 0 8px 0;
 }
 
@@ -170,7 +170,7 @@
 
 .meta-item {
   font-size: 14px;
-  color: #8b7a80;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -215,13 +215,13 @@
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #8b7a80;
+  color: var(--text-secondary);
 }
 
 .empty-icon-box {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -234,7 +234,7 @@
 
 .empty-state h3 {
   font-size: 20px;
-  color: #5c3d4e;
+  color: var(--secondary);
   margin-bottom: 8px;
 }
 
@@ -317,8 +317,8 @@
 .form-select:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: #8b5a7c;
-  box-shadow: 0 0 0 3px rgba(139, 90, 124, 0.1);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-textarea {
@@ -334,7 +334,7 @@
 
 .submit-btn {
   width: 100%;
-  background: linear-gradient(135deg, #a06b8a 0%, #8b5a7c 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   padding: 14px 24px;

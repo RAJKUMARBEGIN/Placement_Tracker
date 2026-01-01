@@ -28,6 +28,10 @@ export const authAPI = {
   checkGCTEmail: (email) => api.get(`/auth/check-gct-email?email=${email}`),
 };
 
+// Forgot Password APIs
+export const forgotPassword = (data) => api.post("/auth/forgot-password", data);
+export const resetPassword = (data) => api.post("/auth/reset-password", data);
+
 // Department APIs
 export const departmentAPI = {
   getAll: () => api.get("/departments"),
@@ -83,6 +87,26 @@ export const placementAPI = {
     api.get(`/placement-experiences/search/department?name=${name}`),
   filterByResult: (result) =>
     api.get(`/placement-experiences/filter/result?result=${result}`),
+  getGroupedByCompany: () => api.get("/placement-experiences/grouped/company"),
+  getByCompanyGroupedByYear: (companyName) =>
+    api.get(`/placement-experiences/company/${companyName}`),
+};
+
+// Admin APIs
+export const adminAPI = {
+  login: (data) => api.post("/admin/login", data),
+  createAdmin: (data) => api.post("/admin/create", data),
+  getById: (id) => api.get(`/admin/${id}`),
+  // Mentor management
+  createMentor: (data) => api.post("/admin/mentors", data),
+  updateMentor: (id, data) => api.put(`/admin/mentors/${id}`, data),
+  deleteMentor: (id) => api.delete(`/admin/mentors/${id}`),
+  getAllMentors: () => api.get("/admin/mentors"),
+  getMentorById: (id) => api.get(`/admin/mentors/${id}`),
+  getMentorsByDepartment: (departmentId) =>
+    api.get(`/admin/mentors/department/${departmentId}`),
+  getMentorsByCompany: (companyName) =>
+    api.get(`/admin/mentors/company?companyName=${companyName}`),
 };
 
 export default api;

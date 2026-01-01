@@ -12,15 +12,8 @@ function StudentDashboard() {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [showMentorModal, setShowMentorModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [editing, setEditing] = useState(null);
-  const [mentorData, setMentorData] = useState({
-    placedCompany: "",
-    placedPosition: "",
-    phoneNumber: "",
-    linkedinProfile: "",
-  });
 
   const createEmptyRound = (roundNumber) => ({
     roundNumber,
@@ -280,54 +273,7 @@ function StudentDashboard() {
     return true;
   };
 
-  // Check if student is eligible to become mentor (graduated and has placement experience)
-  const canBecomeMentor = () => {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth(); // 0-11
-    const graduationYear = user?.graduationYear;
 
-    // Consider graduated if graduation year has passed OR
-    // if current year equals graduation year and we're past June (month 5)
-    const hasGraduated =
-      graduationYear &&
-      (currentYear > graduationYear ||
-        (currentYear === graduationYear && currentMonth >= 5));
-
-    // Check if student has any SELECTED placement experience
-    const hasPlacement = experiences.some(
-      (exp) => exp.finalResult === "SELECTED"
-    );
-
-    return hasGraduated && hasPlacement;
-  };
-
-  // Handle mentor conversion
-  const handleMentorConversion = async (e) => {
-    e.preventDefault();
-
-    if (!mentorData.placedCompany || !mentorData.placedPosition) {
-      toast.error("Please fill in company and position details");
-      return;
-    }
-
-    try {
-      const response = await authAPI.convertToMentor(user.id, {
-        ...mentorData,
-        departmentId: user.departmentId,
-        placementYear: user.graduationYear,
-      });
-
-      // Update user in context with new role
-      updateUser(response.data);
-      toast.success("Congratulations! You are now a mentor! 🎉");
-      setShowMentorModal(false);
-      navigate("/mentor-dashboard");
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to convert to mentor"
-      );
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -339,6 +285,7 @@ function StudentDashboard() {
     try {
       const payload = {
         ...formData,
+        placementYear: user?.graduationYear || new Date().getFullYear(),
         roundsJson: JSON.stringify(formData.rounds),
       };
       delete payload.rounds;
@@ -390,14 +337,6 @@ function StudentDashboard() {
             <p>Share your placement experiences to help juniors</p>
           </div>
           <div className="header-actions">
-            {canBecomeMentor() && (
-              <button
-                className="mentor-btn"
-                onClick={() => setShowMentorModal(true)}
-              >
-                🎓 Become a Mentor
-              </button>
-            )}
             <button className="add-btn" onClick={openAddModal}>
               + Add Experience
             </button>
@@ -1081,113 +1020,7 @@ function StudentDashboard() {
         </div>
       )}
 
-      {/* Become a Mentor Modal */}
-      {showMentorModal && (
-        <div
-          className="modal-overlay"
-          onClick={() => setShowMentorModal(false)}
-        >
-          <div
-            className="modal-content mentor-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-header">
-              <h2>🎓 Become a Mentor</h2>
-              <button
-                className="close-btn"
-                onClick={() => setShowMentorModal(false)}
-              >
-                ×
-              </button>
-            </div>
 
-            <div className="mentor-intro">
-              <p>Congratulations on your graduation! 🎉</p>
-              <p>
-                As a placed student, you can now become a mentor and guide
-                juniors through their placement journey.
-              </p>
-            </div>
-
-            <form className="modal-form" onSubmit={handleMentorConversion}>
-              <div className="form-group">
-                <label>Company You Got Placed At *</label>
-                <input
-                  type="text"
-                  value={mentorData.placedCompany}
-                  onChange={(e) =>
-                    setMentorData({
-                      ...mentorData,
-                      placedCompany: e.target.value,
-                    })
-                  }
-                  placeholder="e.g., Google, Microsoft, TCS"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Position/Role *</label>
-                <input
-                  type="text"
-                  value={mentorData.placedPosition}
-                  onChange={(e) =>
-                    setMentorData({
-                      ...mentorData,
-                      placedPosition: e.target.value,
-                    })
-                  }
-                  placeholder="e.g., Software Engineer, Data Analyst"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Phone Number (for students to contact)</label>
-                <input
-                  type="tel"
-                  value={mentorData.phoneNumber}
-                  onChange={(e) =>
-                    setMentorData({
-                      ...mentorData,
-                      phoneNumber: e.target.value,
-                    })
-                  }
-                  placeholder="e.g., +91-9876543210"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>LinkedIn Profile</label>
-                <input
-                  type="url"
-                  value={mentorData.linkedinProfile}
-                  onChange={(e) =>
-                    setMentorData({
-                      ...mentorData,
-                      linkedinProfile: e.target.value,
-                    })
-                  }
-                  placeholder="https://linkedin.com/in/yourprofile"
-                />
-              </div>
-
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={() => setShowMentorModal(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="submit-btn mentor-submit">
-                  🚀 Become a Mentor
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

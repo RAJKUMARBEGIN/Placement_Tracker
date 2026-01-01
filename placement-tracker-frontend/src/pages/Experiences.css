@@ -172,7 +172,7 @@
 }
 
 .experience-card {
-  background: var(--bg-secondary);
+  background: var(--secondary);
   border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow: var(--shadow);
@@ -194,7 +194,7 @@
 }
 
 .company-name {
-  color: white;
+  color: var(--primary-light);
   font-weight: 700;
   font-size: 1.1rem;
 }

@@ -85,27 +85,17 @@ const Home = () => {
 
       <section className="info-section">
         {!isAuthenticated() && (
-          <>
-            <div className="info-card">
-              <div className="info-icon-box">01</div>
-              <h3>Share Your Experience</h3>
-              <p>Help juniors by sharing your interview experience</p>
-              <Link to="/register" className="info-link">
-                Register as Student →
-              </Link>
-            </div>
-            <div className="info-card">
-              <div className="info-icon-box">02</div>
-              <h3>Become a Mentor</h3>
-              <p>Guide students with your industry experience</p>
-              <Link to="/register" className="info-link">
-                Register as Mentor →
-              </Link>
-            </div>
-          </>
+          <div className="info-card">
+            <div className="info-icon-box">01</div>
+            <h3>Share Your Experience</h3>
+            <p>Help juniors by sharing your interview experience</p>
+            <Link to="/register" className="info-link">
+              Register as Student →
+            </Link>
+          </div>
         )}
         <div className="info-card">
-          <div className="info-icon-box">{isAuthenticated() ? "01" : "03"}</div>
+          <div className="info-icon-box">{isAuthenticated() ? "01" : "02"}</div>
           <h3>Connect with Mentors</h3>
           <p>Get guidance from placed students</p>
           <Link to="/mentors" className="info-link">

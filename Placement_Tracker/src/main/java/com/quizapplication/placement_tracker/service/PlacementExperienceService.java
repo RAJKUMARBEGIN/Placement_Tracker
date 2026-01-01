@@ -5,8 +5,8 @@ import com.quizapplication.placement_tracker.repository.PlacementExperienceRepos
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PlacementExperienceService {
@@ -45,5 +45,32 @@ public class PlacementExperienceService {
 
     public List<PlacementExperience> getByResult(String result) {
         return repository.findByFinalResult(result);
+    }
+
+    // Group experiences by company and year
+    public Map<String, Map<Integer, List<PlacementExperience>>> getExperiencesGroupedByCompanyAndYear() {
+        List<PlacementExperience> allExperiences = repository.findAllByOrderBySubmittedAtDesc();
+        
+        return allExperiences.stream()
+                .collect(Collectors.groupingBy(
+                        PlacementExperience::getCompanyName,
+                        Collectors.groupingBy(exp -> {
+                            // If placementYear is null, use current year
+                            Integer year = exp.getPlacementYear();
+                            return year != null ? year : java.time.Year.now().getValue();
+                        })
+                ));
+    }
+
+    // Get experiences for a specific company grouped by year
+    public Map<Integer, List<PlacementExperience>> getExperiencesByCompanyGroupedByYear(String companyName) {
+        List<PlacementExperience> companyExperiences = repository.findByCompanyNameContainingIgnoreCase(companyName);
+        
+        return companyExperiences.stream()
+                .collect(Collectors.groupingBy(exp -> {
+                    // If placementYear is null, use current year
+                    Integer year = exp.getPlacementYear();
+                    return year != null ? year : java.time.Year.now().getValue();
+                }));
     }
 }

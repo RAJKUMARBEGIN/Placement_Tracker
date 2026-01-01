@@ -190,11 +190,11 @@ function Register() {
     }
   };
 
-  // Step 0: Role Selection (FIRST STEP)
+  // Step 0: Role Selection (FIRST STEP) - Simplified to only STUDENT
   const renderRoleStep = () => (
     <div className="role-selection-step">
-      <h2>Who are you?</h2>
-      <p>Select your role to continue with registration</p>
+      <h2>Student Registration</h2>
+      <p>Register as a GCT student to access placement experiences</p>
 
       <div className="role-selection-cards">
         <div className="role-card" onClick={() => handleRoleSelect("STUDENT")}>
@@ -202,12 +202,10 @@ function Register() {
           <h3>Student</h3>
           <p>Current GCT student looking for placement guidance</p>
         </div>
-
-        <div className="role-card" onClick={() => handleRoleSelect("MENTOR")}>
-          <div className="role-icon">💼</div>
-          <h3>Mentor</h3>
-          <p>Placed alumni who wants to help students</p>
-        </div>
+      </div>
+      
+      <div className="admin-note">
+        <p>📝 Note: Only students can register. Mentors are added by administrators.</p>
       </div>
     </div>
   );

@@ -23,11 +23,14 @@ public class AuthService {
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
-    public AuthService(UserRepository userRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, DepartmentRepository departmentRepository, 
+                      PasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.departmentRepository = departmentRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -194,4 +197,38 @@ public class AuthService {
         dto.setLastLogin(user.getLastLogin());
         return dto;
     }
-}
+
+    /**
+     * Send OTP for password reset
+     */
+    public void sendPasswordResetOTP(String email) {
+        // Check if user exists
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        // Send OTP via email
+        String otp = emailService.sendOTP(email);
+        if (otp == null) {
+            throw new IllegalArgumentException("Invalid email domain. Only GCT emails are allowed.");
+        }
+        // OTP is stored in EmailService
+    }
+
+    /**
+     * Reset password with OTP verification
+     */
+    @Transactional
+    public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        // Find user by email
+        User user = userRepository.findByEmail(resetPasswordDTO.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + resetPasswordDTO.getEmail()));
+
+        // Verify OTP
+        if (!emailService.verifyOTP(resetPasswordDTO.getEmail(), resetPasswordDTO.getOtp())) {
+            throw new IllegalArgumentException("Invalid or expired OTP");
+        }
+
+        // Update password with encryption
+        user.setPassword(passwordEncoder.encode(resetPasswordDTO.getNewPassword()));
+        userRepository.save(user);
+    }}

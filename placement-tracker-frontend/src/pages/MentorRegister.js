@@ -153,7 +153,7 @@ const MentorRegister = () => {
   };
 
   const currentYear = new Date().getFullYear();
-  const graduationYears = Array.from({ length: 10 }, (_, i) => currentYear - i);
+  const graduationYears = Array.from({ length: currentYear - 2000 + 1 }, (_, i) => currentYear - i);
 
   return (
     <div className="register-container mentor-bg">

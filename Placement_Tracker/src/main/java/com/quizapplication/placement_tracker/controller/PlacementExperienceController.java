@@ -66,4 +66,15 @@ public class PlacementExperienceController {
     public List<PlacementExperience> filterByResult(@RequestParam String result) {
         return service.getByResult(result);
     }
+
+    @GetMapping("/grouped/company")
+    public ResponseEntity<java.util.Map<String, java.util.Map<Integer, List<PlacementExperience>>>> getExperiencesGroupedByCompany() {
+        return ResponseEntity.ok(service.getExperiencesGroupedByCompanyAndYear());
+    }
+
+    @GetMapping("/company/{companyName}")
+    public ResponseEntity<java.util.Map<Integer, List<PlacementExperience>>> getExperiencesByCompanyGroupedByYear(
+            @PathVariable String companyName) {
+        return ResponseEntity.ok(service.getExperiencesByCompanyGroupedByYear(companyName));
+    }
 }
