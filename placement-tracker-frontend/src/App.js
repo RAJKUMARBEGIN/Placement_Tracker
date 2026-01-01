@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import DepartmentExperiences from "./pages/DepartmentExperiences";
 import CompanyExperiences from "./pages/CompanyExperiences";
+import CompanyExperiencesDetail from "./pages/CompanyExperiencesDetail";
 import Mentors from "./pages/Mentors";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -24,6 +25,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/department/:id" element={<DepartmentExperiences />} />
+            <Route path="/department/:departmentId/company/:companyName" element={<CompanyExperiencesDetail />} />
             <Route
               path="/company-experiences"
               element={<CompanyExperiences />}

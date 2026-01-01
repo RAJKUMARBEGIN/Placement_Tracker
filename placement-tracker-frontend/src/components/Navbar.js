@@ -33,9 +33,6 @@ function Navbar() {
           <Link to="/" className="nav-link">
             Home
           </Link>
-          <Link to="/company-experiences" className="nav-link">
-            Company Experiences
-          </Link>
 
           {isAdmin ? (
             <>

@@ -7,11 +7,13 @@ import './AdminDashboard.css';
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [mentors, setMentors] = useState([]);
+  const [experiences, setExperiences] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showMentorForm, setShowMentorForm] = useState(false);
   const [showAdminForm, setShowAdminForm] = useState(false);
   const [editingMentor, setEditingMentor] = useState(null);
+  const [activeTab, setActiveTab] = useState('mentors'); // 'mentors' or 'experiences'
   
   const [mentorFormData, setMentorFormData] = useState({
     fullName: '',
@@ -46,12 +48,14 @@ const AdminDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [mentorsRes, deptsRes] = await Promise.all([
+      const [mentorsRes, deptsRes, expRes] = await Promise.all([
         adminAPI.getAllMentors(),
-        departmentAPI.getAll()
+        departmentAPI.getAll(),
+        adminAPI.getAllExperiences()
       ]);
       setMentors(mentorsRes.data);
       setDepartments(deptsRes.data);
+      setExperiences(expRes.data);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to load data');
@@ -61,7 +65,7 @@ const AdminDashboard = () => {
   };
 
   const handleMentorFormChange = (e) => {
-    const { name, value, type, checked, options } = e.target;
+    const { name, value, type, options } = e.target;
     
     if (type === 'select-multiple') {
       const selectedIds = Array.from(options)
@@ -184,6 +188,19 @@ const AdminDashboard = () => {
     navigate('/admin-login');
   };
 
+  const handleDeleteExperience = async (id) => {
+    if (window.confirm('Are you sure you want to delete this experience?')) {
+      try {
+        await adminAPI.deleteExperience(id);
+        toast.success('Experience deleted successfully!');
+        fetchData();
+      } catch (error) {
+        console.error('Error deleting experience:', error);
+        toast.error('Failed to delete experience');
+      }
+    }
+  };
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -211,8 +228,30 @@ const AdminDashboard = () => {
           <h3>Total Departments</h3>
           <p className="stat-value">{departments.length}</p>
         </div>
+        <div className="stat-card">
+          <h3>Total Experiences</h3>
+          <p className="stat-value">{experiences.length}</p>
+        </div>
       </div>
 
+      {/* Tab Navigation */}
+      <div className="tab-navigation">
+        <button 
+          className={`tab-btn ${activeTab === 'mentors' ? 'active' : ''}`}
+          onClick={() => setActiveTab('mentors')}
+        >
+          Manage Mentors
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'experiences' ? 'active' : ''}`}
+          onClick={() => setActiveTab('experiences')}
+        >
+          Manage Experiences
+        </button>
+      </div>
+
+      {/* Mentors Section */}
+      {activeTab === 'mentors' && (
       <div className="mentors-section">
         <div className="section-header">
           <h2>Manage Mentors</h2>
@@ -466,6 +505,60 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
+      )}
+
+      {/* Experiences Section */}
+      {activeTab === 'experiences' && (
+      <div className="experiences-section">
+        <div className="section-header">
+          <h2>Manage Interview Experiences</h2>
+        </div>
+
+        <div className="experiences-table">
+          {experiences.length === 0 ? (
+            <p className="no-data">No experiences shared yet.</p>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th>Company</th>
+                  <th>Position</th>
+                  <th>Year</th>
+                  <th>Department</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {experiences.map(exp => (
+                  <tr key={exp.id}>
+                    <td>{exp.studentName}</td>
+                    <td>{exp.companyName}</td>
+                    <td>{exp.position}</td>
+                    <td>{exp.yearOfPlacement}</td>
+                    <td>{exp.departmentName}</td>
+                    <td>
+                      <button 
+                        onClick={() => navigate(`/experiences/${exp.id}`)} 
+                        className="btn-view"
+                      >
+                        View
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteExperience(exp.id)} 
+                        className="btn-delete"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+      )}
     </div>
   );
 };

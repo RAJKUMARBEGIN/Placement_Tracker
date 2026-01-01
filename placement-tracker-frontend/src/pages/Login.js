@@ -22,6 +22,7 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     try {
+      // Try regular user login first
       const response = await authAPI.login(formData);
       login(response.data.user);
       toast.success("Login successful!");
@@ -31,7 +32,17 @@ function Login() {
         navigate("/student-dashboard");
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Login failed");
+      // If user login fails, try admin login
+      try {
+        const adminResponse = await authAPI.adminLogin(formData);
+        // Store admin info in localStorage
+        localStorage.setItem('adminUser', JSON.stringify(adminResponse.data));
+        localStorage.setItem('userRole', 'ADMIN');
+        toast.success("Admin login successful!");
+        navigate("/admin-dashboard");
+      } catch (adminError) {
+        toast.error(error.response?.data?.message || "Login failed");
+      }
     } finally {
       setLoading(false);
     }

@@ -109,6 +109,16 @@ const Experiences = () => {
     return "linear-gradient(135deg, var(--primary), var(--primary-dark))";
   };
 
+  // Group experiences by company
+  const groupedExperiences = experiences.reduce((acc, exp) => {
+    const companyName = exp.companyName;
+    if (!acc[companyName]) {
+      acc[companyName] = [];
+    }
+    acc[companyName].push(exp);
+    return acc;
+  }, {});
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -205,45 +215,55 @@ const Experiences = () => {
           </button>
         </div>
       ) : (
-        <div className="experiences-grid">
-          {experiences.map((exp) => (
-            <Link
-              to={`/experiences/${exp.id}`}
-              key={exp.id}
-              className="experience-card"
-            >
-              <div
-                className="card-header"
-                style={{ background: getCompanyColor(exp.companyName) }}
+        <div className="company-groups-container">
+          {Object.entries(groupedExperiences).map(([companyName, companyExperiences]) => (
+            <div key={companyName} className="company-group">
+              <div 
+                className="company-group-header"
+                style={{ background: getCompanyColor(companyName) }}
               >
-                <span className="company-name">{exp.companyName}</span>
-                <span className="year-badge">{exp.yearOfPlacement}</span>
+                <h2 className="company-group-title">{companyName}</h2>
+                <span className="company-count">{companyExperiences.length} experience{companyExperiences.length > 1 ? 's' : ''}</span>
               </div>
-              <div className="card-body">
-                <h3 className="position">{exp.position}</h3>
-                <p className="student-name">by {exp.studentName}</p>
+              <div className="company-experiences-grid">
+                {companyExperiences.map((exp) => (
+                  <Link
+                    to={`/experiences/${exp.id}`}
+                    key={exp.id}
+                    className="experience-card-compact"
+                  >
+                    <div className="card-year-badge">{exp.yearOfPlacement}</div>
+                    <div className="card-body-compact">
+                      <h3 className="position-title">{exp.position}</h3>
+                      <p className="student-name-compact">by {exp.studentName}</p>
 
-                <div className="card-meta">
-                  <span className="meta-item">
-                    <FiMapPin />
-                    {exp.departmentName}
-                  </span>
-                  <span className="meta-item">{exp.totalRounds} Rounds</span>
-                </div>
+                      <div className="card-meta-compact">
+                        <span className="meta-item">
+                          <FiMapPin />
+                          {exp.departmentName}
+                        </span>
+                        <span className="meta-item">
+                          <FiCalendar />
+                          {exp.totalRounds} Rounds
+                        </span>
+                      </div>
 
-                <p className="preview-text">
-                  {exp.crackingStrategy?.substring(0, 100)}...
-                </p>
+                      <p className="preview-text-compact">
+                        {exp.crackingStrategy?.substring(0, 80)}...
+                      </p>
 
-                {exp.willingToMentor && (
-                  <span className="mentor-badge">✨ Mentor Available</span>
-                )}
+                      {exp.willingToMentor && (
+                        <span className="mentor-badge-compact">✨ Mentor Available</span>
+                      )}
+                    </div>
+                    <div className="card-footer-compact">
+                      <span>Read full experience</span>
+                      <FiChevronRight />
+                    </div>
+                  </Link>
+                ))}
               </div>
-              <div className="card-footer">
-                <span>Read full experience</span>
-                <FiChevronRight />
-              </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}

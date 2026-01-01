@@ -24,23 +24,26 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final MentorRepository mentorRepository;
     private final DepartmentRepository departmentRepository;
+    private final InterviewExperienceService experienceService;
     private final PasswordEncoder passwordEncoder;
 
     public AdminService(AdminRepository adminRepository, MentorRepository mentorRepository,
-                       DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder) {
+                       DepartmentRepository departmentRepository, InterviewExperienceService experienceService,
+                       PasswordEncoder passwordEncoder) {
         this.adminRepository = adminRepository;
         this.mentorRepository = mentorRepository;
         this.departmentRepository = departmentRepository;
+        this.experienceService = experienceService;
         this.passwordEncoder = passwordEncoder;
     }
 
     // Admin Login
     public AdminDTO login(AdminLoginDTO loginDTO) {
-        Admin admin = adminRepository.findByUsername(loginDTO.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid username or password"));
+        Admin admin = adminRepository.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid email or password"));
 
         if (!passwordEncoder.matches(loginDTO.getPassword(), admin.getPassword())) {
-            throw new ResourceNotFoundException("Invalid username or password");
+            throw new ResourceNotFoundException("Invalid email or password");
         }
 
         if (!admin.getIsActive()) {
@@ -220,5 +223,18 @@ public class AdminService {
         dto.setDepartments(deptDTOs);
 
         return dto;
+    }
+
+    // Interview Experience Management Methods
+    public List<InterviewExperienceDTO> getAllExperiences() {
+        return experienceService.getAllExperiences();
+    }
+
+    public InterviewExperienceDTO updateExperience(Long id, InterviewExperienceDTO experienceDTO) {
+        return experienceService.updateExperience(id, experienceDTO);
+    }
+
+    public void deleteExperience(Long id) {
+        experienceService.deleteExperience(id);
     }
 }

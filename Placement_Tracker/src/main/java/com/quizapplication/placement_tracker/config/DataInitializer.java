@@ -31,9 +31,19 @@ public class DataInitializer implements CommandLineRunner {
             initializeDepartments();
         }
         
-        // Initialize default admin if no admin exists
+        // Initialize or update default admin
         if (adminRepository.count() == 0) {
             initializeDefaultAdmin();
+        } else {
+            // Update existing admin with old email to new email if needed
+            if (!adminRepository.existsByEmail("admin@gmail.com")) {
+                adminRepository.findByEmail("admin@gct.ac.in").ifPresent(admin -> {
+                    admin.setEmail("admin@gmail.com");
+                    admin.setPassword(passwordEncoder.encode("admin123"));
+                    adminRepository.save(admin);
+                    System.out.println("✅ Updated admin email to: admin@gmail.com");
+                });
+            }
         }
     }
 
@@ -86,8 +96,8 @@ public class DataInitializer implements CommandLineRunner {
         defaultAdmin.setUsername("admin");
         defaultAdmin.setPassword(passwordEncoder.encode("admin123"));
         defaultAdmin.setFullName("System Administrator");
-        defaultAdmin.setEmail("admin@gct.ac.in");
+        defaultAdmin.setEmail("admin@gmail.com");
         adminRepository.save(defaultAdmin);
-        System.out.println("✅ Default admin created - Username: admin, Password: admin123");
+        System.out.println("✅ Default admin created - Email: admin@gmail.com, Password: admin123");
     }
 }

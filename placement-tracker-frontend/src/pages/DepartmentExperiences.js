@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { placementAPI, departmentAPI, adminAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import "./DepartmentExperiences.css";
 
 const DepartmentExperiences = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const [department, setDepartment] = useState(null);
   const [experiences, setExperiences] = useState([]);
@@ -290,7 +291,7 @@ const DepartmentExperiences = () => {
                   <div key={companyName} className="company-card-dept">
                     <div
                       className="company-card-header"
-                      onClick={() => toggleCompany(companyName)}
+                      onClick={() => navigate(`/department/${id}/company/${encodeURIComponent(companyName)}`)}
                       style={{ cursor: "pointer" }}
                     >
                       <div
@@ -306,92 +307,8 @@ const DepartmentExperiences = () => {
                           {years.length} year(s)
                         </p>
                       </div>
-                      <div className="arrow-icon">{isExpanded ? "▼" : "▶"}</div>
+                      <div className="arrow-icon">→</div>
                     </div>
-
-                    {isExpanded && (
-                      <>
-                        {/* Year Filter */}
-                        <div className="year-filter">
-                          {years.map((year) => (
-                            <button
-                              key={year}
-                              className={`year-btn ${
-                                selectedYear === year.toString() ? "active" : ""
-                              }`}
-                              onClick={() =>
-                                handleYearSelect(companyName, year.toString())
-                              }
-                            >
-                              {year}
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Experiences List */}
-                        <div className="company-experiences-list">
-                          {filteredExps.length === 0 ? (
-                            <div className="no-exp">
-                              No experiences for selected year
-                            </div>
-                          ) : (
-                            filteredExps.map((exp) => {
-                              const isExpanded =
-                                expandedExperiences[exp.id] || false;
-                              return (
-                                <div key={exp.id} className="exp-item">
-                                  <div
-                                    className="exp-header"
-                                    onClick={(e) => toggleExperience(exp.id, e)}
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    <div className="exp-student">
-                                      <h4>{exp.studentName}</h4>
-                                      <span className="exp-roll">
-                                        {exp.rollNumber}
-                                      </span>
-                                    </div>
-                                    <span
-                                      className={`result-badge ${exp.finalResult?.toLowerCase()}`}
-                                    >
-                                      {exp.finalResult}
-                                    </span>
-                                  </div>
-                                  {isExpanded && (
-                                    <div className="exp-details">
-                                      <div className="exp-meta">
-                                        {exp.salary && (
-                                          <span className="meta-item">
-                                            Salary: {exp.salary}
-                                          </span>
-                                        )}
-                                        {exp.companyType && (
-                                          <span className="meta-item">
-                                            Type: {exp.companyType}
-                                          </span>
-                                        )}
-                                        <span className="meta-item">
-                                          Rounds: {exp.totalRounds}
-                                        </span>
-                                      </div>
-                                      <button
-                                        className="view-full-btn"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setSelectedExp(exp);
-                                        }}
-                                      >
-                                        View Full Details →
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })
-                          )}
-                        </div>
-                      </>
-                    )}
                   </div>
                 );
               })}

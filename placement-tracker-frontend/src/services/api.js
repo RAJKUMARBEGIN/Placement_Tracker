@@ -13,6 +13,7 @@ const api = axios.create({
 export const authAPI = {
   register: (data) => api.post("/auth/register", data),
   login: (data) => api.post("/auth/login", data),
+  adminLogin: (data) => api.post("/admin/login", data),
   getUserById: (id) => api.get(`/auth/user/${id}`),
   getAllMentors: () => api.get("/auth/mentors"),
   getMentorsByDepartment: (departmentId) =>
@@ -95,6 +96,7 @@ export const placementAPI = {
 // Admin APIs
 export const adminAPI = {
   login: (data) => api.post("/admin/login", data),
+  adminLogin: (data) => api.post("/admin/login", data),
   createAdmin: (data) => api.post("/admin/create", data),
   getById: (id) => api.get(`/admin/${id}`),
   // Mentor management
@@ -107,6 +109,10 @@ export const adminAPI = {
     api.get(`/admin/mentors/department/${departmentId}`),
   getMentorsByCompany: (companyName) =>
     api.get(`/admin/mentors/company?companyName=${companyName}`),
+  // Experience management
+  getAllExperiences: () => api.get("/admin/experiences"),
+  updateExperience: (id, data) => api.put(`/admin/experiences/${id}`, data),
+  deleteExperience: (id) => api.delete(`/admin/experiences/${id}`),
 };
 
 export default api;

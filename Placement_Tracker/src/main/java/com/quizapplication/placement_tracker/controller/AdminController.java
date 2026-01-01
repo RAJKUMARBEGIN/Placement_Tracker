@@ -136,4 +136,38 @@ public class AdminController {
         List<MentorDTO> mentors = adminService.getMentorsByCompany(companyName);
         return ResponseEntity.ok(mentors);
     }
+
+    // Interview Experience Management APIs
+    @GetMapping("/experiences")
+    @Operation(summary = "Get all interview experiences", description = "Admin: Retrieve all interview experiences")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved list")
+    public ResponseEntity<List<InterviewExperienceDTO>> getAllExperiences() {
+        List<InterviewExperienceDTO> experiences = adminService.getAllExperiences();
+        return ResponseEntity.ok(experiences);
+    }
+
+    @PutMapping("/experiences/{id}")
+    @Operation(summary = "Update interview experience", description = "Admin: Update an interview experience")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Experience updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Experience not found")
+    })
+    public ResponseEntity<InterviewExperienceDTO> updateExperience(
+            @Parameter(description = "Experience ID") @PathVariable Long id,
+            @Valid @RequestBody InterviewExperienceDTO experienceDTO) {
+        InterviewExperienceDTO updated = adminService.updateExperience(id, experienceDTO);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/experiences/{id}")
+    @Operation(summary = "Delete interview experience", description = "Admin: Delete an interview experience")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Experience deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Experience not found")
+    })
+    public ResponseEntity<Void> deleteExperience(
+            @Parameter(description = "Experience ID") @PathVariable Long id) {
+        adminService.deleteExperience(id);
+        return ResponseEntity.noContent().build();
+    }
 }

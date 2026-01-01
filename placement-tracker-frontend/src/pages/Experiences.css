@@ -365,4 +365,222 @@
   .experiences-grid {
     grid-template-columns: 1fr;
   }
+
+  .company-experiences-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
+
+/* Company Grouped Cards */
+.company-groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.company-group {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.company-group:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.company-group-header {
+  padding: 28px 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.company-group-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+}
+
+.company-group-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.company-count {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+.company-experiences-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+  padding: 32px;
+  background: #fafbfc;
+}
+
+.experience-card-compact {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #e8eaed;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.experience-card-compact:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  border-color: #4f46e5;
+}
+
+.experience-card-compact::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.experience-card-compact:hover::before {
+  transform: scaleX(1);
+}
+
+.card-year-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  z-index: 1;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.card-body-compact {
+  padding: 24px;
+  flex: 1;
+}
+
+.position-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+  padding-right: 70px;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+}
+
+.student-name-compact {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+
+.card-meta-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.card-meta-compact .meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #6b7280;
+  font-size: 13px;
+  background: #f3f4f6;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.card-meta-compact .meta-item svg {
+  font-size: 15px;
+  color: #9ca3af;
+}
+
+.preview-text-compact {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mentor-badge-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #fbbf24;
+}
+
+.card-footer-compact {
+  padding: 16px 24px;
+  border-top: 2px solid #f3f4f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #4f46e5;
+  font-weight: 600;
+  font-size: 14px;
+  background: #fafbfc;
+  transition: all 0.2s ease;
+}
+
+.experience-card-compact:hover .card-footer-compact {
+  background: #f3f4f6;
+  color: #4338ca;
+}
+

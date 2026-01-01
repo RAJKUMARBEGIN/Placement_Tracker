@@ -7,7 +7,7 @@ import './AdminLogin.css';
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: ''
   });
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ const AdminLogin = () => {
       navigate('/admin-dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error.response?.data?.message || 'Invalid username or password');
+      toast.error(error.response?.data?.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -50,16 +50,16 @@ const AdminLogin = () => {
 
         <form onSubmit={handleSubmit} className="admin-login-form">
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="email">Email</label>
             <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
               onChange={handleChange}
-              placeholder="Enter admin username"
+              placeholder="Enter admin email"
               required
-              autoComplete="username"
+              autoComplete="email"
             />
           </div>
 
