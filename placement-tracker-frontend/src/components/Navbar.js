@@ -26,7 +26,7 @@ function Navbar() {
       <div className="nav-container">
         <Link to="/" className="nav-logo">
           <img src="/logo.jpeg" alt="GCT Logo" className="logo-img" />
-          <span className="logo-text">PlaceTrack</span>
+          <span className="logo-text">GCT Placement Tracker</span>
         </Link>
 
         <div className="nav-links">

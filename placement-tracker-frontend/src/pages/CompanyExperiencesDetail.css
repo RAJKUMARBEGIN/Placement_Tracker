@@ -420,6 +420,45 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Modal Footer */
+.modal-footer {
+  padding: 24px 32px;
+  background: #f7fafc;
+  border-top: 2px solid #e2e8f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0 0 24px 24px;
+}
+
+.download-pdf-btn-bottom {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+  justify-content: center;
+}
+
+.download-pdf-btn-bottom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2, #667eea);
+}
+
+.download-pdf-btn-bottom:active {
+  transform: translateY(0);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .company-header-content {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { placementAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import jsPDF from "jspdf";
 import "./CompanyExperiencesDetail.css";
 
 const CompanyExperiencesDetail = () => {
@@ -59,6 +60,163 @@ const CompanyExperiencesDetail = () => {
     ];
     const index = (companyName?.charCodeAt(0) || 0) % colors.length;
     return colors[index];
+  };
+
+  const downloadPDF = (experience) => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    let yPosition = margin;
+
+    // Header
+    doc.setFillColor(102, 126, 234);
+    doc.rect(0, 0, pageWidth, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.text('Interview Experience', pageWidth / 2, 25, { align: 'center' });
+
+    yPosition = 50;
+    doc.setTextColor(0, 0, 0);
+
+    // Company Name
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text(experience.companyName || 'N/A', margin, yPosition);
+    yPosition += 10;
+
+    // Result Badge
+    doc.setFontSize(12);
+    const resultColor = experience.finalResult?.toLowerCase() === 'selected' ? [72, 187, 120] : [245, 101, 101];
+    doc.setTextColor(...resultColor);
+    doc.text(`Status: ${experience.finalResult || 'N/A'}`, margin, yPosition);
+    yPosition += 15;
+
+    doc.setTextColor(0, 0, 0);
+
+    // Student Details
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.text('Student Details', margin, yPosition);
+    yPosition += 8;
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Name: ${experience.studentName || 'N/A'}`, margin, yPosition);
+    yPosition += 6;
+    doc.text(`Roll Number: ${experience.rollNumber || 'N/A'}`, margin, yPosition);
+    yPosition += 6;
+    doc.text(`Department: ${experience.department || 'N/A'}`, margin, yPosition);
+    yPosition += 6;
+    doc.text(`Email: ${experience.personalEmail || 'N/A'}`, margin, yPosition);
+    yPosition += 6;
+    doc.text(`Phone: ${experience.phoneNumber || 'N/A'}`, margin, yPosition);
+    yPosition += 12;
+
+    // Company & Package Details
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.text('Company & Package', margin, yPosition);
+    yPosition += 8;
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Salary/CTC: ${experience.salary || 'Not disclosed'}`, margin, yPosition);
+    yPosition += 6;
+    doc.text(`Intern Offered: ${experience.internOffered ? 'Yes' : 'No'}`, margin, yPosition);
+    yPosition += 6;
+    doc.text(`Bond: ${experience.hasBond ? `Yes - ${experience.bondDetails}` : 'No'}`, margin, yPosition);
+    yPosition += 12;
+
+    // Interview Rounds
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.text(`Interview Rounds (${experience.totalRounds || 'N/A'} Rounds)`, margin, yPosition);
+    yPosition += 8;
+
+    let rounds = [];
+    try {
+      rounds = experience.roundsJson ? JSON.parse(experience.roundsJson) : [];
+    } catch (e) {
+      rounds = [];
+    }
+
+    if (rounds.length > 0) {
+      rounds.forEach((round, idx) => {
+        // Check if we need a new page
+        if (yPosition > pageHeight - 40) {
+          doc.addPage();
+          yPosition = margin;
+        }
+
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text(`Round ${round.roundNumber || idx + 1}: ${round.roundName || 'Interview Round'}`, margin, yPosition);
+        yPosition += 6;
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Status: ${round.cleared ? 'Cleared' : 'Not Cleared'}`, margin, yPosition);
+        yPosition += 6;
+        doc.text(`Platform: ${round.platform || 'N/A'}`, margin, yPosition);
+        yPosition += 6;
+        doc.text(`Duration: ${round.duration || 'N/A'}`, margin, yPosition);
+        yPosition += 6;
+
+        if (round.roundDetails) {
+          const details = doc.splitTextToSize(round.roundDetails, pageWidth - 2 * margin);
+          doc.text(`Details: ${details[0]}`, margin, yPosition);
+          yPosition += 6;
+          for (let i = 1; i < details.length; i++) {
+            if (yPosition > pageHeight - 20) {
+              doc.addPage();
+              yPosition = margin;
+            }
+            doc.text(details[i], margin + 10, yPosition);
+            yPosition += 6;
+          }
+        }
+        yPosition += 6;
+      });
+    } else {
+      doc.setFontSize(10);
+      doc.text('No round details available', margin, yPosition);
+      yPosition += 10;
+    }
+
+    // Overall Experience
+    if (experience.overallExperience) {
+      if (yPosition > pageHeight - 40) {
+        doc.addPage();
+        yPosition = margin;
+      }
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text('Overall Experience', margin, yPosition);
+      yPosition += 8;
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      const overallText = doc.splitTextToSize(experience.overallExperience, pageWidth - 2 * margin);
+      overallText.forEach(line => {
+        if (yPosition > pageHeight - 20) {
+          doc.addPage();
+          yPosition = margin;
+        }
+        doc.text(line, margin, yPosition);
+        yPosition += 6;
+      });
+    }
+
+    // Footer
+    const totalPages = doc.internal.pages.length - 1;
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      doc.text(`Generated on ${new Date().toLocaleDateString()}`, margin, pageHeight - 10);
+    }
+
+    // Save PDF
+    const fileName = `${experience.companyName || 'Experience'}_${experience.studentName || 'Student'}.pdf`.replace(/\s+/g, '_');
+    doc.save(fileName);
   };
 
   if (loading) {
@@ -293,6 +451,16 @@ const CompanyExperiencesDetail = () => {
                 <p className="detail-text">{selectedExp.overallExperience}</p>
               </div>
             )}
+
+            {/* Download Button */}
+            <div className="modal-footer">
+              <button 
+                className="download-pdf-btn-bottom" 
+                onClick={() => downloadPDF(selectedExp)}
+              >
+                📥 Download as PDF
+              </button>
+            </div>
           </div>
         </div>
       )}
