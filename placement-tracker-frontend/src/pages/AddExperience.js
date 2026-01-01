@@ -144,9 +144,12 @@ const AddExperience = () => {
       const submissionData = {
         ...formData,
         departmentId: parseInt(formData.departmentId),
-        yearOfPlacement: parseInt(formData.yearOfPlacement),
+        placementYear: parseInt(formData.yearOfPlacement),
         totalRounds: parseInt(formData.totalRounds),
       };
+      
+      // Remove yearOfPlacement as backend expects placementYear
+      delete submissionData.yearOfPlacement;
 
       await experienceAPI.create(submissionData);
       toast.success("Experience shared successfully! 🎉");

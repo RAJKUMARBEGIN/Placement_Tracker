@@ -17,7 +17,7 @@ import {
   FiDownload,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { experienceAPI } from "../services/api";
+import { placementAPI } from "../services/api";
 import jsPDF from "jspdf";
 import "./ExperienceDetail.css";
 
@@ -33,7 +33,7 @@ const ExperienceDetail = () => {
 
   const fetchExperience = async () => {
     try {
-      const response = await experienceAPI.getById(id);
+      const response = await placementAPI.getById(id);
       setExperience(response.data);
     } catch (error) {
       toast.error("Failed to fetch experience");
@@ -46,7 +46,7 @@ const ExperienceDetail = () => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this experience?")) {
       try {
-        await experienceAPI.delete(id);
+        await placementAPI.delete(id);
         toast.success("Experience deleted successfully!");
         navigate("/experiences");
       } catch (error) {

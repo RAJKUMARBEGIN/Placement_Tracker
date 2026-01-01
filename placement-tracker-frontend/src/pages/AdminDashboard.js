@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminAPI, departmentAPI } from '../services/api';
+import { adminAPI, departmentAPI, placementAPI } from '../services/api';
 import { toast } from 'react-toastify';
 import './AdminDashboard.css';
 
@@ -13,6 +13,7 @@ const AdminDashboard = () => {
   const [showMentorForm, setShowMentorForm] = useState(false);
   const [showAdminForm, setShowAdminForm] = useState(false);
   const [editingMentor, setEditingMentor] = useState(null);
+  const [selectedExp, setSelectedExp] = useState(null);
   const [activeTab, setActiveTab] = useState('mentors'); // 'mentors' or 'experiences'
   
   const [mentorFormData, setMentorFormData] = useState({
@@ -51,7 +52,7 @@ const AdminDashboard = () => {
       const [mentorsRes, deptsRes, expRes] = await Promise.all([
         adminAPI.getAllMentors(),
         departmentAPI.getAll(),
-        adminAPI.getAllExperiences()
+        placementAPI.getAll()
       ]);
       setMentors(mentorsRes.data);
       setDepartments(deptsRes.data);
@@ -191,7 +192,7 @@ const AdminDashboard = () => {
   const handleDeleteExperience = async (id) => {
     if (window.confirm('Are you sure you want to delete this experience?')) {
       try {
-        await adminAPI.deleteExperience(id);
+        await placementAPI.delete(id);
         toast.success('Experience deleted successfully!');
         fetchData();
       } catch (error) {
@@ -539,7 +540,7 @@ const AdminDashboard = () => {
                     <td>{exp.departmentName}</td>
                     <td>
                       <button 
-                        onClick={() => navigate(`/experiences/${exp.id}`)} 
+                        onClick={() => setSelectedExp(exp)} 
                         className="btn-view"
                       >
                         View
@@ -558,6 +559,122 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
+      )}
+
+      {/* Experience Detail Modal */}
+      {selectedExp && (
+        <div className="modal-overlay" onClick={() => setSelectedExp(null)}>
+          <div className="modal-content experience-detail-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn" onClick={() => setSelectedExp(null)}>×</button>
+            
+            {/* Header */}
+            <div className="exp-detail-header">
+              <div className="company-info">
+                <div className="company-logo-modal">
+                  {selectedExp.companyName?.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h2>{selectedExp.companyName}</h2>
+                  <span className="company-type-badge">{selectedExp.companyType || 'Company'}</span>
+                </div>
+              </div>
+              <span className={`result-badge-large ${selectedExp.finalResult?.toLowerCase().replace(' ', '-')}`}>
+                {selectedExp.finalResult}
+              </span>
+            </div>
+
+            {/* Student Details */}
+            <div className="detail-section">
+              <h4>👤 Student Details</h4>
+              <div className="detail-grid">
+                <p><strong>Name:</strong> {selectedExp.studentName}</p>
+                <p><strong>Roll Number:</strong> {selectedExp.rollNumber || 'N/A'}</p>
+                <p><strong>Department:</strong> {selectedExp.department}</p>
+                <p><strong>Email:</strong> {selectedExp.personalEmail || 'N/A'}</p>
+              </div>
+            </div>
+
+            {/* Contact Details */}
+            {(selectedExp.personalEmail || selectedExp.phoneNumber) && (
+              <div className="detail-section contact-section">
+                <h4>📞 Contact Information</h4>
+                <div className="contact-buttons-modal">
+                  {selectedExp.personalEmail && (
+                    <a href={`mailto:${selectedExp.personalEmail}`} className="contact-btn-modal email">
+                      📧 Email
+                    </a>
+                  )}
+                  {selectedExp.phoneNumber && (
+                    <a href={`tel:${selectedExp.phoneNumber}`} className="contact-btn-modal phone">
+                      📱 Call
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Company & Package Details */}
+            <div className="detail-section">
+              <h4>💼 Company & Package</h4>
+              <div className="detail-grid">
+                <p><strong>Salary/CTC:</strong> {selectedExp.salary || 'Not disclosed'}</p>
+                <p><strong>Intern Offered:</strong> {selectedExp.internOffered ? '✅ Yes' : '❌ No'}</p>
+                <p><strong>Bond:</strong> {selectedExp.hasBond ? `Yes - ${selectedExp.bondDetails}` : 'No'}</p>
+              </div>
+            </div>
+
+            {/* Interview Rounds */}
+            <div className="detail-section rounds-section">
+              <h4>🎯 Interview Rounds ({selectedExp.totalRounds || 'N/A'} Rounds)</h4>
+              {(() => {
+                let rounds = [];
+                try {
+                  rounds = selectedExp.roundsJson ? JSON.parse(selectedExp.roundsJson) : [];
+                } catch (e) {
+                  rounds = [];
+                }
+
+                if (rounds.length === 0) {
+                  return <p className="no-data">No round details available</p>;
+                }
+
+                return (
+                  <div className="rounds-container">
+                    {rounds.map((round, idx) => (
+                      <div key={idx} className="round-card">
+                        <div className="round-header">
+                          <span className="round-number">Round {round.roundNumber || idx + 1}</span>
+                          <span className="round-name">{round.roundName || 'Interview Round'}</span>
+                          <span className={`round-status ${round.cleared ? 'cleared' : 'not-cleared'}`}>
+                            {round.cleared ? '✅ Cleared' : '❌ Not Cleared'}
+                          </span>
+                        </div>
+                        <div className="round-body">
+                          <p><strong>Platform:</strong> {round.platform || 'N/A'}</p>
+                          <p><strong>Duration:</strong> {round.duration || 'N/A'}</p>
+                          {round.roundDetails && (
+                            <div className="round-details">
+                              <strong>Details:</strong>
+                              <p>{round.roundDetails}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Overall Experience */}
+            {selectedExp.overallExperience && (
+              <div className="detail-section">
+                <h4>📝 Overall Experience</h4>
+                <p className="detail-text">{selectedExp.overallExperience}</p>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

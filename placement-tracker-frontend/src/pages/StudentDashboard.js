@@ -38,6 +38,7 @@ function StudentDashboard() {
     companyName: "",
     companyType: "IT",
     salary: "",
+    placementYear: new Date().getFullYear(),
     internOffered: false,
     hasBond: false,
     bondDetails: "",
@@ -192,6 +193,7 @@ function StudentDashboard() {
       companyName: "",
       companyType: "IT",
       salary: "",
+      placementYear: new Date().getFullYear(),
       internOffered: false,
       hasBond: false,
       bondDetails: "",
@@ -229,6 +231,7 @@ function StudentDashboard() {
       companyName: exp.companyName || "",
       companyType: exp.companyType || "IT",
       salary: exp.salary || "",
+      placementYear: exp.placementYear || new Date().getFullYear(),
       internOffered: exp.internOffered || false,
       hasBond: exp.hasBond || false,
       bondDetails: exp.bondDetails || "",
@@ -283,11 +286,27 @@ function StudentDashboard() {
 
     try {
       const payload = {
-        ...formData,
-        placementYear: user?.graduationYear || new Date().getFullYear(),
+        studentName: formData.studentName,
+        rollNumber: formData.rollNumber,
+        department: formData.department,
+        personalEmail: formData.personalEmail,
+        contactNumber: formData.contactNumber || null,
+        companyName: formData.companyName,
+        companyType: formData.companyType,
+        salary: formData.salary || null,
+        placementYear: parseInt(formData.placementYear),
+        internOffered: formData.internOffered || false,
+        hasBond: formData.hasBond || false,
+        bondDetails: formData.bondDetails || null,
+        totalRounds: parseInt(formData.totalRounds) || formData.rounds.length,
         roundsJson: JSON.stringify(formData.rounds),
+        overallExperience: formData.overallExperience || null,
+        generalTips: formData.generalTips || null,
+        areasToPrepareFinal: formData.areasToPrepareFinal || null,
+        suggestedResources: formData.suggestedResources || null,
+        finalResult: formData.finalResult,
+        academicYear: formData.academicYear || null,
       };
-      delete payload.rounds;
 
       if (editing) {
         await placementAPI.update(editing.id, payload);
@@ -299,6 +318,7 @@ function StudentDashboard() {
       setShowModal(false);
       fetchData();
     } catch (error) {
+      console.error("Submit error:", error);
       toast.error(error.response?.data?.message || "Failed to save experience");
     }
   };
@@ -546,6 +566,19 @@ function StudentDashboard() {
                   </div>
                   <div className="form-row">
                     <div className="form-group">
+                      <label>Placement Year *</label>
+                      <select
+                        name="placementYear"
+                        value={formData.placementYear}
+                        onChange={handleChange}
+                        required
+                      >
+                        {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i + 1).map(year => (
+                          <option key={year} value={year}>{year}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
                       <label>Salary (CTC)</label>
                       <input
                         name="salary"
@@ -554,6 +587,8 @@ function StudentDashboard() {
                         placeholder="e.g., 15000(Intern) + 8 LPA(FTE)"
                       />
                     </div>
+                  </div>
+                  <div className="form-row">
                     <div className="form-group">
                       <label>Final Result *</label>
                       <select

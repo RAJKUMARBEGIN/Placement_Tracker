@@ -27,8 +27,33 @@ public class PlacementExperienceService {
     }
 
     public PlacementExperience updateExperience(Long id, PlacementExperience experience) {
-        experience.setId(id);
-        return repository.save(experience);
+        PlacementExperience existing = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Experience not found"));
+        
+        // Update all fields except id and submittedAt
+        existing.setStudentName(experience.getStudentName());
+        existing.setRollNumber(experience.getRollNumber());
+        existing.setDepartment(experience.getDepartment());
+        existing.setPersonalEmail(experience.getPersonalEmail());
+        existing.setContactNumber(experience.getContactNumber());
+        existing.setCompanyName(experience.getCompanyName());
+        existing.setCompanyType(experience.getCompanyType());
+        existing.setPlacementYear(experience.getPlacementYear());
+        existing.setSalary(experience.getSalary());
+        existing.setInternOffered(experience.getInternOffered());
+        existing.setHasBond(experience.getHasBond());
+        existing.setBondDetails(experience.getBondDetails());
+        existing.setTotalRounds(experience.getTotalRounds());
+        existing.setRoundsJson(experience.getRoundsJson());
+        existing.setOverallExperience(experience.getOverallExperience());
+        existing.setGeneralTips(experience.getGeneralTips());
+        existing.setAreasToPrepareFinal(experience.getAreasToPrepareFinal());
+        existing.setSuggestedResources(experience.getSuggestedResources());
+        existing.setFinalResult(experience.getFinalResult());
+        existing.setAcademicYear(experience.getAcademicYear());
+        // Keep original submittedAt
+        
+        return repository.save(existing);
     }
 
     public void deleteExperience(Long id) {
