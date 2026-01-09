@@ -48,6 +48,19 @@ public class AdminController {
         return new ResponseEntity<>(admin, HttpStatus.CREATED);
     }
 
+    @PostMapping("/reset-password")
+    @Operation(summary = "Reset admin password", description = "Reset password for admin account (for development/recovery)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password reset successful"),
+            @ApiResponse(responseCode = "404", description = "Admin not found")
+    })
+    public ResponseEntity<String> resetPassword(
+            @RequestParam String username, 
+            @RequestParam String newPassword) {
+        adminService.resetAdminPassword(username, newPassword);
+        return ResponseEntity.ok("Password reset successful for user: " + username);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get admin by ID", description = "Retrieve admin details by ID")
     @ApiResponses(value = {
@@ -55,7 +68,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Admin not found")
     })
     public ResponseEntity<AdminDTO> getAdminById(
-            @Parameter(description = "Admin ID") @PathVariable Long id) {
+            @Parameter(description = "Admin ID") @PathVariable String id) {
         AdminDTO admin = adminService.getAdminById(id);
         return ResponseEntity.ok(admin);
     }
@@ -81,7 +94,7 @@ public class AdminController {
             @ApiResponse(responseCode = "409", description = "Email already exists")
     })
     public ResponseEntity<MentorDTO> updateMentor(
-            @Parameter(description = "Mentor ID") @PathVariable Long id,
+            @Parameter(description = "Mentor ID") @PathVariable String id,
             @Valid @RequestBody CreateMentorDTO updateDTO) {
         MentorDTO mentor = adminService.updateMentor(id, updateDTO);
         return ResponseEntity.ok(mentor);
@@ -94,7 +107,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Mentor not found")
     })
     public ResponseEntity<Void> deleteMentor(
-            @Parameter(description = "Mentor ID") @PathVariable Long id) {
+            @Parameter(description = "Mentor ID") @PathVariable String id) {
         adminService.deleteMentor(id);
         return ResponseEntity.noContent().build();
     }
@@ -114,7 +127,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "Mentor not found")
     })
     public ResponseEntity<MentorDTO> getMentorById(
-            @Parameter(description = "Mentor ID") @PathVariable Long id) {
+            @Parameter(description = "Mentor ID") @PathVariable String id) {
         MentorDTO mentor = adminService.getMentorById(id);
         return ResponseEntity.ok(mentor);
     }
@@ -123,7 +136,7 @@ public class AdminController {
     @Operation(summary = "Get mentors by department", description = "Retrieve mentors assigned to a specific department")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved mentors")
     public ResponseEntity<List<MentorDTO>> getMentorsByDepartment(
-            @Parameter(description = "Department ID") @PathVariable Long departmentId) {
+            @Parameter(description = "Department ID") @PathVariable String departmentId) {
         List<MentorDTO> mentors = adminService.getMentorsByDepartment(departmentId);
         return ResponseEntity.ok(mentors);
     }

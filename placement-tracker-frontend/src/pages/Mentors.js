@@ -1,8 +1,11 @@
 ﻿import React, { useState, useEffect } from "react";
+import { FiArrowLeft } from "react-icons/fi";
 import { authAPI, departmentAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import "./Mentors.css";
 
 function Mentors() {
+  const { user, isAdmin } = useAuth();
   const [mentors, setMentors] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +66,16 @@ function Mentors() {
     setSelectedYear("");
   };
 
+  // Check if contact info should be visible for a mentor
+  const canViewContactInfo = (mentor) => {
+    // If visibility is PUBLIC, everyone can see
+    if (mentor.contactVisibility !== "ADMIN_ONLY") {
+      return true;
+    }
+    // If ADMIN_ONLY, only admin can see
+    return isAdmin && isAdmin();
+  };
+
   if (loading) {
     return (
       <div className="mentors-loading">
@@ -75,8 +88,18 @@ function Mentors() {
   return (
     <div className="mentors-page">
       <div className="mentors-header">
-        <h1>Our Mentors</h1>
-        <p>Connect with placed students who can guide your placement journey</p>
+        <button
+          className="back-link-hero"
+          onClick={() => window.history.back()}
+        >
+          <FiArrowLeft /> Back
+        </button>
+        <div className="hero-content">
+          <h1>Our Mentors</h1>
+          <p>
+            Connect with placed students who can guide your placement journey
+          </p>
+        </div>
       </div>
 
       <div className="mentors-content">
@@ -232,92 +255,104 @@ function Mentors() {
 
                     <div className="modal-section">
                       <h4>📞 Contact Information</h4>
-                      <div className="detail-row">
-                        <span className="detail-label">Email:</span>
-                        <span className="detail-value">
-                          {selectedMentor.email ? (
-                            <a
-                              href={`mailto:${selectedMentor.email}`}
-                              className="contact-link"
-                            >
-                              {selectedMentor.email}
-                            </a>
-                          ) : (
-                            "Not provided"
-                          )}
-                        </span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="detail-label">Phone:</span>
-                        <span className="detail-value">
-                          {selectedMentor.phoneNumber ? (
-                            <a
-                              href={`tel:${selectedMentor.phoneNumber}`}
-                              className="contact-link"
-                            >
-                              {selectedMentor.phoneNumber}
-                            </a>
-                          ) : (
-                            "Not provided"
-                          )}
-                        </span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="detail-label">LinkedIn:</span>
-                        <span className="detail-value">
-                          {selectedMentor.linkedinProfile ? (
-                            <a
-                              href={
-                                selectedMentor.linkedinProfile.startsWith(
-                                  "http"
-                                )
-                                  ? selectedMentor.linkedinProfile
-                                  : `https://${selectedMentor.linkedinProfile}`
-                              }
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="contact-link"
-                            >
-                              View Profile
-                            </a>
-                          ) : (
-                            "Not provided"
-                          )}
-                        </span>
-                      </div>
+                      {canViewContactInfo(selectedMentor) ? (
+                        <>
+                          <div className="detail-row">
+                            <span className="detail-label">Email:</span>
+                            <span className="detail-value">
+                              {selectedMentor.email ? (
+                                <a
+                                  href={`mailto:${selectedMentor.email}`}
+                                  className="contact-link"
+                                >
+                                  {selectedMentor.email}
+                                </a>
+                              ) : (
+                                "Not provided"
+                              )}
+                            </span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="detail-label">Phone:</span>
+                            <span className="detail-value">
+                              {selectedMentor.phoneNumber ? (
+                                <a
+                                  href={`tel:${selectedMentor.phoneNumber}`}
+                                  className="contact-link"
+                                >
+                                  {selectedMentor.phoneNumber}
+                                </a>
+                              ) : (
+                                "Not provided"
+                              )}
+                            </span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="detail-label">LinkedIn:</span>
+                            <span className="detail-value">
+                              {selectedMentor.linkedinProfile ? (
+                                <a
+                                  href={
+                                    selectedMentor.linkedinProfile.startsWith(
+                                      "http"
+                                    )
+                                      ? selectedMentor.linkedinProfile
+                                      : `https://${selectedMentor.linkedinProfile}`
+                                  }
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="contact-link"
+                                >
+                                  View Profile
+                                </a>
+                              ) : (
+                                "Not provided"
+                              )}
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <p className="contact-restricted">
+                          Contact information is only visible to administrators.
+                        </p>
+                      )}
                     </div>
                   </div>
 
                   <div className="modal-actions">
-                    {selectedMentor.email && (
-                      <a
-                        href={`mailto:${selectedMentor.email}`}
-                        className="action-btn email-btn"
-                      >
-                        📧 Send Email
-                      </a>
-                    )}
-                    {selectedMentor.phoneNumber && (
-                      <a
-                        href={`tel:${selectedMentor.phoneNumber}`}
-                        className="action-btn call-btn"
-                      >
-                        📞 Call Now
-                      </a>
-                    )}
-                    {selectedMentor.linkedinProfile && (
-                      <a
-                        href={
-                          selectedMentor.linkedinProfile.startsWith("http")
-                            ? selectedMentor.linkedinProfile
-                            : `https://${selectedMentor.linkedinProfile}`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="action-btn linkedin-btn"
-                      >
-                        💼 LinkedIn
-                      </a>
+                    {canViewContactInfo(selectedMentor) && (
+                      <>
+                        {selectedMentor.email && (
+                          <a
+                            href={`mailto:${selectedMentor.email}`}
+                            className="action-btn email-btn"
+                          >
+                            📧 Send Email
+                          </a>
+                        )}
+                        {selectedMentor.phoneNumber && (
+                          <a
+                            href={`tel:${selectedMentor.phoneNumber}`}
+                            className="action-btn call-btn"
+                          >
+                            📞 Call Now
+                          </a>
+                        )}
+                        {selectedMentor.linkedinProfile && (
+                          <a
+                            href={
+                              selectedMentor.linkedinProfile.startsWith("http")
+                                ? selectedMentor.linkedinProfile
+                                : `https://${selectedMentor.linkedinProfile}`
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="action-btn linkedin-btn"
+                          >
+                            💼 LinkedIn
+                          </a>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>

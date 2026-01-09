@@ -35,7 +35,7 @@ public class CompanyController {
     })
     public ResponseEntity<CompanyDTO> createCompany(
             @Valid @RequestBody CompanyDTO companyDTO,
-            @Parameter(description = "User ID of creator") @RequestParam(required = false) Long userId) {
+            @Parameter(description = "User ID of creator") @RequestParam(required = false) String userId) {
         CompanyDTO createdCompany = companyService.createCompany(companyDTO, userId);
         return new ResponseEntity<>(createdCompany, HttpStatus.CREATED);
     }
@@ -55,7 +55,7 @@ public class CompanyController {
             @ApiResponse(responseCode = "404", description = "Company not found")
     })
     public ResponseEntity<CompanyDTO> getCompanyById(
-            @Parameter(description = "Company ID") @PathVariable Long id) {
+            @Parameter(description = "Company ID") @PathVariable String id) {
         CompanyDTO company = companyService.getCompanyById(id);
         return ResponseEntity.ok(company);
     }
@@ -98,7 +98,7 @@ public class CompanyController {
             @ApiResponse(responseCode = "409", description = "Company name already exists")
     })
     public ResponseEntity<CompanyDTO> updateCompany(
-            @Parameter(description = "Company ID") @PathVariable Long id,
+            @Parameter(description = "Company ID") @PathVariable String id,
             @RequestBody CompanyDTO companyDTO) {
         CompanyDTO updatedCompany = companyService.updateCompany(id, companyDTO);
         return ResponseEntity.ok(updatedCompany);
@@ -111,7 +111,7 @@ public class CompanyController {
             @ApiResponse(responseCode = "404", description = "Company not found")
     })
     public ResponseEntity<Void> deleteCompany(
-            @Parameter(description = "Company ID") @PathVariable Long id) {
+            @Parameter(description = "Company ID") @PathVariable String id) {
         companyService.deleteCompany(id);
         return ResponseEntity.noContent().build();
     }

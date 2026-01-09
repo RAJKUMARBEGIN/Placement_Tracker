@@ -21,7 +21,7 @@ public class ConvertToMentorDTO {
     private String linkedinProfile;
 
     @Schema(description = "Department ID", example = "1")
-    private Long departmentId;
+    private String departmentId;
 
     @Schema(description = "Year of placement", example = "2024")
     private Integer placementYear;
@@ -59,11 +59,11 @@ public class ConvertToMentorDTO {
         this.linkedinProfile = linkedinProfile;
     }
 
-    public Long getDepartmentId() {
+    public String getDepartmentId() {
         return departmentId;
     }
 
-    public void setDepartmentId(Long departmentId) {
+    public void setDepartmentId(String departmentId) {
         this.departmentId = departmentId;
     }
 

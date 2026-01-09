@@ -86,8 +86,13 @@ public class DataInitializer implements CommandLineRunner {
         defaultAdmin.setUsername("admin");
         defaultAdmin.setPassword(passwordEncoder.encode("admin123"));
         defaultAdmin.setFullName("System Administrator");
-        defaultAdmin.setEmail("admin@gct.ac.in");
+        defaultAdmin.setEmail("harshavardhinin6@gmail.com");
+        defaultAdmin.setIsActive(true);
         adminRepository.save(defaultAdmin);
-        System.out.println("✅ Default admin created - Username: admin, Password: admin123");
+        System.out.println("========================================");
+        System.out.println("  DEFAULT ADMIN ACCOUNT CREATED");
+        System.out.println("  Username: admin");
+        System.out.println("  Password: admin123");
+        System.out.println("========================================");
     }
 }

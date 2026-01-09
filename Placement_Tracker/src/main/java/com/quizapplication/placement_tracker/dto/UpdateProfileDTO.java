@@ -1,31 +1,20 @@
 package com.quizapplication.placement_tracker.dto;
 
-import com.quizapplication.placement_tracker.entity.UserRole;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
 
-@Schema(description = "User Registration Request")
-public class RegisterDTO {
+@Schema(description = "Update Profile Request")
+public class UpdateProfileDTO {
 
-    @NotBlank(message = "Full name is required")
     @Schema(description = "User's full name", example = "John Doe")
     private String fullName;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
-    @Schema(description = "Email address", example = "john.doe@email.com")
-    private String email;
+    @Schema(description = "Phone number", example = "+91-9876543210")
+    private String phoneNumber;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters")
-    @Schema(description = "Password (min 6 characters)", example = "password123")
-    private String password;
+    @Schema(description = "LinkedIn profile URL", example = "https://linkedin.com/in/johndoe")
+    private String linkedinProfile;
 
-    @NotNull(message = "Role is required")
-    @Schema(description = "User role (STUDENT or MENTOR)", example = "STUDENT")
-    private UserRole role;
-
-    @Schema(description = "Department ID (optional)", example = "1")
+    @Schema(description = "Department ID", example = "1")
     private String departmentId;
 
     @Schema(description = "Roll number (for students)", example = "20IT001")
@@ -37,13 +26,6 @@ public class RegisterDTO {
     @Schema(description = "Graduation year", example = "2024")
     private Integer graduationYear;
 
-    @Schema(description = "Phone number", example = "+91-9876543210")
-    private String phoneNumber;
-
-    @Schema(description = "LinkedIn profile URL", example = "https://linkedin.com/in/johndoe")
-    private String linkedinProfile;
-
-    // For mentors only
     @Schema(description = "Company where placed (for mentors)", example = "Google")
     private String placedCompany;
 
@@ -56,8 +38,8 @@ public class RegisterDTO {
     @Schema(description = "Location/Place of the mentor", example = "Bangalore, Karnataka")
     private String location;
 
-    @Schema(description = "Contact visibility: PUBLIC (everyone) or ADMIN_ONLY (only admins)", example = "PUBLIC")
-    private String contactVisibility = "PUBLIC";
+    @Schema(description = "Contact visibility: PUBLIC or ADMIN_ONLY", example = "PUBLIC")
+    private String contactVisibility;
 
     // Getters and Setters
     public String getFullName() {
@@ -68,28 +50,20 @@ public class RegisterDTO {
         this.fullName = fullName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public String getPassword() {
-        return password;
+    public String getLinkedinProfile() {
+        return linkedinProfile;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
+    public void setLinkedinProfile(String linkedinProfile) {
+        this.linkedinProfile = linkedinProfile;
     }
 
     public String getDepartmentId() {
@@ -122,22 +96,6 @@ public class RegisterDTO {
 
     public void setGraduationYear(Integer graduationYear) {
         this.graduationYear = graduationYear;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getLinkedinProfile() {
-        return linkedinProfile;
-    }
-
-    public void setLinkedinProfile(String linkedinProfile) {
-        this.linkedinProfile = linkedinProfile;
     }
 
     public String getPlacedCompany() {

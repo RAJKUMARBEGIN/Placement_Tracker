@@ -1,78 +1,65 @@
 package com.quizapplication.placement_tracker.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.index.Indexed;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
-@Entity
-@Table(name = "mentors")
+@Document(collection = "mentors")
 public class Mentor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false)
     private String fullName;
 
-    @Column(nullable = false, unique = true)
+    @Indexed(unique = true)
     private String email;
 
-    @Column
     private String phoneNumber;
 
-    @Column
     private String linkedinProfile;
 
-    @Column(nullable = false)
     private String placedCompany;
 
-    @Column
     private String placedPosition;
 
-    @Column
     private Integer placementYear;
 
-    @Column
     private Integer graduationYear;
 
-    // Many-to-Many relationship with Department
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "mentor_departments",
-        joinColumns = @JoinColumn(name = "mentor_id"),
-        inverseJoinColumns = @JoinColumn(name = "department_id")
-    )
-    private Set<Department> departments = new HashSet<>();
+    // Store department IDs instead of full objects
+    private List<String> departmentIds = new ArrayList<>();
 
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
     private Boolean isActive = true;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
 
     // Constructors
     public Mentor() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 
     public Mentor(String fullName, String email, String placedCompany) {
         this.fullName = fullName;
         this.email = email;
         this.placedCompany = placedCompany;
+        this.createdAt = LocalDateTime.now();
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -140,12 +127,12 @@ public class Mentor {
         this.graduationYear = graduationYear;
     }
 
-    public Set<Department> getDepartments() {
-        return departments;
+    public List<String> getDepartmentIds() {
+        return departmentIds;
     }
 
-    public void setDepartments(Set<Department> departments) {
-        this.departments = departments;
+    public void setDepartmentIds(List<String> departmentIds) {
+        this.departmentIds = departmentIds;
     }
 
     public LocalDateTime getCreatedAt() {

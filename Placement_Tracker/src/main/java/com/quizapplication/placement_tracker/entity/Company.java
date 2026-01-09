@@ -1,60 +1,49 @@
 package com.quizapplication.placement_tracker.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
-@Table(name = "companies")
+@Document(collection = "companies")
 public class Company {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false, unique = true)
+    @Indexed(unique = true)
     private String companyName;
 
-    @Column(length = 1000)
     private String description;
 
-    @Column
     private String industry;
 
-    @Column
     private String website;
 
-    @Column
     private String logoUrl;
 
-    @Column
     private String headquarters;
 
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
-    private List<InterviewExperience> interviewExperiences;
+    private List<String> interviewExperienceIds;
 
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by")
-    private User createdBy;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
+    private String createdById;
 
     // Constructors
     public Company() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -106,12 +95,12 @@ public class Company {
         this.headquarters = headquarters;
     }
 
-    public List<InterviewExperience> getInterviewExperiences() {
-        return interviewExperiences;
+    public List<String> getInterviewExperienceIds() {
+        return interviewExperienceIds;
     }
 
-    public void setInterviewExperiences(List<InterviewExperience> interviewExperiences) {
-        this.interviewExperiences = interviewExperiences;
+    public void setInterviewExperienceIds(List<String> interviewExperienceIds) {
+        this.interviewExperienceIds = interviewExperienceIds;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -122,11 +111,11 @@ public class Company {
         this.createdAt = createdAt;
     }
 
-    public User getCreatedBy() {
-        return createdBy;
+    public String getCreatedById() {
+        return createdById;
     }
 
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
+    public void setCreatedById(String createdById) {
+        this.createdById = createdById;
     }
 }

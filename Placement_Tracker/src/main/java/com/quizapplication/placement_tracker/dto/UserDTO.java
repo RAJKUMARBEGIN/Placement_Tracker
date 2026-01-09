@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class UserDTO {
 
     @Schema(description = "User ID", example = "1")
-    private Long id;
+    private String id;
 
     @Schema(description = "User email", example = "john.doe@gct.ac.in")
     private String email;
@@ -21,7 +21,7 @@ public class UserDTO {
     private UserRole role;
 
     @Schema(description = "Department ID", example = "1")
-    private Long departmentId;
+    private String departmentId;
 
     @Schema(description = "Department name", example = "Information Technology")
     private String departmentName;
@@ -53,6 +53,15 @@ public class UserDTO {
     @Schema(description = "Year of placement (for mentors)", example = "2024")
     private Integer placementYear;
 
+    @Schema(description = "Location/Place of the mentor", example = "Bangalore, Karnataka")
+    private String location;
+
+    @Schema(description = "Contact visibility: PUBLIC or ADMIN_ONLY", example = "PUBLIC")
+    private String contactVisibility;
+
+    @Schema(description = "Mentor approval status", example = "false")
+    private Boolean isApproved;
+
     @Schema(description = "Account creation time")
     private LocalDateTime createdAt;
 
@@ -60,11 +69,11 @@ public class UserDTO {
     private LocalDateTime lastLogin;
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -92,11 +101,11 @@ public class UserDTO {
         this.role = role;
     }
 
-    public Long getDepartmentId() {
+    public String getDepartmentId() {
         return departmentId;
     }
 
-    public void setDepartmentId(Long departmentId) {
+    public void setDepartmentId(String departmentId) {
         this.departmentId = departmentId;
     }
 
@@ -194,5 +203,29 @@ public class UserDTO {
 
     public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getContactVisibility() {
+        return contactVisibility;
+    }
+
+    public void setContactVisibility(String contactVisibility) {
+        this.contactVisibility = contactVisibility;
+    }
+
+    public Boolean getIsApproved() {
+        return isApproved;
+    }
+
+    public void setIsApproved(Boolean isApproved) {
+        this.isApproved = isApproved;
     }
 }

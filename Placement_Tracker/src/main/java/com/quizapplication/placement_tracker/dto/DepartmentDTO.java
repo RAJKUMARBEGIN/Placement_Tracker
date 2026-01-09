@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 public class DepartmentDTO {
 
     @Schema(description = "Department ID", example = "1")
-    private Long id;
+    private String id;
 
     @NotBlank(message = "Department name is required")
     @Schema(description = "Department name", example = "Information Technology")
@@ -29,7 +29,7 @@ public class DepartmentDTO {
     public DepartmentDTO() {
     }
 
-    public DepartmentDTO(Long id, String departmentName, String departmentCode, String description, DepartmentGroup departmentGroup) {
+    public DepartmentDTO(String id, String departmentName, String departmentCode, String description, DepartmentGroup departmentGroup) {
         this.id = id;
         this.departmentName = departmentName;
         this.departmentCode = departmentCode;
@@ -37,11 +37,11 @@ public class DepartmentDTO {
         this.departmentGroup = departmentGroup;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

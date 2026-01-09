@@ -52,7 +52,7 @@ public class InterviewExperienceController {
             @ApiResponse(responseCode = "404", description = "Experience not found")
     })
     public ResponseEntity<InterviewExperienceDTO> getExperienceById(
-            @Parameter(description = "Experience ID") @PathVariable Long id) {
+            @Parameter(description = "Experience ID") @PathVariable String id) {
         InterviewExperienceDTO experience = experienceService.getExperienceById(id);
         return ResponseEntity.ok(experience);
     }
@@ -64,7 +64,7 @@ public class InterviewExperienceController {
             @ApiResponse(responseCode = "404", description = "Department not found")
     })
     public ResponseEntity<List<InterviewExperienceDTO>> getExperiencesByDepartment(
-            @Parameter(description = "Department ID") @PathVariable Long departmentId) {
+            @Parameter(description = "Department ID") @PathVariable String departmentId) {
         List<InterviewExperienceDTO> experiences = experienceService.getExperiencesByDepartment(departmentId);
         return ResponseEntity.ok(experiences);
     }
@@ -102,7 +102,7 @@ public class InterviewExperienceController {
             @ApiResponse(responseCode = "404", description = "Department not found")
     })
     public ResponseEntity<List<InterviewExperienceDTO>> getExperiencesByDepartmentAndYear(
-            @Parameter(description = "Department ID") @PathVariable Long departmentId,
+            @Parameter(description = "Department ID") @PathVariable String departmentId,
             @Parameter(description = "Placement year") @PathVariable Integer year) {
         List<InterviewExperienceDTO> experiences = experienceService.getExperiencesByDepartmentAndYear(departmentId, year);
         return ResponseEntity.ok(experiences);
@@ -116,7 +116,7 @@ public class InterviewExperienceController {
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     public ResponseEntity<InterviewExperienceDTO> updateExperience(
-            @Parameter(description = "Experience ID") @PathVariable Long id,
+            @Parameter(description = "Experience ID") @PathVariable String id,
             @Valid @RequestBody InterviewExperienceDTO experienceDTO) {
         InterviewExperienceDTO updatedExperience = experienceService.updateExperience(id, experienceDTO);
         return ResponseEntity.ok(updatedExperience);
@@ -129,7 +129,7 @@ public class InterviewExperienceController {
             @ApiResponse(responseCode = "404", description = "Experience not found")
     })
     public ResponseEntity<Void> deleteExperience(
-            @Parameter(description = "Experience ID") @PathVariable Long id) {
+            @Parameter(description = "Experience ID") @PathVariable String id) {
         experienceService.deleteExperience(id);
         return ResponseEntity.noContent().build();
     }

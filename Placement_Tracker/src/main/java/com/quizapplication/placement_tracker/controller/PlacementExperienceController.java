@@ -22,7 +22,7 @@ public class PlacementExperienceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PlacementExperience> getExperienceById(@PathVariable Long id) {
+    public ResponseEntity<PlacementExperience> getExperienceById(@PathVariable String id) {
         return service.getExperienceById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -35,7 +35,7 @@ public class PlacementExperienceController {
 
     @PutMapping("/{id}")
     public ResponseEntity<PlacementExperience> updateExperience(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody PlacementExperience experience) {
         return service.getExperienceById(id)
                 .map(existing -> ResponseEntity.ok(service.updateExperience(id, experience)))
@@ -43,7 +43,7 @@ public class PlacementExperienceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExperience(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteExperience(@PathVariable String id) {
         return service.getExperienceById(id)
                 .map(existing -> {
                     service.deleteExperience(id);

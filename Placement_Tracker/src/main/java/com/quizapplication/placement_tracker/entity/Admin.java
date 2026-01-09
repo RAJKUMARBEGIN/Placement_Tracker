@@ -1,44 +1,36 @@
 package com.quizapplication.placement_tracker.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "admins")
+@Document(collection = "admins")
 public class Admin {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false, unique = true)
+    @Indexed(unique = true)
     private String username;
 
-    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private String fullName;
 
-    @Column
     private String email;
 
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column
     private LocalDateTime lastLogin;
 
-    @Column(nullable = false)
     private Boolean isActive = true;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
 
     // Constructors
     public Admin() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 
     public Admin(String username, String password, String fullName, String email) {
@@ -46,14 +38,15 @@ public class Admin {
         this.password = password;
         this.fullName = fullName;
         this.email = email;
+        this.createdAt = LocalDateTime.now();
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

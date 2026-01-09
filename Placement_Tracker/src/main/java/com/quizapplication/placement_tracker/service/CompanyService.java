@@ -26,7 +26,7 @@ public class CompanyService {
     }
 
     @Transactional
-    public CompanyDTO createCompany(CompanyDTO companyDTO, Long userId) {
+    public CompanyDTO createCompany(CompanyDTO companyDTO, String userId) {
         // Check if company already exists
         if (companyRepository.existsByCompanyNameIgnoreCase(companyDTO.getCompanyName())) {
             throw new ResourceAlreadyExistsException("Company '" + companyDTO.getCompanyName() + "' already exists");
@@ -45,7 +45,7 @@ public class CompanyService {
         company.setWebsite(companyDTO.getWebsite());
         company.setLogoUrl(companyDTO.getLogoUrl());
         company.setHeadquarters(companyDTO.getHeadquarters());
-        company.setCreatedBy(createdBy);
+        company.setCreatedById(createdBy.getId());
 
         Company savedCompany = companyRepository.save(company);
         return convertToDTO(savedCompany);
@@ -57,7 +57,7 @@ public class CompanyService {
                 .collect(Collectors.toList());
     }
 
-    public CompanyDTO getCompanyById(Long id) {
+    public CompanyDTO getCompanyById(String id) {
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + id));
         return convertToDTO(company);
@@ -80,7 +80,7 @@ public class CompanyService {
     }
 
     @Transactional
-    public CompanyDTO updateCompany(Long id, CompanyDTO companyDTO) {
+    public CompanyDTO updateCompany(String id, CompanyDTO companyDTO) {
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + id));
 
@@ -102,7 +102,7 @@ public class CompanyService {
     }
 
     @Transactional
-    public void deleteCompany(Long id) {
+    public void deleteCompany(String id) {
         if (!companyRepository.existsById(id)) {
             throw new ResourceNotFoundException("Company not found with id: " + id);
         }
@@ -119,11 +119,9 @@ public class CompanyService {
         dto.setLogoUrl(company.getLogoUrl());
         dto.setHeadquarters(company.getHeadquarters());
         dto.setCreatedAt(company.getCreatedAt());
-        if (company.getCreatedBy() != null) {
-            dto.setCreatedById(company.getCreatedBy().getId());
-        }
-        if (company.getInterviewExperiences() != null) {
-            dto.setExperienceCount(company.getInterviewExperiences().size());
+        dto.setCreatedById(company.getCreatedById());
+        if (company.getInterviewExperienceIds() != null) {
+            dto.setExperienceCount(company.getInterviewExperienceIds().size());
         } else {
             dto.setExperienceCount(0);
         }

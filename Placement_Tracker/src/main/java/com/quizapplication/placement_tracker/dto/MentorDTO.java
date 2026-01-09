@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 public class MentorDTO {
-    private Long id;
+    private String id;
     private String fullName;
     private String email;
     private String phoneNumber;
@@ -14,6 +14,7 @@ public class MentorDTO {
     private Integer placementYear;
     private Integer graduationYear;
     private Set<DepartmentDTO> departments;
+    private java.util.List<String> departmentIds;
     private LocalDateTime createdAt;
     private Boolean isActive;
 
@@ -21,11 +22,11 @@ public class MentorDTO {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -99,6 +100,14 @@ public class MentorDTO {
 
     public void setDepartments(Set<DepartmentDTO> departments) {
         this.departments = departments;
+    }
+
+    public java.util.List<String> getDepartmentIds() {
+        return departmentIds;
+    }
+
+    public void setDepartmentIds(java.util.List<String> departmentIds) {
+        this.departmentIds = departmentIds;
     }
 
     public LocalDateTime getCreatedAt() {

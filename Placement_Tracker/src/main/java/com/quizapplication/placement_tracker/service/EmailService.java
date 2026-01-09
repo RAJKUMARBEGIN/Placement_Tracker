@@ -19,6 +19,12 @@ public class EmailService {
     @Value("${app.gct.email.domain:gct.ac.in}")
     private String gctEmailDomain;
 
+    @Value("${app.admin.email:harshavardhinin6@gmail.com}")
+    private String adminEmail;
+
+    @Value("${app.base.url:http://localhost:8080}")
+    private String baseUrl;
+
     // Store OTPs with expiry (email -> OTP)
     private final Map<String, OTPData> otpStore = new ConcurrentHashMap<>();
 
@@ -121,5 +127,96 @@ public class EmailService {
     public void clearExpiredOTPs() {
         long now = System.currentTimeMillis();
         otpStore.entrySet().removeIf(entry -> entry.getValue().expiryTime < now);
+    }
+
+    /**
+     * Send notification to admin when a new mentor registers with approve link
+     */
+    public void sendMentorRegistrationNotification(String mentorName, String mentorEmail, 
+            String company, String position, String departmentName, String phoneNumber,
+            String linkedinProfile, Integer graduationYear, Integer placementYear,
+            String contactVisibility, String approvalToken) {
+        
+        String approveLink = baseUrl + "/api/auth/mentors/approve-via-email?token=" + approvalToken;
+        String rejectLink = baseUrl + "/api/auth/mentors/reject-via-email?token=" + approvalToken;
+        
+        String subject = "🎓 New Mentor Registration - Approval Required | PlaceTrack";
+        String text = "Dear Admin,\n\n" +
+                "═══════════════════════════════════════════════════════════\n" +
+                "          NEW MENTOR REGISTRATION - APPROVAL REQUIRED\n" +
+                "═══════════════════════════════════════════════════════════\n\n" +
+                "A new mentor has registered on GCT PlaceTrack and is awaiting your approval.\n\n" +
+                "📋 MENTOR DETAILS:\n" +
+                "─────────────────────────────────────────────────────────────\n" +
+                "👤 Full Name:        " + mentorName + "\n" +
+                "📧 Email:            " + mentorEmail + "\n" +
+                "🏢 Company:          " + (company != null ? company : "Not specified") + "\n" +
+                "💼 Position:         " + (position != null ? position : "Not specified") + "\n" +
+                "🎓 Department:       " + (departmentName != null ? departmentName : "Not specified") + "\n" +
+                "📞 Phone:            " + (phoneNumber != null ? phoneNumber : "Not provided") + "\n" +
+                "🔗 LinkedIn:         " + (linkedinProfile != null ? linkedinProfile : "Not provided") + "\n" +
+                "📅 Graduation Year:  " + (graduationYear != null ? graduationYear.toString() : "Not specified") + "\n" +
+                "📅 Placement Year:   " + (placementYear != null ? placementYear.toString() : "Not specified") + "\n" +
+                "🔒 Contact Visibility: " + (contactVisibility != null ? contactVisibility : "PUBLIC") + "\n" +
+                "─────────────────────────────────────────────────────────────\n\n" +
+                "📌 ACTIONS:\n\n" +
+                "✅ APPROVE this mentor:\n" +
+                approveLink + "\n\n" +
+                "❌ REJECT this mentor:\n" +
+                rejectLink + "\n\n" +
+                "═══════════════════════════════════════════════════════════\n" +
+                "NOTE: You can also manage this request from the Admin Dashboard.\n" +
+                "═══════════════════════════════════════════════════════════\n\n" +
+                "Best regards,\n" +
+                "GCT PlaceTrack System";
+
+        if (mailSender != null) {
+            try {
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setTo(adminEmail);
+                message.setSubject(subject);
+                message.setText(text);
+                mailSender.send(message);
+                System.out.println("Mentor registration notification with approve link sent to: " + adminEmail);
+            } catch (Exception e) {
+                System.err.println("Failed to send mentor registration notification: " + e.getMessage());
+            }
+        } else {
+            System.out.println("DEV MODE - Mentor Registration Notification:");
+            System.out.println("To: " + adminEmail);
+            System.out.println("Subject: " + subject);
+            System.out.println("Body: " + text);
+        }
+    }
+
+    /**
+     * Send notification to mentor when their account is approved
+     */
+    public void sendMentorApprovalNotification(String mentorEmail, String mentorName) {
+        String subject = "Your Mentor Account has been Approved - PlaceTrack";
+        String text = "Dear " + mentorName + ",\n\n" +
+                "Congratulations! Your mentor account on GCT PlaceTrack has been approved.\n\n" +
+                "You can now log in and your profile will be visible to students " +
+                "who are seeking guidance for their placement journey.\n\n" +
+                "Thank you for being a mentor and helping our students!\n\n" +
+                "Best regards,\n" +
+                "GCT Placement Cell";
+
+        if (mailSender != null) {
+            try {
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setTo(mentorEmail);
+                message.setSubject(subject);
+                message.setText(text);
+                mailSender.send(message);
+                System.out.println("Mentor approval notification sent to: " + mentorEmail);
+            } catch (Exception e) {
+                System.err.println("Failed to send mentor approval notification: " + e.getMessage());
+            }
+        } else {
+            System.out.println("DEV MODE - Mentor Approval Notification:");
+            System.out.println("To: " + mentorEmail);
+            System.out.println("Subject: " + subject);
+        }
     }
 }

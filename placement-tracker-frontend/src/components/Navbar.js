@@ -33,9 +33,6 @@ function Navbar() {
           <Link to="/" className="nav-link">
             Home
           </Link>
-          <Link to="/company-experiences" className="nav-link">
-            Company Experiences
-          </Link>
 
           {isAdmin ? (
             <>
@@ -54,7 +51,7 @@ function Navbar() {
                 </Link>
               )}
               <div className="user-menu">
-                <div className="user-info">
+                <Link to="/profile" className="user-info user-info-link">
                   <div className="user-avatar">
                     {user?.fullName?.charAt(0) || user?.name?.charAt(0) || "U"}
                   </div>
@@ -66,7 +63,7 @@ function Navbar() {
                       {user?.role?.toLowerCase()}
                     </span>
                   </div>
-                </div>
+                </Link>
                 <button className="logout-btn" onClick={handleLogout}>
                   Logout
                 </button>

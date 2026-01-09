@@ -14,7 +14,12 @@ export const authAPI = {
   register: (data) => api.post("/auth/register", data),
   login: (data) => api.post("/auth/login", data),
   getUserById: (id) => api.get(`/auth/user/${id}`),
+  updateProfile: (id, data) => api.put(`/auth/user/${id}/profile`, data),
   getAllMentors: () => api.get("/auth/mentors"),
+  getPendingMentors: () => api.get("/auth/mentors/pending"),
+  getAllMentorsIncludingPending: () => api.get("/auth/mentors/all"),
+  approveMentor: (id) => api.put(`/auth/mentors/${id}/approve`),
+  rejectMentor: (id) => api.delete(`/auth/mentors/${id}/reject`),
   getMentorsByDepartment: (departmentId) =>
     api.get(`/auth/mentors/department/${departmentId}`),
   getMentorsByCompany: (companyName) =>

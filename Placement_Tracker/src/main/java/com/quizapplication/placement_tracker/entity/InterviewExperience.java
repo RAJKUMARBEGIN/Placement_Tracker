@@ -1,107 +1,73 @@
 package com.quizapplication.placement_tracker.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "interview_experiences")
+@Document(collection = "interview_experiences")
 public class InterviewExperience {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false)
     private String studentName;
 
-    @Column(nullable = false)
     private String companyName;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
     @JsonIgnore
-    private Company company;
+    private String companyId;
 
-    @ManyToOne
-    @JoinColumn(name = "mentor_id")
     @JsonIgnore
-    private User mentor;
+    private String mentorId;
 
-    @Column(nullable = false)
     private String position;
 
-    @Column(nullable = false)
     private Integer yearOfPlacement;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id", nullable = false)
     @JsonIgnore
-    private Department department;
+    private String departmentId;
 
-    @Column(nullable = false)
     private Integer totalRounds;
 
-    // Use LOB / LONGTEXT for very large text columns to avoid MySQL row-size limits
-    @Lob
-    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String roundsDescription;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String questionsAsked;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String problemsSolved;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
     private String inPersonInterviewTips;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String crackingStrategy;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String preparationDetails;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
     private String resources;
 
-    @Column(nullable = true)
     private Boolean willingToMentor = false;
 
-    @Column(nullable = true)
     private String contactEmail;
 
-    @Column(nullable = true)
     private String contactPhone;
 
-    @Column(nullable = true)
     private String linkedinProfile;
 
-    @Column(nullable = false)
     private LocalDateTime submittedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        submittedAt = LocalDateTime.now();
-    }
 
     // Constructors
     public InterviewExperience() {
+        if (submittedAt == null) {
+            submittedAt = LocalDateTime.now();
+        }
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -137,12 +103,12 @@ public class InterviewExperience {
         this.yearOfPlacement = yearOfPlacement;
     }
 
-    public Department getDepartment() {
-        return department;
+    public String getDepartmentId() {
+        return departmentId;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
+    public void setDepartmentId(String departmentId) {
+        this.departmentId = departmentId;
     }
 
     public Integer getTotalRounds() {

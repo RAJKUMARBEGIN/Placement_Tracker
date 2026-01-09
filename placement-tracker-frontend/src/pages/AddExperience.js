@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiSend, FiPlus, FiUpload, FiFile, FiX } from "react-icons/fi";
+import {
+  FiSend,
+  FiPlus,
+  FiUpload,
+  FiFile,
+  FiX,
+  FiArrowLeft,
+} from "react-icons/fi";
 import { toast } from "react-toastify";
 import { experienceAPI, departmentAPI } from "../services/api";
 import "./AddExperience.css";
@@ -18,7 +25,6 @@ const AddExperience = () => {
     departmentId: "",
     totalRounds: 1,
     roundsDescription: "",
-    questionsAsked: "",
     problemsSolved: "",
     inPersonInterviewTips: "",
     crackingStrategy: "",
@@ -88,7 +94,7 @@ const AddExperience = () => {
       // For now, we're just tracking if a file was selected
       const submissionData = {
         ...formData,
-        departmentId: parseInt(formData.departmentId),
+        departmentId: formData.departmentId,
         yearOfPlacement: parseInt(formData.yearOfPlacement),
         totalRounds: parseInt(formData.totalRounds),
         hasResourceFile: resourceFile !== null,
@@ -117,15 +123,24 @@ const AddExperience = () => {
 
   return (
     <div className="add-experience-page">
-      <div className="page-header">
-        <h1>
-          <FiPlus className="header-icon" />
-          Share Your Experience
-        </h1>
-        <p>
-          Help juniors by sharing your interview journey. Your insights can
-          change someone's career.
-        </p>
+      {/* Hero Header with Back Link */}
+      <div className="page-hero">
+        <button
+          className="back-link-hero"
+          onClick={() => window.history.back()}
+        >
+          <FiArrowLeft /> Back
+        </button>
+        <div className="hero-content">
+          <h1>
+            <FiPlus className="header-icon" />
+            Share Your Experience
+          </h1>
+          <p>
+            Help juniors by sharing your interview journey. Your insights can
+            change someone's career.
+          </p>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="experience-form">
@@ -223,17 +238,6 @@ const AddExperience = () => {
               onChange={handleChange}
               placeholder="Describe each round in detail. E.g., Round 1: Online coding test with 3 DSA problems (Medium-Hard). Round 2: Technical interview focusing on System Design..."
               rows={5}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Questions Asked *</label>
-            <textarea
-              name="questionsAsked"
-              value={formData.questionsAsked}
-              onChange={handleChange}
-              placeholder="List the technical and HR questions you were asked. E.g., Explain your projects, What is OOP, Tell me about yourself..."
-              rows={4}
               required
             />
           </div>

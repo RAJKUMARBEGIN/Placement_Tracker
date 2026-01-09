@@ -26,7 +26,7 @@ public class CreateMentorDTO {
     private Integer graduationYear;
     
     @NotEmpty(message = "At least one department must be assigned")
-    private Set<Long> departmentIds;
+    private Set<String> departmentIds;
 
     public CreateMentorDTO() {
     }
@@ -96,11 +96,11 @@ public class CreateMentorDTO {
         this.graduationYear = graduationYear;
     }
 
-    public Set<Long> getDepartmentIds() {
+    public Set<String> getDepartmentIds() {
         return departmentIds;
     }
 
-    public void setDepartmentIds(Set<Long> departmentIds) {
+    public void setDepartmentIds(Set<String> departmentIds) {
         this.departmentIds = departmentIds;
     }
 }

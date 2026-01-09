@@ -1,5 +1,6 @@
 ﻿import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FiArrowLeft } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 import { authAPI } from "../services/api";
@@ -40,6 +41,9 @@ function Login() {
   return (
     <div className="auth-page">
       <div className="auth-container">
+        <Link to="/" className="back-to-home">
+          <FiArrowLeft /> Back to Home
+        </Link>
         <div className="auth-header">
           <h1>Welcome Back</h1>
           <p>Sign in to access your dashboard</p>
@@ -67,8 +71,15 @@ function Login() {
               required
             />
           </div>
-          
-          <p className="auth-link" style={{ textAlign: 'right', marginTop: '-8px', marginBottom: '12px' }}>
+
+          <p
+            className="auth-link"
+            style={{
+              textAlign: "right",
+              marginTop: "-8px",
+              marginBottom: "12px",
+            }}
+          >
             <Link to="/forgot-password">Forgot Password?</Link>
           </p>
 

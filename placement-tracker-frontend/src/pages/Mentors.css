@@ -4,25 +4,53 @@
   background: var(--bg-primary);
 }
 
-/* Header */
+/* Header with Back Button */
 .mentors-header {
   background: var(--secondary);
-  padding: 80px 24px;
-  text-align: center;
+  padding: 24px 40px 48px 40px;
+  border-radius: 0 0 24px 24px;
   color: white;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.back-link-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+.back-link-hero:hover {
+  color: white;
+  transform: translateX(-4px);
+}
+
+.back-link-hero svg {
+  font-size: 16px;
+}
+
+.hero-content {
+  text-align: center;
 }
 
 .mentors-header h1 {
-  font-size: 56px;
+  font-size: 40px;
   font-weight: 800;
   margin-bottom: 16px;
-  letter-spacing: -2px;
+  letter-spacing: -1.5px;
 }
 
 .mentors-header p {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.7);
   max-width: 700px;
   margin: 0 auto;
 }
@@ -302,12 +330,40 @@
   font-size: 14px;
 }
 
+.contact-restricted {
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+
 @media (max-width: 768px) {
-  .mentors-header h1 {
-    font-size: 36px;
+  .mentors-header {
+    padding: 20px 20px 36px 20px;
+    border-radius: 0 0 16px 16px;
   }
-  
+
+  .back-link-hero {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .mentors-header h1 {
+    font-size: 28px;
+  }
+
+  .mentors-header p {
+    font-size: 15px;
+  }
+
   .mentors-grid {
     grid-template-columns: 1fr;
+  }
+
+  .mentors-content {
+    padding: 32px 16px;
   }
 }

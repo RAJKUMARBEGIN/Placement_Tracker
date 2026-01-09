@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { placementAPI } from "../services/api";
 import { toast } from "react-toastify";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiArrowLeft, FiBriefcase } from "react-icons/fi";
 import "./CompanyExperiences.css";
 
 const CompanyExperiences = () => {
@@ -115,12 +115,20 @@ const CompanyExperiences = () => {
 
   return (
     <div className="company-experiences-page">
-      <div className="page-header">
-        <Link to="/" className="back-btn">
-          ← Back to Home
-        </Link>
-        <h1>Placement Experiences by Company</h1>
-        <p>Browse interview experiences organized by company</p>
+      {/* Hero Header with Back Link */}
+      <div className="page-hero">
+        <button
+          className="back-link-hero"
+          onClick={() => window.history.back()}
+        >
+          <FiArrowLeft /> Back
+        </button>
+        <div className="hero-content">
+          <h1>
+            <FiBriefcase className="header-icon" /> Experiences by Company
+          </h1>
+          <p>Browse interview experiences organized by company</p>
+        </div>
       </div>
 
       <div className="search-section">

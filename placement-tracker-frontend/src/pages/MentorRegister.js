@@ -20,6 +20,7 @@ const MentorRegister = () => {
     placedCompany: "",
     placedPosition: "",
     placementYear: "",
+    contactVisibility: "PUBLIC",
   });
 
   const [departments, setDepartments] = useState([]);
@@ -115,7 +116,7 @@ const MentorRegister = () => {
         password: formData.password,
         fullName: formData.fullName,
         role: "MENTOR",
-        departmentId: parseInt(formData.departmentId),
+        departmentId: formData.departmentId,
         graduationYear: formData.graduationYear
           ? parseInt(formData.graduationYear)
           : null,
@@ -126,11 +127,16 @@ const MentorRegister = () => {
         placementYear: formData.placementYear
           ? parseInt(formData.placementYear)
           : null,
+        contactVisibility: formData.contactVisibility,
       };
 
       const response = await authAPI.register(registerData);
-      login(response.data);
-      navigate("/mentor/dashboard");
+      // Don't log in the mentor - they need admin approval first
+      // Show success message and redirect to home
+      alert(
+        "Registration successful! Your account is pending admin approval. You will receive an email once approved."
+      );
+      navigate("/");
     } catch (err) {
       setError(
         err.response?.data?.message || "Registration failed. Please try again."
@@ -153,7 +159,10 @@ const MentorRegister = () => {
   };
 
   const currentYear = new Date().getFullYear();
-  const graduationYears = Array.from({ length: currentYear - 2000 + 1 }, (_, i) => currentYear - i);
+  const graduationYears = Array.from(
+    { length: currentYear - 2000 + 1 },
+    (_, i) => currentYear - i
+  );
 
   return (
     <div className="register-container mentor-bg">
@@ -355,6 +364,29 @@ const MentorRegister = () => {
                   ))}
                 </select>
               </div>
+            </div>
+          </div>
+
+          <div className="form-section">
+            <h3 className="section-title">Privacy Settings</h3>
+            <div className="form-group">
+              <label>Contact Visibility</label>
+              <select
+                name="contactVisibility"
+                value={formData.contactVisibility}
+                onChange={handleChange}
+              >
+                <option value="PUBLIC">
+                  Public - Everyone can see my contact info
+                </option>
+                <option value="ADMIN_ONLY">
+                  Admin Only - Only administrators can see my contact info
+                </option>
+              </select>
+              <p className="form-hint">
+                Choose who can view your email, phone number, and LinkedIn
+                profile
+              </p>
             </div>
           </div>
 

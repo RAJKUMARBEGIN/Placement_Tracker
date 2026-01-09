@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FiSearch,
   FiFilter,
@@ -7,15 +7,18 @@ import {
   FiCalendar,
   FiMapPin,
   FiChevronRight,
+  FiArrowLeft,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { experienceAPI, departmentAPI } from "../services/api";
+import { placementAPI, departmentAPI } from "../services/api";
 import "./Experiences.css";
 
 const Experiences = () => {
+  const location = useLocation();
   const [experiences, setExperiences] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
@@ -25,15 +28,42 @@ const Experiences = () => {
   }, []);
 
   const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+
     try {
-      const [expResponse, deptResponse] = await Promise.all([
-        experienceAPI.getAll(),
-        departmentAPI.getAll(),
-      ]);
-      setExperiences(expResponse.data);
-      setDepartments(deptResponse.data);
+      // Make direct fetch call
+      const expRes = await fetch(
+        "http://localhost:8080/api/placement-experiences"
+      );
+      const deptRes = await fetch("http://localhost:8080/api/departments");
+
+      if (!expRes.ok)
+        throw new Error(`Experiences API Error: ${expRes.status}`);
+      if (!deptRes.ok)
+        throw new Error(`Departments API Error: ${deptRes.status}`);
+
+      const experiencesData = await expRes.json();
+      const departmentsData = await deptRes.json();
+
+      // Handle both array and object with data property
+      const expArray = Array.isArray(experiencesData)
+        ? experiencesData
+        : experiencesData.data || [];
+      const deptArray = Array.isArray(departmentsData)
+        ? departmentsData
+        : departmentsData.data || [];
+
+      setExperiences(expArray);
+      setDepartments(deptArray);
+
+      if (expArray.length === 0) {
+        setError("No experiences found in database");
+      }
     } catch (error) {
-      toast.error("Failed to fetch data");
+      console.error("Fetch Error:", error);
+      setError(error.message);
+      toast.error("Error: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -46,14 +76,28 @@ const Experiences = () => {
     }
     try {
       setLoading(true);
-      const response = await experienceAPI.searchByCompany(searchTerm);
+      const response = await placementAPI.searchByCompany(searchTerm);
       setExperiences(response.data);
     } catch (error) {
+      console.error("Search error:", error);
       toast.error("Search failed");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (location.state?.searchCompany) {
+      setSearchTerm(location.state.searchCompany);
+    }
+    fetchData();
+  }, [location]);
+
+  useEffect(() => {
+    if (location.state?.searchCompany && searchTerm) {
+      handleSearch();
+    }
+  }, [searchTerm]);
 
   const handleFilter = async () => {
     try {
@@ -61,20 +105,32 @@ const Experiences = () => {
       let response;
 
       if (selectedDepartment && selectedYear) {
-        response = await experienceAPI.getByDepartmentAndYear(
-          selectedDepartment,
-          selectedYear
-        );
+        // Filter by department and year
+        const allExp = await placementAPI.getAll();
+        response = {
+          data: allExp.data.filter(
+            (exp) =>
+              exp.department === selectedDepartment &&
+              exp.placementYear === parseInt(selectedYear)
+          ),
+        };
       } else if (selectedDepartment) {
-        response = await experienceAPI.getByDepartment(selectedDepartment);
+        response = await placementAPI.searchByDepartment(selectedDepartment);
       } else if (selectedYear) {
-        response = await experienceAPI.getByYear(selectedYear);
+        // Filter by year
+        const allExp = await placementAPI.getAll();
+        response = {
+          data: allExp.data.filter(
+            (exp) => exp.placementYear === parseInt(selectedYear)
+          ),
+        };
       } else {
-        response = await experienceAPI.getAll();
+        response = await placementAPI.getAll();
       }
 
       setExperiences(response.data);
     } catch (error) {
+      console.error("Filter error:", error);
       toast.error("Filter failed");
     } finally {
       setLoading(false);
@@ -120,8 +176,15 @@ const Experiences = () => {
 
   return (
     <div className="experiences-page">
-      <div className="page-header">
-        <div className="header-content">
+      {/* Hero Header with Back Link */}
+      <div className="page-hero">
+        <button
+          className="back-link-hero"
+          onClick={() => window.history.back()}
+        >
+          <FiArrowLeft /> Back
+        </button>
+        <div className="hero-content">
           <h1>
             <FiFileText className="header-icon" />
             Interview Experiences
@@ -197,7 +260,9 @@ const Experiences = () => {
       {/* Experiences Grid */}
       {experiences.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📝</div>
+          <div className="empty-icon">
+            <FiFileText />
+          </div>
           <h3>No experiences found</h3>
           <p>Try adjusting your search or filters</p>
           <button className="btn btn-secondary" onClick={clearFilters}>
@@ -208,7 +273,7 @@ const Experiences = () => {
         <div className="experiences-grid">
           {experiences.map((exp) => (
             <Link
-              to={`/experiences/${exp.id}`}
+              to={`/experience/${exp.id}`}
               key={exp.id}
               className="experience-card"
             >
@@ -217,26 +282,35 @@ const Experiences = () => {
                 style={{ background: getCompanyColor(exp.companyName) }}
               >
                 <span className="company-name">{exp.companyName}</span>
-                <span className="year-badge">{exp.yearOfPlacement}</span>
+                <span className="year-badge">
+                  {exp.placementYear || new Date().getFullYear()}
+                </span>
               </div>
               <div className="card-body">
-                <h3 className="position">{exp.position}</h3>
+                <h3 className="position">
+                  {exp.placedPosition || exp.companyType || "Interview"}
+                </h3>
                 <p className="student-name">by {exp.studentName}</p>
 
                 <div className="card-meta">
                   <span className="meta-item">
                     <FiMapPin />
-                    {exp.departmentName}
+                    {exp.department}
                   </span>
-                  <span className="meta-item">{exp.totalRounds} Rounds</span>
+                  <span className="meta-item">
+                    {exp.totalRounds || 0} Rounds
+                  </span>
                 </div>
 
                 <p className="preview-text">
-                  {exp.crackingStrategy?.substring(0, 100)}...
+                  {exp.generalTips?.substring(0, 100) ||
+                    exp.overallExperience?.substring(0, 100) ||
+                    "Experience shared"}
+                  ...
                 </p>
 
-                {exp.willingToMentor && (
-                  <span className="mentor-badge">✨ Mentor Available</span>
+                {exp.finalResult === "SELECTED" && (
+                  <span className="mentor-badge">Successfully Selected</span>
                 )}
               </div>
               <div className="card-footer">

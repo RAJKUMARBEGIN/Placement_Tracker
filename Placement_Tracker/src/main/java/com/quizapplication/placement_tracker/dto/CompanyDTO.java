@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class CompanyDTO {
 
     @Schema(description = "Company ID", example = "1")
-    private Long id;
+    private String id;
 
     @NotBlank(message = "Company name is required")
     @Schema(description = "Company name", example = "Google")
@@ -37,14 +37,14 @@ public class CompanyDTO {
     private LocalDateTime createdAt;
 
     @Schema(description = "Created by user ID")
-    private Long createdById;
+    private String createdById;
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -112,11 +112,11 @@ public class CompanyDTO {
         this.createdAt = createdAt;
     }
 
-    public Long getCreatedById() {
+    public String getCreatedById() {
         return createdById;
     }
 
-    public void setCreatedById(Long createdById) {
+    public void setCreatedById(String createdById) {
         this.createdById = createdById;
     }
 }

@@ -47,13 +47,13 @@ public class DepartmentService {
                 .collect(Collectors.toList());
     }
 
-    public DepartmentDTO getDepartmentById(Long id) {
+    public DepartmentDTO getDepartmentById(String id) {
         Department department = departmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + id));
         return convertToDTO(department);
     }
 
-    public List<DepartmentDTO> getRelatedDepartments(Long departmentId) {
+    public List<DepartmentDTO> getRelatedDepartments(String departmentId) {
         Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + departmentId));
         
@@ -69,7 +69,7 @@ public class DepartmentService {
     }
 
     @Transactional
-    public DepartmentDTO updateDepartment(Long id, DepartmentDTO departmentDTO) {
+    public DepartmentDTO updateDepartment(String id, DepartmentDTO departmentDTO) {
         Department department = departmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + id));
 
@@ -88,7 +88,7 @@ public class DepartmentService {
     }
 
     @Transactional
-    public void deleteDepartment(Long id) {
+    public void deleteDepartment(String id) {
         if (!departmentRepository.existsById(id)) {
             throw new ResourceNotFoundException("Department not found with id: " + id);
         }

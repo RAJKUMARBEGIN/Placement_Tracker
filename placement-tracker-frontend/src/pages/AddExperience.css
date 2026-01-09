@@ -1,34 +1,70 @@
 /* Add Experience - Professional Tech Design */
 .add-experience-page {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 60px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 0;
 }
 
-.page-header {
-  margin-bottom: 60px;
-  text-align: center;
+/* Hero Header - Consistent with other pages */
+.page-hero {
+  background: var(--secondary);
+  padding: 24px 40px 48px 40px;
+  border-radius: 0 0 24px 24px;
+  position: relative;
 }
 
-.page-header h1 {
+.back-link-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+.back-link-hero:hover {
+  color: white;
+  transform: translateX(-4px);
+}
+
+.back-link-hero svg {
+  font-size: 16px;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hero-content h1 {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  font-size: 40px;
+  gap: 12px;
+  font-size: 32px;
   font-weight: 800;
-  color: var(--secondary);
-  letter-spacing: -1.5px;
+  color: white;
+  letter-spacing: -0.5px;
+  margin: 0;
 }
 
-.header-icon {
-  color: var(--primary);
+.hero-content h1 .header-icon {
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.page-header p {
-  color: var(--text-secondary);
-  margin-top: 16px;
-  font-size: 18px;
+.hero-content p {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  font-size: 16px;
 }
 
 /* Form */
@@ -36,6 +72,9 @@
   display: flex;
   flex-direction: column;
   gap: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px 60px 24px;
 }
 
 .form-section {
@@ -292,6 +331,28 @@
 }
 
 @media (max-width: 768px) {
+  .page-hero {
+    padding: 20px 20px 36px 20px;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .back-link-hero {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .hero-content h1 {
+    font-size: 24px;
+  }
+
+  .hero-content p {
+    font-size: 14px;
+  }
+
+  .experience-form {
+    padding: 0 16px 40px 16px;
+  }
+
   .form-section {
     padding: 1.5rem;
   }

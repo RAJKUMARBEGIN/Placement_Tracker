@@ -53,7 +53,7 @@ public class DepartmentController {
             @ApiResponse(responseCode = "404", description = "Department not found")
     })
     public ResponseEntity<DepartmentDTO> getDepartmentById(
-            @Parameter(description = "Department ID") @PathVariable Long id) {
+            @Parameter(description = "Department ID") @PathVariable String id) {
         DepartmentDTO department = departmentService.getDepartmentById(id);
         return ResponseEntity.ok(department);
     }
@@ -65,7 +65,7 @@ public class DepartmentController {
             @ApiResponse(responseCode = "404", description = "Department not found")
     })
     public ResponseEntity<List<DepartmentDTO>> getRelatedDepartments(
-            @Parameter(description = "Department ID") @PathVariable Long id) {
+            @Parameter(description = "Department ID") @PathVariable String id) {
         List<DepartmentDTO> departments = departmentService.getRelatedDepartments(id);
         return ResponseEntity.ok(departments);
     }
@@ -87,7 +87,7 @@ public class DepartmentController {
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     public ResponseEntity<DepartmentDTO> updateDepartment(
-            @Parameter(description = "Department ID") @PathVariable Long id,
+            @Parameter(description = "Department ID") @PathVariable String id,
             @Valid @RequestBody DepartmentDTO departmentDTO) {
         DepartmentDTO updatedDepartment = departmentService.updateDepartment(id, departmentDTO);
         return ResponseEntity.ok(updatedDepartment);
@@ -100,7 +100,7 @@ public class DepartmentController {
             @ApiResponse(responseCode = "404", description = "Department not found")
     })
     public ResponseEntity<Void> deleteDepartment(
-            @Parameter(description = "Department ID") @PathVariable Long id) {
+            @Parameter(description = "Department ID") @PathVariable String id) {
         departmentService.deleteDepartment(id);
         return ResponseEntity.noContent().build();
     }

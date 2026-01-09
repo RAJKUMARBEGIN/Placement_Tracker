@@ -27,7 +27,8 @@ public class InterviewExperienceService {
 
     @Transactional
     public InterviewExperienceDTO createExperience(InterviewExperienceDTO dto) {
-        Department department = departmentRepository.findById(dto.getDepartmentId())
+        // Verify department exists
+        departmentRepository.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + dto.getDepartmentId()));
 
         InterviewExperience experience = new InterviewExperience();
@@ -35,7 +36,7 @@ public class InterviewExperienceService {
         experience.setCompanyName(dto.getCompanyName());
         experience.setPosition(dto.getPosition());
         experience.setYearOfPlacement(dto.getYearOfPlacement());
-        experience.setDepartment(department);
+        experience.setDepartmentId(dto.getDepartmentId());
         experience.setTotalRounds(dto.getTotalRounds());
         experience.setRoundsDescription(dto.getRoundsDescription());
         experience.setQuestionsAsked(dto.getQuestionsAsked());
@@ -59,13 +60,13 @@ public class InterviewExperienceService {
                 .collect(Collectors.toList());
     }
 
-    public InterviewExperienceDTO getExperienceById(Long id) {
+    public InterviewExperienceDTO getExperienceById(String id) {
         InterviewExperience experience = experienceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Interview experience not found with id: " + id));
         return convertToDTO(experience);
     }
 
-    public List<InterviewExperienceDTO> getExperiencesByDepartment(Long departmentId) {
+    public List<InterviewExperienceDTO> getExperiencesByDepartment(String departmentId) {
         if (!departmentRepository.existsById(departmentId)) {
             throw new ResourceNotFoundException("Department not found with id: " + departmentId);
         }
@@ -92,7 +93,7 @@ public class InterviewExperienceService {
                 .collect(Collectors.toList());
     }
 
-    public List<InterviewExperienceDTO> getExperiencesByDepartmentAndYear(Long departmentId, Integer year) {
+    public List<InterviewExperienceDTO> getExperiencesByDepartmentAndYear(String departmentId, Integer year) {
         if (!departmentRepository.existsById(departmentId)) {
             throw new ResourceNotFoundException("Department not found with id: " + departmentId);
         }
@@ -102,18 +103,19 @@ public class InterviewExperienceService {
     }
 
     @Transactional
-    public InterviewExperienceDTO updateExperience(Long id, InterviewExperienceDTO dto) {
+    public InterviewExperienceDTO updateExperience(String id, InterviewExperienceDTO dto) {
         InterviewExperience experience = experienceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Interview experience not found with id: " + id));
 
-        Department department = departmentRepository.findById(dto.getDepartmentId())
+        // Verify department exists
+        departmentRepository.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + dto.getDepartmentId()));
 
         experience.setStudentName(dto.getStudentName());
         experience.setCompanyName(dto.getCompanyName());
         experience.setPosition(dto.getPosition());
         experience.setYearOfPlacement(dto.getYearOfPlacement());
-        experience.setDepartment(department);
+        experience.setDepartmentId(dto.getDepartmentId());
         experience.setTotalRounds(dto.getTotalRounds());
         experience.setRoundsDescription(dto.getRoundsDescription());
         experience.setQuestionsAsked(dto.getQuestionsAsked());
@@ -132,7 +134,7 @@ public class InterviewExperienceService {
     }
 
     @Transactional
-    public void deleteExperience(Long id) {
+    public void deleteExperience(String id) {
         if (!experienceRepository.existsById(id)) {
             throw new ResourceNotFoundException("Interview experience not found with id: " + id);
         }
@@ -146,8 +148,12 @@ public class InterviewExperienceService {
         dto.setCompanyName(experience.getCompanyName());
         dto.setPosition(experience.getPosition());
         dto.setYearOfPlacement(experience.getYearOfPlacement());
-        dto.setDepartmentId(experience.getDepartment().getId());
-        dto.setDepartmentName(experience.getDepartment().getDepartmentName());
+        dto.setDepartmentId(experience.getDepartmentId());
+        
+        // Fetch and set department name
+        departmentRepository.findById(experience.getDepartmentId())
+                .ifPresent(dept -> dto.setDepartmentName(dept.getDepartmentName()));
+        
         dto.setTotalRounds(experience.getTotalRounds());
         dto.setRoundsDescription(experience.getRoundsDescription());
         dto.setQuestionsAsked(experience.getQuestionsAsked());

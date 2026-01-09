@@ -18,7 +18,7 @@ public class PlacementExperienceService {
         return repository.findAllByOrderBySubmittedAtDesc();
     }
 
-    public Optional<PlacementExperience> getExperienceById(Long id) {
+    public Optional<PlacementExperience> getExperienceById(String id) {
         return repository.findById(id);
     }
 
@@ -26,12 +26,12 @@ public class PlacementExperienceService {
         return repository.save(experience);
     }
 
-    public PlacementExperience updateExperience(Long id, PlacementExperience experience) {
+    public PlacementExperience updateExperience(String id, PlacementExperience experience) {
         experience.setId(id);
         return repository.save(experience);
     }
 
-    public void deleteExperience(Long id) {
+    public void deleteExperience(String id) {
         repository.deleteById(id);
     }
 

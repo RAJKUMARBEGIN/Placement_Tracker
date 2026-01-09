@@ -75,10 +75,18 @@ public class AdminService {
     }
 
     // Get admin by ID
-    public AdminDTO getAdminById(Long id) {
+    public AdminDTO getAdminById(String id) {
         Admin admin = adminRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Admin not found with id: " + id));
         return convertToAdminDTO(admin);
+    }
+
+    // Reset admin password by username
+    public void resetAdminPassword(String username, String newPassword) {
+        Admin admin = adminRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Admin not found with username: " + username));
+        admin.setPassword(passwordEncoder.encode(newPassword));
+        adminRepository.save(admin);
     }
 
     // Create Mentor
@@ -99,19 +107,19 @@ public class AdminService {
 
         // Assign departments
         Set<Department> departments = new HashSet<>();
-        for (Long deptId : createMentorDTO.getDepartmentIds()) {
+        for (String deptId : createMentorDTO.getDepartmentIds()) {
             Department dept = departmentRepository.findById(deptId)
                     .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + deptId));
             departments.add(dept);
         }
-        mentor.setDepartments(departments);
+        mentor.setDepartmentIds(departments.stream().map(d -> d.getId()).collect(Collectors.toList()));
 
         Mentor savedMentor = mentorRepository.save(mentor);
         return convertToMentorDTO(savedMentor);
     }
 
     // Update Mentor
-    public MentorDTO updateMentor(Long id, CreateMentorDTO updateDTO) {
+    public MentorDTO updateMentor(String id, CreateMentorDTO updateDTO) {
         Mentor mentor = mentorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Mentor not found with id: " + id));
 
@@ -132,19 +140,19 @@ public class AdminService {
 
         // Update departments
         Set<Department> departments = new HashSet<>();
-        for (Long deptId : updateDTO.getDepartmentIds()) {
+        for (String deptId : updateDTO.getDepartmentIds()) {
             Department dept = departmentRepository.findById(deptId)
                     .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + deptId));
             departments.add(dept);
         }
-        mentor.setDepartments(departments);
+        mentor.setDepartmentIds(departments.stream().map(d -> d.getId()).collect(Collectors.toList()));
 
         Mentor updatedMentor = mentorRepository.save(mentor);
         return convertToMentorDTO(updatedMentor);
     }
 
     // Delete Mentor
-    public void deleteMentor(Long id) {
+    public void deleteMentor(String id) {
         if (!mentorRepository.existsById(id)) {
             throw new ResourceNotFoundException("Mentor not found with id: " + id);
         }
@@ -159,14 +167,14 @@ public class AdminService {
     }
 
     // Get mentor by ID
-    public MentorDTO getMentorById(Long id) {
+    public MentorDTO getMentorById(String id) {
         Mentor mentor = mentorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Mentor not found with id: " + id));
         return convertToMentorDTO(mentor);
     }
 
     // Get mentors by department
-    public List<MentorDTO> getMentorsByDepartment(Long departmentId) {
+    public List<MentorDTO> getMentorsByDepartment(String departmentId) {
         return mentorRepository.findByDepartmentId(departmentId).stream()
                 .map(this::convertToMentorDTO)
                 .collect(Collectors.toList());
@@ -206,18 +214,10 @@ public class AdminService {
         dto.setCreatedAt(mentor.getCreatedAt());
         dto.setIsActive(mentor.getIsActive());
 
-        // Convert departments
-        Set<DepartmentDTO> deptDTOs = mentor.getDepartments().stream()
-                .map(dept -> {
-                    DepartmentDTO deptDTO = new DepartmentDTO();
-                    deptDTO.setId(dept.getId());
-                    deptDTO.setDepartmentName(dept.getDepartmentName());
-                    deptDTO.setDepartmentCode(dept.getDepartmentCode());
-                    deptDTO.setDescription(dept.getDescription());
-                    return deptDTO;
-                })
-                .collect(Collectors.toSet());
-        dto.setDepartments(deptDTOs);
+        // Convert department IDs
+        if (mentor.getDepartmentIds() != null) {
+            dto.setDepartmentIds(new ArrayList<>(mentor.getDepartmentIds()));
+        }
 
         return dto;
     }

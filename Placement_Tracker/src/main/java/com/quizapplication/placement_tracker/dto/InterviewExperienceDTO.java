@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class InterviewExperienceDTO {
 
     @Schema(description = "Experience ID", example = "1")
-    private Long id;
+    private String id;
 
     @NotBlank(message = "Student name is required")
     @Schema(description = "Student name", example = "John Doe")
@@ -31,7 +31,7 @@ public class InterviewExperienceDTO {
 
     @NotNull(message = "Department ID is required")
     @Schema(description = "Department ID", example = "1")
-    private Long departmentId;
+    private String departmentId;
 
     @Schema(description = "Department name", example = "Computer Science Engineering")
     private String departmentName;
@@ -45,7 +45,6 @@ public class InterviewExperienceDTO {
     @Schema(description = "Description of each round", example = "Round 1: Online Test, Round 2: Technical Interview...")
     private String roundsDescription;
 
-    @NotBlank(message = "Questions asked is required")
     @Schema(description = "Questions asked in the interview", example = "Data structures, algorithms, system design...")
     private String questionsAsked;
 
@@ -88,11 +87,11 @@ public class InterviewExperienceDTO {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -128,11 +127,11 @@ public class InterviewExperienceDTO {
         this.yearOfPlacement = yearOfPlacement;
     }
 
-    public Long getDepartmentId() {
+    public String getDepartmentId() {
         return departmentId;
     }
 
-    public void setDepartmentId(Long departmentId) {
+    public void setDepartmentId(String departmentId) {
         this.departmentId = departmentId;
     }
 

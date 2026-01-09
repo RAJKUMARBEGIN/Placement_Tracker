@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FiArrowLeft } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 import { authAPI, departmentAPI } from "../services/api";
@@ -34,6 +35,8 @@ function Register() {
     departmentId: "",
     placementYear: new Date().getFullYear(),
     graduationYear: new Date().getFullYear() + 1,
+    location: "",
+    contactVisibility: "PUBLIC",
   });
 
   useEffect(() => {
@@ -161,7 +164,7 @@ function Register() {
       };
 
       if (selectedRole === "STUDENT") {
-        payload.departmentId = parseInt(formData.departmentId);
+        payload.departmentId = formData.departmentId;
         payload.graduationYear = parseInt(formData.graduationYear);
       }
 
@@ -170,8 +173,10 @@ function Register() {
         payload.placedPosition = formData.placedPosition;
         payload.phoneNumber = formData.phoneNumber;
         payload.linkedinProfile = formData.linkedinProfile;
-        payload.departmentId = parseInt(formData.departmentId);
+        payload.departmentId = formData.departmentId;
         payload.placementYear = parseInt(formData.placementYear);
+        payload.location = formData.location;
+        payload.contactVisibility = formData.contactVisibility;
       }
 
       const response = await authAPI.register(payload);
@@ -190,11 +195,11 @@ function Register() {
     }
   };
 
-  // Step 0: Role Selection (FIRST STEP) - Simplified to only STUDENT
+  // Step 0: Role Selection (FIRST STEP)
   const renderRoleStep = () => (
     <div className="role-selection-step">
-      <h2>Student Registration</h2>
-      <p>Register as a GCT student to access placement experiences</p>
+      <h2>Join GCT Placement Community</h2>
+      <p>Choose how you want to register</p>
 
       <div className="role-selection-cards">
         <div className="role-card" onClick={() => handleRoleSelect("STUDENT")}>
@@ -202,10 +207,19 @@ function Register() {
           <h3>Student</h3>
           <p>Current GCT student looking for placement guidance</p>
         </div>
+
+        <div className="role-card" onClick={() => handleRoleSelect("MENTOR")}>
+          <div className="role-icon">💼</div>
+          <h3>Mentor</h3>
+          <p>Alumni who got placed and wants to guide juniors</p>
+        </div>
       </div>
-      
+
       <div className="admin-note">
-        <p>📝 Note: Only students can register. Mentors are added by administrators.</p>
+        <p>
+          📝 Note: Students need GCT email verification. Mentors can register
+          with any email.
+        </p>
       </div>
     </div>
   );
@@ -473,24 +487,72 @@ function Register() {
             />
           </div>
           <div className="form-group">
-            <label>Phone Number (optional)</label>
+            <label>Location/Place *</label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="e.g., Bangalore, Karnataka"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Phone Number *</label>
             <input
               type="tel"
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
               placeholder="Your contact number"
+              required
             />
           </div>
           <div className="form-group">
-            <label>LinkedIn Profile (optional)</label>
+            <label>LinkedIn Profile *</label>
             <input
-              type="text"
+              type="url"
               name="linkedinProfile"
               value={formData.linkedinProfile}
               onChange={handleChange}
-              placeholder="linkedin.com/in/yourprofile"
+              placeholder="https://linkedin.com/in/yourprofile"
+              required
             />
+          </div>
+
+          <div className="form-group privacy-section">
+            <label>Contact Details Visibility *</label>
+            <p className="privacy-description">
+              Choose who can see your phone number and email
+            </p>
+            <div className="radio-options">
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="contactVisibility"
+                  value="PUBLIC"
+                  checked={formData.contactVisibility === "PUBLIC"}
+                  onChange={handleChange}
+                />
+                <span className="radio-label">
+                  🌐 <strong>Public</strong> - All users can see my contact
+                  details
+                </span>
+              </label>
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="contactVisibility"
+                  value="ADMIN_ONLY"
+                  checked={formData.contactVisibility === "ADMIN_ONLY"}
+                  onChange={handleChange}
+                />
+                <span className="radio-label">
+                  🔒 <strong>Admin Only</strong> - Only admins can see my
+                  contact details
+                </span>
+              </label>
+            </div>
           </div>
         </div>
       )}
@@ -518,6 +580,9 @@ function Register() {
   return (
     <div className="auth-page">
       <div className="auth-container">
+        <Link to="/" className="back-to-home">
+          <FiArrowLeft /> Back to Home
+        </Link>
         <div className="auth-header">
           <h1>Create Account</h1>
           <p>Join GCT Placement Community</p>

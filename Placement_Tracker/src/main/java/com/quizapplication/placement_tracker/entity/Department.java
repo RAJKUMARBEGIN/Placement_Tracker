@@ -1,54 +1,48 @@
 package com.quizapplication.placement_tracker.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.List;
 
-@Entity
-@Table(name = "departments")
+@Document(collection = "departments")
 public class Department {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false, unique = true)
+    @Indexed(unique = true)
     private String departmentName;
 
-    @Column(nullable = false, unique = true)
+    @Indexed(unique = true)
     private String departmentCode;
 
-    @Column(length = 500)
     private String description;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     private DepartmentGroup departmentGroup;
 
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<InterviewExperience> interviewExperiences;
+    private List<String> interviewExperienceIds;
 
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<User> users;
+    private List<String> userIds;
 
     public Department() {
     }
 
-    public Department(Long id, String departmentName, String description, List<InterviewExperience> interviewExperiences) {
+    public Department(String id, String departmentName, String description) {
         this.id = id;
         this.departmentName = departmentName;
         this.description = description;
-        this.interviewExperiences = interviewExperiences;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -84,19 +78,19 @@ public class Department {
         this.departmentGroup = departmentGroup;
     }
 
-    public List<InterviewExperience> getInterviewExperiences() {
-        return interviewExperiences;
+    public List<String> getInterviewExperienceIds() {
+        return interviewExperienceIds;
     }
 
-    public void setInterviewExperiences(List<InterviewExperience> interviewExperiences) {
-        this.interviewExperiences = interviewExperiences;
+    public void setInterviewExperienceIds(List<String> interviewExperienceIds) {
+        this.interviewExperienceIds = interviewExperienceIds;
     }
 
-    public List<User> getUsers() {
-        return users;
+    public List<String> getUserIds() {
+        return userIds;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setUserIds(List<String> userIds) {
+        this.userIds = userIds;
     }
 }

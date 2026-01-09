@@ -1,82 +1,75 @@
 package com.quizapplication.placement_tracker.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "users")
+@Document(collection = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false, unique = true)
+    @Indexed(unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private String fullName;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department department;
+    private String departmentId;
 
-    @Column
     private String rollNumber;
 
-    @Column
     private Integer yearOfStudy;
 
-    @Column
     private Integer graduationYear;
 
-    @Column
     private String phoneNumber;
 
-    @Column
     private String linkedinProfile;
 
     // For mentors - company they got placed in
-    @Column
     private String placedCompany;
 
-    @Column
     private String placedPosition;
 
-    @Column
     private Integer placementYear;
 
-    @Column(nullable = false)
+    // Location/Place of the mentor
+    private String location;
+
+    // Contact visibility: "PUBLIC" (everyone can see), "ADMIN_ONLY" (only admins)
+    private String contactVisibility = "PUBLIC";
+
+    // Mentor approval status - mentors need admin approval to be visible
+    private Boolean isApproved = false;
+
+    // Unique token for email-based approval
+    private String approvalToken;
+
     private LocalDateTime createdAt;
 
-    @Column
     private LocalDateTime lastLogin;
 
-    @Column(nullable = false)
     private Boolean isActive = true;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
 
     // Constructors
     public User() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -112,12 +105,12 @@ public class User {
         this.role = role;
     }
 
-    public Department getDepartment() {
-        return department;
+    public String getDepartmentId() {
+        return departmentId;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
+    public void setDepartmentId(String departmentId) {
+        this.departmentId = departmentId;
     }
 
     public String getRollNumber() {
@@ -206,5 +199,37 @@ public class User {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getContactVisibility() {
+        return contactVisibility;
+    }
+
+    public void setContactVisibility(String contactVisibility) {
+        this.contactVisibility = contactVisibility;
+    }
+
+    public Boolean getIsApproved() {
+        return isApproved;
+    }
+
+    public void setIsApproved(Boolean isApproved) {
+        this.isApproved = isApproved;
+    }
+
+    public String getApprovalToken() {
+        return approvalToken;
+    }
+
+    public void setApprovalToken(String approvalToken) {
+        this.approvalToken = approvalToken;
     }
 }

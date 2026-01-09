@@ -83,6 +83,135 @@
   margin: 0;
 }
 
+.pending-stat .stat-value {
+  color: #f59e0b;
+}
+
+/* Pending Mentors Section */
+.pending-mentors-section {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  border-left: 4px solid #f59e0b;
+}
+
+.pending-mentors-section .section-header h2 {
+  color: #f59e0b;
+}
+
+.pending-count {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pending-mentors-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pending-mentor-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #fffbeb;
+  border-radius: 12px;
+  border: 1px solid #fcd34d;
+  transition: all 0.2s ease;
+}
+
+.pending-mentor-card:hover {
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+.pending-mentor-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pending-mentor-info .mentor-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.pending-mentor-info .mentor-details h4 {
+  margin: 0 0 4px 0;
+  color: #1e293b;
+  font-size: 16px;
+}
+
+.pending-mentor-info .mentor-email {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.pending-mentor-info .mentor-company {
+  margin: 4px 0 0 0;
+  color: #0ea5e9;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pending-mentor-info .mentor-dept {
+  margin: 2px 0 0 0;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.pending-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-approve {
+  padding: 10px 20px;
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-approve:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+}
+
+.btn-reject {
+  padding: 10px 20px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reject:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
 .mentors-section {
   background: white;
   padding: 25px;
@@ -376,5 +505,20 @@
 
   .dashboard-stats {
     grid-template-columns: 1fr;
+  }
+
+  .pending-mentor-card {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .pending-mentor-info {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .pending-actions {
+    justify-content: center;
   }
 }

@@ -1,38 +1,31 @@
 package com.quizapplication.placement_tracker.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "placement_experiences")
+@Document(collection = "placement_experiences")
 public class PlacementExperience {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     // ============ STUDENT INFO ============
-    @Column(nullable = false)
     private String studentName;
 
-    @Column(nullable = false)
     private String rollNumber;
 
-    @Column(nullable = false)
     private String department;
 
-    @Column(nullable = false)
     private String personalEmail;
 
     private String contactNumber;
 
     // ============ COMPANY INFO ============
-    @Column(nullable = false)
     private String companyName;
 
     private String companyType; // IT, Core, etc.
 
-    @Column
     private Integer placementYear; // Year when student was placed
 
     private String salary; // e.g., "15000(Intern Stipend) + 8 LPA(FTE)"
@@ -44,55 +37,40 @@ public class PlacementExperience {
     private String bondDetails;
 
     // ============ SELECTION PROCESS ============
-    @Column(nullable = false)
     private Integer totalRounds;
 
     // Store rounds as JSON string - each round contains detailed info
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
     private String roundsJson; // JSON array of round objects
 
     // ============ OVERALL SUMMARY ============
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
     private String overallExperience;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
     private String generalTips;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
     private String areasToPrepareFinal;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
     private String suggestedResources;
 
     // ============ STATUS ============
-    @Column(nullable = false)
     private String finalResult; // SELECTED, REJECTED, PENDING
 
-    @Column(nullable = false)
     private LocalDateTime submittedAt;
 
     private String academicYear; // e.g., "2025-26"
 
-    @PrePersist
-    protected void onCreate() {
-        submittedAt = LocalDateTime.now();
-    }
-
     // ============ CONSTRUCTORS ============
     public PlacementExperience() {
+        if (submittedAt == null) {
+            submittedAt = LocalDateTime.now();
+        }
     }
 
     // ============ GETTERS AND SETTERS ============
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

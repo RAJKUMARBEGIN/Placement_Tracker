@@ -15,17 +15,38 @@ import {
   FiEdit2,
   FiTrash2,
   FiDownload,
+  FiFileText,
+  FiList,
+  FiHelpCircle,
+  FiLink,
+  FiCheckCircle,
+  FiXCircle,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { experienceAPI } from "../services/api";
+import { placementAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import jsPDF from "jspdf";
 import "./ExperienceDetail.css";
 
 const ExperienceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user, isAdmin } = useAuth();
   const [experience, setExperience] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Check if current user is the author of this experience
+  const isAuthor = () => {
+    if (!user || !experience) return false;
+    // Match by email (personalEmail in experience vs user's email)
+    return (
+      user.email === experience.personalEmail ||
+      user.collegeEmail === experience.personalEmail
+    );
+  };
+
+  // Can edit/delete if user is author or admin
+  const canModify = () => isAuthor() || isAdmin();
 
   useEffect(() => {
     fetchExperience();
@@ -33,9 +54,10 @@ const ExperienceDetail = () => {
 
   const fetchExperience = async () => {
     try {
-      const response = await experienceAPI.getById(id);
+      const response = await placementAPI.getById(id);
       setExperience(response.data);
     } catch (error) {
+      console.error("Fetch error:", error);
       toast.error("Failed to fetch experience");
       navigate("/experiences");
     } finally {
@@ -46,7 +68,7 @@ const ExperienceDetail = () => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this experience?")) {
       try {
-        await experienceAPI.delete(id);
+        await placementAPI.delete(id);
         toast.success("Experience deleted successfully!");
         navigate("/experiences");
       } catch (error) {
@@ -63,65 +85,367 @@ const ExperienceDetail = () => {
     const maxWidth = pageWidth - 2 * margin;
     let yPosition = margin;
 
+    // Parse rounds from JSON
+    let pdfRounds = [];
+    try {
+      if (experience.roundsJson) {
+        pdfRounds = JSON.parse(experience.roundsJson);
+      }
+    } catch (e) {
+      console.error("Error parsing rounds for PDF:", e);
+    }
+
+    // Helper function to check page break
+    const checkPageBreak = (neededHeight = 20) => {
+      if (yPosition > pageHeight - margin - neededHeight) {
+        pdf.addPage();
+        yPosition = margin;
+      }
+    };
+
     // Helper function to add text with word wrap
-    const addText = (text, fontSize = 12, isBold = false) => {
+    const addText = (
+      text,
+      fontSize = 12,
+      isBold = false,
+      color = [0, 0, 0]
+    ) => {
+      checkPageBreak();
       pdf.setFontSize(fontSize);
+      pdf.setTextColor(color[0], color[1], color[2]);
       if (isBold) pdf.setFont(undefined, "bold");
       else pdf.setFont(undefined, "normal");
 
-      const lines = pdf.splitTextToSize(text, maxWidth);
+      const lines = pdf.splitTextToSize(String(text || "N/A"), maxWidth);
       lines.forEach((line) => {
-        if (yPosition > pageHeight - margin) {
-          pdf.addPage();
-          yPosition = margin;
-        }
+        checkPageBreak();
         pdf.text(line, margin, yPosition);
         yPosition += fontSize * 0.5;
       });
-      yPosition += 5;
+      yPosition += 3;
     };
 
-    // Title
-    addText(`${experience.companyName} - ${experience.position}`, 18, true);
-    yPosition += 5;
+    // Helper function to add section header
+    const addSectionHeader = (title) => {
+      checkPageBreak(25);
+      yPosition += 5;
+      pdf.setFillColor(37, 99, 235);
+      pdf.rect(margin, yPosition - 5, maxWidth, 10, "F");
+      pdf.setFontSize(12);
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont(undefined, "bold");
+      pdf.text(title, margin + 5, yPosition + 2);
+      yPosition += 15;
+      pdf.setTextColor(0, 0, 0);
+    };
 
-    // Basic Info
-    addText(`Student: ${experience.studentName}`, 12);
-    addText(`Department: ${experience.departmentName}`, 12);
-    addText(`Year: ${experience.yearOfPlacement}`, 12);
-    addText(`Total Rounds: ${experience.totalRounds}`, 12);
-    yPosition += 5;
+    // Helper function to add label-value pair
+    const addLabelValue = (label, value) => {
+      checkPageBreak();
+      pdf.setFontSize(10);
+      pdf.setFont(undefined, "bold");
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(label + ":", margin, yPosition);
+      pdf.setFont(undefined, "normal");
+      pdf.setTextColor(0, 0, 0);
+      pdf.text(String(value || "N/A"), margin + 45, yPosition);
+      yPosition += 7;
+    };
 
-    // Interview Details
-    addText("Interview Rounds:", 14, true);
-    addText(experience.roundsDescription || "N/A", 11);
-    yPosition += 5;
+    // ============ TITLE ============
+    pdf.setFillColor(15, 23, 42);
+    pdf.rect(0, 0, pageWidth, 45, "F");
+    pdf.setFontSize(22);
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont(undefined, "bold");
+    pdf.text(experience.companyName || "Company", margin, 25);
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, "normal");
+    pdf.text(
+      `Placement Experience - ${
+        experience.placementYear || new Date().getFullYear()
+      }`,
+      margin,
+      38
+    );
+    yPosition = 60;
 
-    addText("Questions Asked:", 14, true);
-    addText(experience.questionsAsked || "N/A", 11);
-    yPosition += 5;
+    // ============ STUDENT INFORMATION ============
+    addSectionHeader("STUDENT INFORMATION");
+    addLabelValue("Name", experience.studentName);
+    addLabelValue("Roll Number", experience.rollNumber);
+    addLabelValue("Department", experience.department);
+    addLabelValue("Email", experience.personalEmail);
+    addLabelValue("Contact", experience.contactNumber);
+    addLabelValue("Placement Year", experience.placementYear);
 
-    addText("Problems Solved:", 14, true);
-    addText(experience.problemsSolved || "N/A", 11);
-    yPosition += 5;
+    // ============ OFFER DETAILS ============
+    addSectionHeader("OFFER DETAILS");
+    addLabelValue("Company", experience.companyName);
+    addLabelValue("Company Type", experience.companyType);
+    addLabelValue("Salary/CTC", experience.salary);
+    addLabelValue("Intern Offered", experience.internOffered ? "Yes" : "No");
+    addLabelValue(
+      "Bond",
+      experience.hasBond ? experience.bondDetails || "Yes" : "No"
+    );
+    addLabelValue("Total Rounds", experience.totalRounds);
+    addLabelValue("Final Result", experience.finalResult);
 
-    addText("Cracking Strategy:", 14, true);
-    addText(experience.crackingStrategy || "N/A", 11);
-    yPosition += 5;
+    // ============ INTERVIEW ROUNDS ============
+    if (pdfRounds.length > 0) {
+      addSectionHeader(`INTERVIEW ROUNDS (${pdfRounds.length})`);
 
-    addText("Preparation Details:", 14, true);
-    addText(experience.preparationDetails || "N/A", 11);
-    yPosition += 5;
+      pdfRounds.forEach((round, idx) => {
+        checkPageBreak(40);
 
-    if (experience.inPersonInterviewTips) {
-      addText("In-Person Interview Tips:", 14, true);
-      addText(experience.inPersonInterviewTips, 11);
+        // Round header
+        pdf.setFillColor(241, 245, 249);
+        pdf.rect(margin, yPosition - 3, maxWidth, 8, "F");
+        pdf.setFontSize(11);
+        pdf.setFont(undefined, "bold");
+        pdf.setTextColor(37, 99, 235);
+        pdf.text(
+          `Round ${idx + 1}: ${round.roundName || "Untitled"}`,
+          margin + 3,
+          yPosition + 2
+        );
+        yPosition += 12;
+
+        pdf.setTextColor(0, 0, 0);
+        addLabelValue("Platform", round.platform);
+        addLabelValue("Duration", round.duration);
+        addLabelValue("Cleared", round.cleared ? "Yes" : "No");
+
+        if (round.roundDetails) {
+          checkPageBreak(20);
+          pdf.setFontSize(10);
+          pdf.setFont(undefined, "bold");
+          pdf.text("Round Details:", margin, yPosition);
+          yPosition += 5;
+          pdf.setFont(undefined, "normal");
+          const detailLines = pdf.splitTextToSize(
+            round.roundDetails,
+            maxWidth - 5
+          );
+          detailLines.forEach((line) => {
+            checkPageBreak();
+            pdf.text(line, margin + 5, yPosition);
+            yPosition += 5;
+          });
+          yPosition += 3;
+        }
+
+        if (round.topicsCovered) {
+          checkPageBreak(20);
+          pdf.setFontSize(10);
+          pdf.setFont(undefined, "bold");
+          pdf.text("Topics Covered:", margin, yPosition);
+          yPosition += 5;
+          pdf.setFont(undefined, "normal");
+          const topicLines = pdf.splitTextToSize(
+            round.topicsCovered,
+            maxWidth - 5
+          );
+          topicLines.forEach((line) => {
+            checkPageBreak();
+            pdf.text(line, margin + 5, yPosition);
+            yPosition += 5;
+          });
+          yPosition += 3;
+        }
+
+        if (round.comments) {
+          checkPageBreak(20);
+          pdf.setFontSize(10);
+          pdf.setFont(undefined, "bold");
+          pdf.text("Tips & Comments:", margin, yPosition);
+          yPosition += 5;
+          pdf.setFont(undefined, "normal");
+          const commentLines = pdf.splitTextToSize(
+            round.comments,
+            maxWidth - 5
+          );
+          commentLines.forEach((line) => {
+            checkPageBreak();
+            pdf.text(line, margin + 5, yPosition);
+            yPosition += 5;
+          });
+          yPosition += 3;
+        }
+
+        if (round.studyLinks) {
+          checkPageBreak(20);
+          pdf.setFontSize(10);
+          pdf.setFont(undefined, "bold");
+          pdf.text("Study Resources:", margin, yPosition);
+          yPosition += 5;
+          pdf.setFont(undefined, "normal");
+          const links = round.studyLinks.split("\n").filter((l) => l.trim());
+          links.forEach((link) => {
+            checkPageBreak();
+            pdf.setTextColor(37, 99, 235);
+            pdf.text("• " + link.trim(), margin + 5, yPosition);
+            yPosition += 5;
+          });
+          pdf.setTextColor(0, 0, 0);
+          yPosition += 3;
+        }
+
+        // Questions if any
+        if (
+          round.questions &&
+          round.questions.length > 0 &&
+          round.questions.some((q) => q.question)
+        ) {
+          checkPageBreak(20);
+          pdf.setFontSize(10);
+          pdf.setFont(undefined, "bold");
+          pdf.text("Questions Asked:", margin, yPosition);
+          yPosition += 5;
+          pdf.setFont(undefined, "normal");
+
+          round.questions
+            .filter((q) => q.question)
+            .forEach((q, qIdx) => {
+              checkPageBreak(15);
+              if (q.domain) {
+                pdf.setTextColor(124, 58, 237);
+                pdf.text(`[${q.domain}]`, margin + 5, yPosition);
+                yPosition += 5;
+              }
+              pdf.setTextColor(0, 0, 0);
+              const qLines = pdf.splitTextToSize(
+                `Q${qIdx + 1}: ${q.question}`,
+                maxWidth - 10
+              );
+              qLines.forEach((line) => {
+                checkPageBreak();
+                pdf.text(line, margin + 5, yPosition);
+                yPosition += 5;
+              });
+              if (q.approach) {
+                pdf.setTextColor(100, 100, 100);
+                const aLines = pdf.splitTextToSize(
+                  `Approach: ${q.approach}`,
+                  maxWidth - 10
+                );
+                aLines.forEach((line) => {
+                  checkPageBreak();
+                  pdf.text(line, margin + 10, yPosition);
+                  yPosition += 5;
+                });
+              }
+              pdf.setTextColor(0, 0, 0);
+              yPosition += 3;
+            });
+        }
+
+        yPosition += 5;
+      });
+    }
+
+    // ============ OVERALL SUMMARY ============
+    addSectionHeader("OVERALL SUMMARY & TIPS");
+
+    if (experience.overallExperience) {
+      checkPageBreak(20);
+      pdf.setFontSize(10);
+      pdf.setFont(undefined, "bold");
+      pdf.text("Overall Experience:", margin, yPosition);
+      yPosition += 5;
+      pdf.setFont(undefined, "normal");
+      const expLines = pdf.splitTextToSize(
+        experience.overallExperience,
+        maxWidth - 5
+      );
+      expLines.forEach((line) => {
+        checkPageBreak();
+        pdf.text(line, margin + 5, yPosition);
+        yPosition += 5;
+      });
       yPosition += 5;
     }
 
-    if (experience.resources) {
-      addText("Resources Used:", 14, true);
-      addText(experience.resources, 11);
+    if (experience.generalTips) {
+      checkPageBreak(20);
+      pdf.setFontSize(10);
+      pdf.setFont(undefined, "bold");
+      pdf.text("General Tips:", margin, yPosition);
+      yPosition += 5;
+      pdf.setFont(undefined, "normal");
+      const tipLines = pdf.splitTextToSize(
+        experience.generalTips,
+        maxWidth - 5
+      );
+      tipLines.forEach((line) => {
+        checkPageBreak();
+        pdf.text(line, margin + 5, yPosition);
+        yPosition += 5;
+      });
+      yPosition += 5;
+    }
+
+    if (experience.areasToPrepareFinal) {
+      checkPageBreak(20);
+      pdf.setFontSize(10);
+      pdf.setFont(undefined, "bold");
+      pdf.text("Areas to Prepare:", margin, yPosition);
+      yPosition += 5;
+      pdf.setFont(undefined, "normal");
+      const areaLines = pdf.splitTextToSize(
+        experience.areasToPrepareFinal,
+        maxWidth - 5
+      );
+      areaLines.forEach((line) => {
+        checkPageBreak();
+        pdf.text(line, margin + 5, yPosition);
+        yPosition += 5;
+      });
+      yPosition += 5;
+    }
+
+    if (experience.suggestedResources) {
+      checkPageBreak(20);
+      pdf.setFontSize(10);
+      pdf.setFont(undefined, "bold");
+      pdf.text("Suggested Resources:", margin, yPosition);
+      yPosition += 5;
+      pdf.setFont(undefined, "normal");
+      const resLines = pdf.splitTextToSize(
+        experience.suggestedResources,
+        maxWidth - 5
+      );
+      resLines.forEach((line) => {
+        checkPageBreak();
+        pdf.text(line, margin + 5, yPosition);
+        yPosition += 5;
+      });
+      yPosition += 5;
+    }
+
+    // ============ CONTACT INFORMATION ============
+    if (experience.personalEmail || experience.contactNumber) {
+      addSectionHeader("CONTACT INFORMATION");
+      addLabelValue("Email", experience.personalEmail);
+      addLabelValue("Phone", experience.contactNumber);
+      if (experience.linkedinProfile) {
+        addLabelValue("LinkedIn", experience.linkedinProfile);
+      }
+    }
+
+    // ============ FOOTER ============
+    const totalPages = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(150, 150, 150);
+      pdf.text(
+        `Generated from PlaceTrack | Page ${i} of ${totalPages} | ${new Date().toLocaleDateString()}`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: "center" }
+      );
     }
 
     // Save PDF
@@ -153,6 +477,16 @@ const ExperienceDetail = () => {
     );
   }
 
+  // Parse rounds from JSON
+  let rounds = [];
+  try {
+    if (experience.roundsJson) {
+      rounds = JSON.parse(experience.roundsJson);
+    }
+  } catch (e) {
+    console.error("Error parsing rounds:", e);
+  }
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -163,26 +497,29 @@ const ExperienceDetail = () => {
 
   return (
     <div className="experience-detail">
-      {/* Back Button */}
-      <Link to="/experiences" className="back-link">
-        <FiArrowLeft />
-        Back to Experiences
-      </Link>
-
-      {/* Header Section */}
+      {/* Header Section with Back Button */}
       <div className="detail-header">
+        <button
+          className="back-link-hero"
+          onClick={() => window.history.back()}
+        >
+          <FiArrowLeft /> Back
+        </button>
         <div className="header-info">
           <div className="company-badge">{experience.companyName}</div>
-          <h1>{experience.position}</h1>
+          <h1>
+            {experience.placedPosition || experience.companyType || "Interview"}
+          </h1>
           <div className="header-meta">
             <span>
               <FiUser /> {experience.studentName}
             </span>
             <span>
-              <FiMapPin /> {experience.departmentName}
+              <FiMapPin /> {experience.department}
             </span>
             <span>
-              <FiCalendar /> {experience.yearOfPlacement}
+              <FiCalendar />{" "}
+              {experience.placementYear || new Date().getFullYear()}
             </span>
             <span>
               <FiLayers /> {experience.totalRounds} Rounds
@@ -194,122 +531,294 @@ const ExperienceDetail = () => {
             <FiDownload />
             Download PDF
           </button>
-          <button className="action-btn delete" onClick={handleDelete}>
-            <FiTrash2 />
-            Delete
-          </button>
+          {canModify() && (
+            <button className="action-btn delete" onClick={handleDelete}>
+              <FiTrash2 />
+              Delete
+            </button>
+          )}
         </div>
       </div>
 
       {/* Main Content */}
       <div className="detail-content">
-        {/* Rounds Description */}
+        {/* Student Info Section */}
         <section className="content-section">
           <div className="section-header">
-            <FiLayers className="section-icon" />
-            <h2>Interview Rounds</h2>
+            <FiUser className="section-icon" />
+            <h2>Student Information</h2>
           </div>
-          <div className="section-body">
-            <p>{experience.roundsDescription}</p>
+          <div className="section-body info-grid">
+            <div className="info-item">
+              <strong>Name:</strong> {experience.studentName}
+            </div>
+            <div className="info-item">
+              <strong>Roll Number:</strong> {experience.rollNumber || "N/A"}
+            </div>
+            <div className="info-item">
+              <strong>Department:</strong> {experience.department}
+            </div>
+            <div className="info-item">
+              <strong>Placement Year:</strong>{" "}
+              {experience.placementYear || new Date().getFullYear()}
+            </div>
           </div>
         </section>
 
-        {/* Questions Asked */}
-        <section className="content-section">
-          <div className="section-header">
-            <FiMessageCircle className="section-icon" />
-            <h2>Questions Asked</h2>
-          </div>
-          <div className="section-body">
-            <p>{experience.questionsAsked}</p>
-          </div>
-        </section>
-
-        {/* Problems Solved */}
+        {/* Salary & Offer Details */}
         <section className="content-section">
           <div className="section-header">
             <FiTarget className="section-icon" />
-            <h2>Problems Solved</h2>
+            <h2>Offer Details</h2>
           </div>
-          <div className="section-body">
-            <p>{experience.problemsSolved}</p>
+          <div className="section-body info-grid">
+            <div className="info-item">
+              <strong>Salary:</strong> {experience.salary || "N/A"}
+            </div>
+            <div className="info-item">
+              <strong>Company Type:</strong> {experience.companyType || "N/A"}
+            </div>
+            <div className="info-item">
+              <strong>Intern Offered:</strong>{" "}
+              {experience.internOffered ? "Yes" : "No"}
+            </div>
+            <div className="info-item">
+              <strong>Bond:</strong>{" "}
+              {experience.hasBond ? experience.bondDetails || "Yes" : "No"}
+            </div>
+            <div className="info-item result-item">
+              <strong>Result:</strong>
+              <span
+                className={`result-badge ${experience.finalResult?.toLowerCase()}`}
+              >
+                {experience.finalResult || "Pending"}
+              </span>
+            </div>
           </div>
         </section>
 
-        {/* Cracking Strategy */}
-        <section className="content-section highlight">
-          <div className="section-header">
-            <FiTarget className="section-icon" />
-            <h2>Cracking Strategy</h2>
-          </div>
-          <div className="section-body">
-            <p>{experience.crackingStrategy}</p>
-          </div>
-        </section>
-
-        {/* Preparation Details */}
-        <section className="content-section">
-          <div className="section-header">
-            <FiBook className="section-icon" />
-            <h2>Preparation Details</h2>
-          </div>
-          <div className="section-body">
-            <p>{experience.preparationDetails}</p>
-          </div>
-        </section>
-
-        {/* In-Person Interview Tips */}
-        {experience.inPersonInterviewTips && (
-          <section className="content-section">
+        {/* Interview Rounds Section */}
+        {rounds.length > 0 && (
+          <section className="content-section rounds-section">
             <div className="section-header">
-              <FiUser className="section-icon" />
-              <h2>In-Person Interview Tips</h2>
+              <FiLayers className="section-icon" />
+              <h2>Interview Rounds ({rounds.length})</h2>
             </div>
             <div className="section-body">
-              <p>{experience.inPersonInterviewTips}</p>
+              <div className="rounds-list">
+                {rounds.map((round, idx) => (
+                  <div key={idx} className="round-card">
+                    <div className="round-header">
+                      <span className="round-number">
+                        Round {round.roundNumber || idx + 1}
+                      </span>
+                      <h3>{round.roundName || "Untitled Round"}</h3>
+                      <div className="round-badges">
+                        <span className="badge platform">{round.platform}</span>
+                        {round.duration && (
+                          <span className="badge duration">
+                            {round.duration}
+                          </span>
+                        )}
+                        <span
+                          className={`badge ${
+                            round.cleared ? "cleared" : "not-cleared"
+                          }`}
+                        >
+                          {round.cleared ? (
+                            <>
+                              <FiCheckCircle /> Cleared
+                            </>
+                          ) : (
+                            <>
+                              <FiXCircle /> Not Cleared
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+
+                    {round.roundDetails && (
+                      <div className="round-section">
+                        <h4>
+                          <FiFileText className="section-icon-small" /> Round
+                          Details
+                        </h4>
+                        <p>{round.roundDetails}</p>
+                      </div>
+                    )}
+
+                    {round.topicsCovered && (
+                      <div className="round-section">
+                        <h4>
+                          <FiList className="section-icon-small" /> Topics
+                          Covered
+                        </h4>
+                        <p>{round.topicsCovered}</p>
+                      </div>
+                    )}
+
+                    {round.comments && (
+                      <div className="round-section">
+                        <h4>
+                          <FiMessageCircle className="section-icon-small" />{" "}
+                          Tips & Comments
+                        </h4>
+                        <p>{round.comments}</p>
+                      </div>
+                    )}
+
+                    {round.studyLinks && (
+                      <div className="round-section">
+                        <h4>
+                          <FiLink className="section-icon-small" /> Study
+                          Resources
+                        </h4>
+                        <div className="study-links">
+                          {round.studyLinks
+                            .split("\n")
+                            .filter((link) => link.trim())
+                            .map((link, linkIdx) => (
+                              <a
+                                key={linkIdx}
+                                href={
+                                  link.trim().startsWith("http")
+                                    ? link.trim()
+                                    : `https://${link.trim()}`
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="study-link"
+                              >
+                                {link.trim()}
+                              </a>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {round.questions &&
+                      round.questions.length > 0 &&
+                      round.questions.some((q) => q.question) && (
+                        <div className="round-section">
+                          <h4>
+                            <FiHelpCircle className="section-icon-small" />{" "}
+                            Questions Asked
+                          </h4>
+                          <div className="questions-list">
+                            {round.questions
+                              .filter((q) => q.question)
+                              .map((q, qIdx) => (
+                                <div key={qIdx} className="question-item">
+                                  {q.domain && (
+                                    <span className="question-domain">
+                                      {q.domain}
+                                    </span>
+                                  )}
+                                  <p className="question-text">{q.question}</p>
+                                  {q.approach && (
+                                    <p className="question-approach">
+                                      <strong>Approach:</strong> {q.approach}
+                                    </p>
+                                  )}
+                                  {q.references && (
+                                    <p className="question-refs">
+                                      <strong>References:</strong>{" "}
+                                      {q.references}
+                                    </p>
+                                  )}
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         )}
 
-        {/* Resources */}
-        {experience.resources && (
+        {/* Overall Experience */}
+        {experience.overallExperience && (
+          <section className="content-section highlight">
+            <div className="section-header">
+              <FiBook className="section-icon" />
+              <h2>Overall Experience</h2>
+            </div>
+            <div className="section-body">
+              <p>{experience.overallExperience}</p>
+            </div>
+          </section>
+        )}
+
+        {/* General Tips */}
+        {experience.generalTips && (
+          <section className="content-section">
+            <div className="section-header">
+              <FiMessageCircle className="section-icon" />
+              <h2>General Tips</h2>
+            </div>
+            <div className="section-body">
+              <p>{experience.generalTips}</p>
+            </div>
+          </section>
+        )}
+
+        {/* Areas to Prepare */}
+        {experience.areasToPrepareFinal && (
+          <section className="content-section">
+            <div className="section-header">
+              <FiTarget className="section-icon" />
+              <h2>Areas to Prepare</h2>
+            </div>
+            <div className="section-body">
+              <p>{experience.areasToPrepareFinal}</p>
+            </div>
+          </section>
+        )}
+
+        {/* Suggested Resources */}
+        {experience.suggestedResources && (
           <section className="content-section">
             <div className="section-header">
               <FiBook className="section-icon" />
-              <h2>Resources Used</h2>
+              <h2>Suggested Resources</h2>
             </div>
             <div className="section-body">
-              <p>{experience.resources}</p>
+              <p>{experience.suggestedResources}</p>
             </div>
           </section>
         )}
       </div>
 
       {/* Contact Card */}
-      {experience.willingToMentor && (
+      {(experience.personalEmail ||
+        experience.contactNumber ||
+        experience.linkedinProfile) && (
         <div className="mentor-card">
           <div className="mentor-header">
-            <span className="mentor-badge">✨ Available to Mentor</span>
-            <h3>{experience.studentName} is willing to help!</h3>
-            <p>Connect with them for guidance and mentorship</p>
+            <span className="mentor-badge">✨ Connect with Them</span>
+            <h3>{experience.studentName}</h3>
+            <p>Get in touch for guidance and mentorship</p>
           </div>
           <div className="contact-info">
-            {experience.contactEmail && (
+            {experience.personalEmail && (
               <a
-                href={`mailto:${experience.contactEmail}`}
+                href={`mailto:${experience.personalEmail}`}
                 className="contact-item"
               >
                 <FiMail />
-                {experience.contactEmail}
+                {experience.personalEmail}
               </a>
             )}
-            {experience.contactPhone && (
+            {experience.contactNumber && (
               <a
-                href={`tel:${experience.contactPhone}`}
+                href={`tel:${experience.contactNumber}`}
                 className="contact-item"
               >
                 <FiPhone />
-                {experience.contactPhone}
+                {experience.contactNumber}
               </a>
             )}
             {experience.linkedinProfile && (

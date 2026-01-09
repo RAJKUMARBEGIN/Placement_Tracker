@@ -250,23 +250,49 @@ function StudentDashboard() {
       { field: "rollNumber", label: "Roll Number" },
       { field: "department", label: "Department" },
       { field: "personalEmail", label: "Personal Email" },
+      { field: "contactNumber", label: "Contact Number" },
       { field: "companyName", label: "Company Name" },
+      { field: "companyType", label: "Company Type" },
+      { field: "salary", label: "Salary" },
+      { field: "finalResult", label: "Final Result" },
+      { field: "overallExperience", label: "Overall Experience" },
+      { field: "generalTips", label: "General Tips" },
+      { field: "areasToPrepareFinal", label: "Areas to Prepare" },
+      { field: "suggestedResources", label: "Suggested Resources" },
     ];
 
     for (const { field, label } of requiredFields) {
-      if (!formData[field] || formData[field].trim() === "") {
+      if (!formData[field] || formData[field].toString().trim() === "") {
         toast.error(`${label} is required`);
         return false;
       }
     }
 
-    // Validate at least one round has a name
+    // Validate each round has required fields
     for (let i = 0; i < formData.rounds.length; i++) {
-      if (
-        !formData.rounds[i].roundName ||
-        formData.rounds[i].roundName.trim() === ""
-      ) {
+      const round = formData.rounds[i];
+      if (!round.roundName || round.roundName.trim() === "") {
         toast.error(`Round ${i + 1} name is required`);
+        return false;
+      }
+      if (!round.roundDetails || round.roundDetails.trim() === "") {
+        toast.error(`Round ${i + 1} details are required`);
+        return false;
+      }
+      if (!round.topicsCovered || round.topicsCovered.trim() === "") {
+        toast.error(`Round ${i + 1} topics covered is required`);
+        return false;
+      }
+      if (!round.duration || round.duration.trim() === "") {
+        toast.error(`Round ${i + 1} duration is required`);
+        return false;
+      }
+      if (!round.comments || round.comments.trim() === "") {
+        toast.error(`Round ${i + 1} comments/tips are required`);
+        return false;
+      }
+      if (!round.studyLinks || round.studyLinks.trim() === "") {
+        toast.error(`Round ${i + 1} study links are required`);
         return false;
       }
     }
@@ -507,12 +533,13 @@ function StudentDashboard() {
                     </div>
                   </div>
                   <div className="form-group">
-                    <label>Contact Number</label>
+                    <label>Contact Number *</label>
                     <input
                       name="contactNumber"
                       value={formData.contactNumber}
                       onChange={handleChange}
                       placeholder="e.g., 9876543210"
+                      required
                     />
                   </div>
 
@@ -529,11 +556,12 @@ function StudentDashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>Company Type</label>
+                      <label>Company Type *</label>
                       <select
                         name="companyType"
                         value={formData.companyType}
                         onChange={handleChange}
+                        required
                       >
                         <option value="IT">IT</option>
                         <option value="Core">Core</option>
@@ -546,12 +574,13 @@ function StudentDashboard() {
                   </div>
                   <div className="form-row">
                     <div className="form-group">
-                      <label>Salary (CTC)</label>
+                      <label>Salary (CTC) *</label>
                       <input
                         name="salary"
                         value={formData.salary}
                         onChange={handleChange}
                         placeholder="e.g., 15000(Intern) + 8 LPA(FTE)"
+                        required
                       />
                     </div>
                     <div className="form-group">
@@ -678,7 +707,7 @@ function StudentDashboard() {
                               </select>
                             </div>
                             <div className="form-group">
-                              <label>Duration</label>
+                              <label>Duration *</label>
                               <input
                                 placeholder="e.g., 1 hour, 30 mins"
                                 value={round.duration}
@@ -689,6 +718,7 @@ function StudentDashboard() {
                                     e.target.value
                                   )
                                 }
+                                required
                               />
                             </div>
                           </div>
@@ -753,11 +783,12 @@ function StudentDashboard() {
                             }
                             placeholder="Describe the round process, format, number of questions, cutoff marks, time given, difficulty level..."
                             rows={4}
+                            required
                           />
                         </div>
 
                         <div className="form-group">
-                          <label>Topics/Areas Covered</label>
+                          <label>Topics/Areas Covered *</label>
                           <textarea
                             value={round.topicsCovered}
                             onChange={(e) =>
@@ -769,11 +800,12 @@ function StudentDashboard() {
                             }
                             placeholder="e.g., Aptitude, Logical Reasoning, DSA, OOP, DBMS, OS, CN, Verbal, Coding..."
                             rows={2}
+                            required
                           />
                         </div>
 
                         <div className="form-group">
-                          <label>Your Comments About This Round</label>
+                          <label>Your Comments About This Round *</label>
                           <textarea
                             value={round.comments}
                             onChange={(e) =>
@@ -785,12 +817,13 @@ function StudentDashboard() {
                             }
                             placeholder="Your experience, tips for this round, time management advice, what worked, what didn't..."
                             rows={3}
+                            required
                           />
                         </div>
 
                         <div className="form-group">
                           <label>
-                            Links to Refer for Study (for this round)
+                            Links to Refer for Study (for this round) *
                           </label>
                           <textarea
                             value={round.studyLinks}
@@ -803,6 +836,7 @@ function StudentDashboard() {
                             }
                             placeholder="Add helpful links separated by new lines:\nhttps://leetcode.com/problems/...\nhttps://geeksforgeeks.org/...\nhttps://youtube.com/watch?v=..."
                             rows={3}
+                            required
                           />
                         </div>
 
@@ -820,147 +854,6 @@ function StudentDashboard() {
                           />
                           <span>I cleared this round</span>
                         </label>
-
-                        <div className="questions-section">
-                          <div className="questions-header">
-                            <h5>Questions Asked in Round {roundIdx + 1}</h5>
-                            <p>
-                              Add specific questions that were asked to help
-                              other students prepare
-                            </p>
-                          </div>
-
-                          {round.questions.map((q, qIdx) => (
-                            <div key={qIdx} className="question-card">
-                              <div className="question-card-header">
-                                <span className="question-number">
-                                  Question {qIdx + 1}
-                                </span>
-                                {round.questions.length > 1 && (
-                                  <button
-                                    type="button"
-                                    className="remove-q-btn"
-                                    onClick={() =>
-                                      removeQuestion(roundIdx, qIdx)
-                                    }
-                                  >
-                                    ✕ Remove
-                                  </button>
-                                )}
-                              </div>
-
-                              <div className="form-group">
-                                <label>Domain/Category</label>
-                                <select
-                                  value={q.domain}
-                                  onChange={(e) =>
-                                    handleQuestionChange(
-                                      roundIdx,
-                                      qIdx,
-                                      "domain",
-                                      e.target.value
-                                    )
-                                  }
-                                >
-                                  <option value="">Select Domain</option>
-                                  <option value="DSA">
-                                    DSA (Data Structures & Algorithms)
-                                  </option>
-                                  <option value="Aptitude">Aptitude</option>
-                                  <option value="Logical Reasoning">
-                                    Logical Reasoning
-                                  </option>
-                                  <option value="Verbal Ability">
-                                    Verbal Ability
-                                  </option>
-                                  <option value="Puzzles">Puzzles</option>
-                                  <option value="OOP">
-                                    OOP (Object Oriented Programming)
-                                  </option>
-                                  <option value="DBMS">DBMS</option>
-                                  <option value="OS">Operating System</option>
-                                  <option value="CN">Computer Networks</option>
-                                  <option value="Core Subject">
-                                    Core Subject
-                                  </option>
-                                  <option value="HR Questions">
-                                    HR Questions
-                                  </option>
-                                  <option value="Coding">
-                                    Coding Challenge
-                                  </option>
-                                  <option value="System Design">
-                                    System Design
-                                  </option>
-                                  <option value="Behavioral">Behavioral</option>
-                                  <option value="Project Discussion">
-                                    Project Discussion
-                                  </option>
-                                  <option value="Other">Other</option>
-                                </select>
-                              </div>
-
-                              <div className="form-group">
-                                <label>Question *</label>
-                                <textarea
-                                  placeholder="Write the exact question or describe the problem..."
-                                  value={q.question}
-                                  onChange={(e) =>
-                                    handleQuestionChange(
-                                      roundIdx,
-                                      qIdx,
-                                      "question",
-                                      e.target.value
-                                    )
-                                  }
-                                  rows={2}
-                                />
-                              </div>
-
-                              <div className="form-group">
-                                <label>Approach/Solution</label>
-                                <textarea
-                                  placeholder="Explain how you solved it or the expected approach..."
-                                  value={q.approach}
-                                  onChange={(e) =>
-                                    handleQuestionChange(
-                                      roundIdx,
-                                      qIdx,
-                                      "approach",
-                                      e.target.value
-                                    )
-                                  }
-                                  rows={3}
-                                />
-                              </div>
-
-                              <div className="form-group">
-                                <label>Reference Links</label>
-                                <textarea
-                                  placeholder="Add helpful links for this question:\nhttps://leetcode.com/problems/...\nhttps://geeksforgeeks.org/..."
-                                  value={q.references}
-                                  onChange={(e) =>
-                                    handleQuestionChange(
-                                      roundIdx,
-                                      qIdx,
-                                      "references",
-                                      e.target.value
-                                    )
-                                  }
-                                  rows={2}
-                                />
-                              </div>
-                            </div>
-                          ))}
-
-                          <button
-                            type="button"
-                            className="add-q-btn"
-                            onClick={() => addQuestion(roundIdx)}
-                          >
-                            + Add Another Question
-                          </button>
-                        </div>
                       </div>
                     ))}
                   </div>
@@ -972,46 +865,50 @@ function StudentDashboard() {
                   <h3>Overall Summary and Tips</h3>
 
                   <div className="form-group">
-                    <label>Overall Experience</label>
+                    <label>Overall Experience *</label>
                     <textarea
                       name="overallExperience"
                       value={formData.overallExperience}
                       onChange={handleChange}
                       placeholder="Describe your overall experience..."
                       rows={4}
+                      required
                     />
                   </div>
 
                   <div className="form-group">
-                    <label>General Tips for Students</label>
+                    <label>General Tips for Students *</label>
                     <textarea
                       name="generalTips"
                       value={formData.generalTips}
                       onChange={handleChange}
                       placeholder="Share tips that helped you..."
                       rows={4}
+                      required
                     />
                   </div>
 
                   <div className="form-group">
-                    <label>Areas to Prepare</label>
+                    <label>Areas to Prepare *</label>
                     <textarea
                       name="areasToPrepareFinal"
                       value={formData.areasToPrepareFinal}
                       onChange={handleChange}
                       placeholder="1. C Programming 2. DSA 3. Aptitude..."
                       rows={3}
+                      required
                     />
                   </div>
 
                   <div className="form-group">
-                    <label>Sites/Books Suggested</label>
+                    <label>Sites/Books Suggested *</label>
                     <textarea
                       name="suggestedResources"
                       value={formData.suggestedResources}
                       onChange={handleChange}
                       placeholder="LeetCode, GeeksforGeeks, Striver..."
                       rows={3}
+                      required
                     />
                   </div>
 

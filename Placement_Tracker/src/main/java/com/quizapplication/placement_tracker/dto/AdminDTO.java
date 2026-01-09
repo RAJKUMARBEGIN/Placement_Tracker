@@ -3,7 +3,7 @@ package com.quizapplication.placement_tracker.dto;
 import java.time.LocalDateTime;
 
 public class AdminDTO {
-    private Long id;
+    private String id;
     private String username;
     private String fullName;
     private String email;
@@ -14,7 +14,7 @@ public class AdminDTO {
     public AdminDTO() {
     }
 
-    public AdminDTO(Long id, String username, String fullName, String email, 
+    public AdminDTO(String id, String username, String fullName, String email, 
                     LocalDateTime createdAt, LocalDateTime lastLogin, Boolean isActive) {
         this.id = id;
         this.username = username;
@@ -26,11 +26,11 @@ public class AdminDTO {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
