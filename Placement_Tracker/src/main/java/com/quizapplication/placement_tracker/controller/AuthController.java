@@ -269,6 +269,78 @@ public class AuthController {
         return ResponseEntity.ok("Password reset successfully");
     }
 
+    @PostMapping("/mentors/send-verification-code")
+    @Operation(summary = "Send verification code to mentor", description = "Send a verification code to mentor's email")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Verification code sent successfully"),
+            @ApiResponse(responseCode = "404", description = "Mentor not found")
+    })
+    public ResponseEntity<Map<String, Object>> sendMentorVerificationCode(@RequestBody SendMentorVerificationCodeDTO sendCodeDTO) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            authService.resendMentorVerificationCode(sendCodeDTO.getEmail());
+            response.put("success", true);
+            response.put("message", "Verification code sent to your email");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @GetMapping("/admin/send-mentor-code")
+    @Operation(summary = "Admin sends verification code to mentor", description = "Admin endpoint to send verification code via email link")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Verification code sent successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid token or request"),
+            @ApiResponse(responseCode = "404", description = "Mentor not found")
+    })
+    public ResponseEntity<String> adminSendMentorCode(
+            @RequestParam String email,
+            @RequestParam String token) {
+        try {
+            authService.adminSendMentorVerificationCode(email, token);
+            return ResponseEntity.ok(
+                "<html><body style='font-family: Arial; text-align: center; padding: 50px;'>" +
+                "<h1 style='color: #22c55e;'>✅ Verification Code Sent Successfully!</h1>" +
+                "<p>A verification code has been sent to the mentor's email address.</p>" +
+                "<p>The mentor can now log in and enter this code to access their dashboard.</p>" +
+                "<a href='http://localhost:3000' style='display: inline-block; margin-top: 20px; padding: 12px 24px; background: #2563eb; color: white; text-decoration: none; border-radius: 8px;'>Go to PlaceTrack</a>" +
+                "</body></html>"
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                "<html><body style='font-family: Arial; text-align: center; padding: 50px;'>" +
+                "<h1 style='color: #ef4444;'>❌ Failed to Send Verification Code</h1>" +
+                "<p>" + e.getMessage() + "</p>" +
+                "<a href='http://localhost:3000' style='display: inline-block; margin-top: 20px; padding: 12px 24px; background: #2563eb; color: white; text-decoration: none; border-radius: 8px;'>Go to PlaceTrack</a>" +
+                "</body></html>"
+            );
+        }
+    }
+
+    @PostMapping("/mentors/verify-code")
+    @Operation(summary = "Verify mentor code", description = "Verify the code sent to mentor's email")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Code verified successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid or expired code")
+    })
+    public ResponseEntity<Map<String, Object>> verifyMentorCode(@RequestBody VerifyMentorCodeDTO verifyCodeDTO) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            UserDTO user = authService.verifyMentorCode(verifyCodeDTO.getEmail(), verifyCodeDTO.getVerificationCode());
+            response.put("success", true);
+            response.put("message", "Email verified successfully");
+            response.put("user", user);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
     @GetMapping("/mentors/approve-via-email")
     @Operation(summary = "Approve mentor via email link", description = "Approve a mentor using the token sent in email")
     public ResponseEntity<String> approveMentorViaEmail(@RequestParam String token) {

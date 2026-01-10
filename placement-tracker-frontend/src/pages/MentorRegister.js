@@ -131,12 +131,9 @@ const MentorRegister = () => {
       };
 
       const response = await authAPI.register(registerData);
-      // Don't log in the mentor - they need admin approval first
-      // Show success message and redirect to home
-      alert(
-        "Registration successful! Your account is pending admin approval. You will receive an email once approved."
-      );
-      navigate("/");
+      // Mentor registered, redirect to verification page
+      toast.success("Registration successful! Your request has been sent to the admin.");
+      navigate("/mentor-verify", { state: { email: formData.email } });
     } catch (err) {
       setError(
         err.response?.data?.message || "Registration failed. Please try again."

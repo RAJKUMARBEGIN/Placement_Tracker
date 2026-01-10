@@ -180,12 +180,14 @@ function Register() {
       }
 
       const response = await authAPI.register(payload);
-      login(response.data.user);
       toast.success("Registration successful!");
 
       if (selectedRole === "MENTOR") {
-        navigate("/mentor-dashboard");
+        // Mentors need to wait for admin approval
+        toast.info("Your registration request has been sent to the admin. You'll receive a verification code once approved.");
+        navigate("/mentor-verify", { state: { email: formData.email } });
       } else {
+        login(response.data.user);
         navigate("/student-dashboard");
       }
     } catch (error) {

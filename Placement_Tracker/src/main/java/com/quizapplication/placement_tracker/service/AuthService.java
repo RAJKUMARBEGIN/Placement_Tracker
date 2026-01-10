@@ -71,57 +71,39 @@ public class AuthService {
         user.setLocation(registerDTO.getLocation());
         user.setContactVisibility(registerDTO.getContactVisibility() != null ? registerDTO.getContactVisibility() : "PUBLIC");
 
-        // Mentors need admin approval, students and admins are auto-approved
+        // Mentors need admin approval to verify, students and admins are auto-approved
         if (registerDTO.getRole() == UserRole.MENTOR) {
             user.setIsApproved(false);
-            // Generate unique approval token for email-based approval
-            user.setApprovalToken(java.util.UUID.randomUUID().toString());
+            user.setIsVerified(false);
+            user.setRegistrationStatus("REGISTERED");  // Will become WAITING_FOR_CODE after admin sends code
+            // Generate admin approval token for secure email link
+            user.setAdminApprovalToken(generateSecureToken());
         } else {
             user.setIsApproved(true);
         }
 
         User savedUser = userRepository.save(user);
 
-        // Send email notification to admin if mentor registered
+        // Send email notification to admin for mentor registration request
         if (registerDTO.getRole() == UserRole.MENTOR) {
-            sendMentorRegistrationNotification(savedUser);
+            emailService.sendMentorRegistrationRequestToAdmin(savedUser);
         }
 
         return new AuthResponseDTO("Registration successful", convertToDTO(savedUser));
     }
 
     /**
-     * Send email notification to admin when a new mentor registers
+     * Send verification code to mentor email
      */
-    private void sendMentorRegistrationNotification(User mentor) {
+    private void sendMentorVerificationCode(User mentor) {
         try {
-            // Get department name
-            String departmentName = null;
-            if (mentor.getDepartmentId() != null) {
-                try {
-                    departmentName = departmentRepository.findById(mentor.getDepartmentId())
-                        .map(dept -> dept.getDepartmentName())
-                        .orElse("Not specified");
-                } catch (Exception e) {
-                    departmentName = "Not specified";
-                }
-            }
-            
-            emailService.sendMentorRegistrationNotification(
+            emailService.sendMentorVerificationCode(
                 mentor.getFullName(),
                 mentor.getEmail(),
-                mentor.getPlacedCompany(),
-                mentor.getPlacedPosition(),
-                departmentName,
-                mentor.getPhoneNumber(),
-                mentor.getLinkedinProfile(),
-                mentor.getGraduationYear(),
-                mentor.getPlacementYear(),
-                mentor.getContactVisibility(),
-                mentor.getApprovalToken()
+                mentor.getVerificationCode()
             );
         } catch (Exception e) {
-            System.err.println("Failed to send mentor registration notification: " + e.getMessage());
+            System.err.println("Failed to send mentor verification code: " + e.getMessage());
         }
     }
 
@@ -139,9 +121,9 @@ public class AuthService {
             throw new IllegalArgumentException("Account is deactivated");
         }
 
-        // Check if mentor is approved
-        if (user.getRole() == UserRole.MENTOR && !Boolean.TRUE.equals(user.getIsApproved())) {
-            throw new IllegalArgumentException("Your account is pending admin approval. You will receive an email once approved.");
+        // Check if mentor has verified their code
+        if (user.getRole() == UserRole.MENTOR && !Boolean.TRUE.equals(user.getIsVerified())) {
+            throw new IllegalArgumentException("MENTOR_NOT_VERIFIED");
         }
 
         // Update last login
@@ -469,6 +451,13 @@ public class AuthService {
     }
 
     /**
+     * Generate a secure random token for admin approval
+     */
+    private String generateSecureToken() {
+        return java.util.UUID.randomUUID().toString();
+    }
+
+    /**
      * Send OTP for password reset
      */
     public void sendPasswordResetOTP(String email) {
@@ -501,5 +490,98 @@ public class AuthService {
         // Update password with encryption
         user.setPassword(passwordEncoder.encode(resetPasswordDTO.getNewPassword()));
         userRepository.save(user);
+    }
+
+    /**
+     * Admin sends verification code to mentor - called when admin clicks the link in registration email
+     */
+    @Transactional
+    public void adminSendMentorVerificationCode(String mentorEmail, String adminApprovalToken) {
+        User user = userRepository.findByEmail(mentorEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + mentorEmail));
+
+        if (user.getRole() != UserRole.MENTOR) {
+            throw new IllegalArgumentException("Only mentors can receive verification codes");
+        }
+
+        // Verify admin approval token matches
+        if (user.getAdminApprovalToken() == null || !user.getAdminApprovalToken().equals(adminApprovalToken)) {
+            throw new IllegalArgumentException("Invalid or expired approval token");
+        }
+
+        // Generate new verification code - 6 digit code (NO EXPIRY)
+        String verificationCode = String.format("%06d", new java.util.Random().nextInt(1000000));
+        user.setVerificationCode(verificationCode);
+        user.setRegistrationStatus("WAITING_FOR_CODE");
+        userRepository.save(user);
+
+        // Send the code via email
+        try {
+            emailService.sendMentorVerificationCode(user.getFullName(), user.getEmail(), verificationCode);
+        } catch (Exception e) {
+            System.err.println("Failed to send verification code: " + e.getMessage());
+            throw new IllegalArgumentException("Failed to send verification code to email");
+        }
+    }
+
+    /**
+     * Resend verification code to mentor email (from verification page)
+     */
+    @Transactional
+    public void resendMentorVerificationCode(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        if (user.getRole() != UserRole.MENTOR) {
+            throw new IllegalArgumentException("Only mentors can request verification code");
+        }
+
+        if (!user.getRegistrationStatus().equals("WAITING_FOR_CODE")) {
+            throw new IllegalArgumentException("You must wait for admin to send verification code first");
+        }
+
+        // Generate new verification code - 6 digit code (NO EXPIRY)
+        String verificationCode = String.format("%06d", new java.util.Random().nextInt(1000000));
+        user.setVerificationCode(verificationCode);
+        userRepository.save(user);
+
+        // Send the code via email
+        try {
+            emailService.sendMentorVerificationCode(user.getFullName(), user.getEmail(), verificationCode);
+        } catch (Exception e) {
+            System.err.println("Failed to send verification code: " + e.getMessage());
+            throw new IllegalArgumentException("Failed to send verification code to email");
+        }
+    }
+
+    /**
+     * Verify mentor's verification code (NO EXPIRY - mentor can enter code anytime)
+     */
+    @Transactional
+    public UserDTO verifyMentorCode(String email, String code) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        if (user.getRole() != UserRole.MENTOR) {
+            throw new IllegalArgumentException("Only mentors can verify codes");
+        }
+
+        // Check if code matches (NO EXPIRY CHECK)
+        if (user.getVerificationCode() == null || !user.getVerificationCode().equals(code)) {
+            throw new IllegalArgumentException("Invalid verification code");
+        }
+
+        // Mark as verified
+        user.setIsVerified(true);
+        user.setIsApproved(true); // Auto-approve once verified
+        user.setRegistrationStatus("VERIFIED");
+        user.setVerificationCode(null); // Clear the code
+        user.setAdminApprovalToken(null);
+        User savedUser = userRepository.save(user);
+
+        // Sync mentor to mentors collection
+        syncMentorToMentorsCollection(savedUser);
+
+        return convertToDTO(savedUser);
     }
 }

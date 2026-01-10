@@ -190,7 +190,7 @@ public class EmailService {
     }
 
     /**
-     * Send notification to mentor when their account is approved
+     * Send mentor approval notification
      */
     public void sendMentorApprovalNotification(String mentorEmail, String mentorName) {
         String subject = "Your Mentor Account has been Approved - PlaceTrack";
@@ -217,6 +217,99 @@ public class EmailService {
             System.out.println("DEV MODE - Mentor Approval Notification:");
             System.out.println("To: " + mentorEmail);
             System.out.println("Subject: " + subject);
+        }
+    }
+
+    /**
+     * Send mentor registration request to admin for approval
+     */
+    public void sendMentorRegistrationRequestToAdmin(com.quizapplication.placement_tracker.entity.User mentor) {
+        String subject = "🔔 New Mentor Registration Request - PlaceTrack Admin";
+        String mentorEmail = mentor.getEmail();
+        String mentorName = mentor.getFullName();
+        String mentorPhone = mentor.getPhoneNumber() != null ? mentor.getPhoneNumber() : "Not provided";
+        String approvalLink = baseUrl + "/api/auth/admin/send-mentor-code?token=" + mentor.getAdminApprovalToken() + "&email=" + mentorEmail;
+        
+        String text = "Dear Admin,\n\n" +
+                "A new mentor has registered on GCT PlaceTrack and is awaiting approval.\n\n" +
+                "═══════════════════════════════════════════════════════════\n" +
+                "          MENTOR REGISTRATION DETAILS\n" +
+                "═══════════════════════════════════════════════════════════\n\n" +
+                "Name: " + mentorName + "\n" +
+                "Email: " + mentorEmail + "\n" +
+                "Phone: " + mentorPhone + "\n" +
+                "Company: " + (mentor.getPlacedCompany() != null ? mentor.getPlacedCompany() : "Not provided") + "\n" +
+                "Position: " + (mentor.getPlacedPosition() != null ? mentor.getPlacedPosition() : "Not provided") + "\n" +
+                "Location: " + (mentor.getLocation() != null ? mentor.getLocation() : "Not provided") + "\n\n" +
+                "═══════════════════════════════════════════════════════════\n\n" +
+                "SEND VERIFICATION CODE:\n" +
+                "Click the link below to send a verification code to the mentor:\n" +
+                approvalLink + "\n\n" +
+                "Once you click this link, a verification code will be generated and sent to the mentor's email.\n" +
+                "The mentor can then enter this code to access the platform.\n\n" +
+                "═══════════════════════════════════════════════════════════\n\n" +
+                "Best regards,\n" +
+                "GCT Placement Cell";
+
+        if (mailSender != null) {
+            try {
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setTo(adminEmail);
+                message.setSubject(subject);
+                message.setText(text);
+                mailSender.send(message);
+                System.out.println("Mentor registration request sent to admin: " + adminEmail);
+            } catch (Exception e) {
+                System.err.println("Failed to send mentor registration request to admin: " + e.getMessage());
+            }
+        } else {
+            // Development mode - email not configured
+            System.out.println("DEV MODE - Mentor Registration Request for Admin:");
+            System.out.println("To: " + adminEmail);
+            System.out.println("Subject: " + subject);
+            System.out.println("Approval Link: " + approvalLink);
+        }
+    }
+
+    /**
+     * Send verification code to mentor email
+     */
+    public void sendMentorVerificationCode(String mentorName, String mentorEmail, String verificationCode) {
+        String subject = "🔐 Your Mentor Verification Code - PlaceTrack";
+        String text = "Dear " + mentorName + ",\n\n" +
+                "Your admin has approved your mentor registration and sent you a verification code.\n\n" +
+                "═══════════════════════════════════════════════════════════\n" +
+                "          YOUR VERIFICATION CODE\n" +
+                "═══════════════════════════════════════════════════════════\n\n" +
+                "Your 6-digit verification code is: " + verificationCode + "\n\n" +
+                "HOW TO USE:\n" +
+                "1. Go to the Placement Tracker application\n" +
+                "2. Log in with your email and password\n" +
+                "3. You will be prompted to enter your verification code\n" +
+                "4. Enter the code above (6 digits)\n" +
+                "5. Once verified, you can access your mentor dashboard\n\n" +
+                "Note: Keep this code safe. You can use it whenever you want to verify your account.\n" +
+                "The code does NOT expire.\n\n" +
+                "═══════════════════════════════════════════════════════════\n\n" +
+                "If you did not request this, please contact your admin.\n\n" +
+                "Best regards,\n" +
+                "GCT Placement Cell";
+
+        if (mailSender != null) {
+            try {
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setTo(mentorEmail);
+                message.setSubject(subject);
+                message.setText(text);
+                mailSender.send(message);
+                System.out.println("Mentor verification code sent to: " + mentorEmail);
+            } catch (Exception e) {
+                System.err.println("Failed to send mentor verification code: " + e.getMessage());
+                System.out.println("DEV MODE - Verification Code for " + mentorEmail + ": " + verificationCode);
+            }
+        } else {
+            // Development mode - email not configured
+            System.out.println("DEV MODE - Mentor Verification Code for " + mentorEmail + ": " + verificationCode);
         }
     }
 }

@@ -45,11 +45,20 @@ public class User {
     // Contact visibility: "PUBLIC" (everyone can see), "ADMIN_ONLY" (only admins)
     private String contactVisibility = "PUBLIC";
 
-    // Mentor approval status - mentors need admin approval to be visible
+    // Mentor approval status - mentors need verification code to access
     private Boolean isApproved = false;
 
-    // Unique token for email-based approval
-    private String approvalToken;
+    // Registration status for mentors: REGISTERED, WAITING_FOR_CODE, VERIFIED
+    private String registrationStatus = "REGISTERED";  // REGISTERED -> WAITING_FOR_CODE -> VERIFIED
+
+    // Verification code for mentors sent by admin
+    private String verificationCode;
+    
+    // Whether the mentor has verified their code
+    private Boolean isVerified = false;
+    
+    // Token for admin to send verification code securely
+    private String adminApprovalToken;
 
     private LocalDateTime createdAt;
 
@@ -226,10 +235,42 @@ public class User {
     }
 
     public String getApprovalToken() {
-        return approvalToken;
+        return verificationCode;
     }
 
     public void setApprovalToken(String approvalToken) {
-        this.approvalToken = approvalToken;
+        this.verificationCode = approvalToken;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public Boolean getIsVerified() {
+        return isVerified;
+    }
+
+    public void setIsVerified(Boolean isVerified) {
+        this.isVerified = isVerified;
+    }
+
+    public String getRegistrationStatus() {
+        return registrationStatus;
+    }
+
+    public void setRegistrationStatus(String registrationStatus) {
+        this.registrationStatus = registrationStatus;
+    }
+
+    public String getAdminApprovalToken() {
+        return adminApprovalToken;
+    }
+
+    public void setAdminApprovalToken(String adminApprovalToken) {
+        this.adminApprovalToken = adminApprovalToken;
     }
 }

@@ -11,8 +11,11 @@ import CompanyExperiences from "./pages/CompanyExperiences";
 import Mentors from "./pages/Mentors";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import MentorRegister from "./pages/MentorRegister";
+import MentorVerificationCode from "./pages/MentorVerificationCode";
 import ForgotPassword from "./pages/ForgotPassword";
 import StudentDashboard from "./pages/StudentDashboard";
+import MentorDashboard from "./pages/MentorDashboard";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ExperienceDetail from "./pages/ExperienceDetail";
@@ -36,8 +39,11 @@ function App() {
             <Route path="/mentors" element={<Mentors />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/mentor-register" element={<MentorRegister />} />
+            <Route path="/mentor-verify" element={<MentorVerificationCode />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/student-dashboard" element={<StudentDashboard />} />
+            <Route path="/mentor-dashboard" element={<MentorDashboard />} />
             <Route path="/experience/:id" element={<ExperienceDetail />} />
             <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />

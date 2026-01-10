@@ -1,11 +1,11 @@
 /* Auth Pages - Professional Tech Design */
 .auth-page {
-  min-height: calc(100vh - 72px);
+  min-height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--bg-primary);
-  padding: 40px 24px;
+  padding: 20px 24px;
   position: relative;
   overflow: hidden;
 }

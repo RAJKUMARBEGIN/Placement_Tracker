@@ -31,6 +31,9 @@ export const authAPI = {
   sendOTP: (email) => api.post("/auth/send-otp", { email }),
   verifyOTP: (email, otp) => api.post("/auth/verify-otp", { email, otp }),
   checkGCTEmail: (email) => api.get(`/auth/check-gct-email?email=${email}`),
+  // Mentor verification code
+  sendMentorVerificationCode: (email) => api.post("/auth/mentors/send-verification-code", { email }),
+  verifyMentorCode: (email, verificationCode) => api.post("/auth/mentors/verify-code", { email, verificationCode }),
 };
 
 // Forgot Password APIs

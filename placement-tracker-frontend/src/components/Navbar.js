@@ -50,6 +50,11 @@ function Navbar() {
                   Dashboard
                 </Link>
               )}
+              {user?.role === "MENTOR" && (
+                <Link to="/mentor-dashboard" className="nav-link">
+                  Dashboard
+                </Link>
+              )}
               <div className="user-menu">
                 <Link to="/profile" className="user-info user-info-link">
                   <div className="user-avatar">

@@ -24,15 +24,25 @@ function Login() {
     setLoading(true);
     try {
       const response = await authAPI.login(formData);
-      login(response.data.user);
-      toast.success("Login successful!");
+      
+      // Check if it's a mentor that needs verification
       if (response.data.user.role === "MENTOR") {
-        navigate("/mentor-dashboard");
+        // Don't login yet, navigate to verification page
+        toast.info("Please verify your account using the code sent by admin.");
+        navigate("/mentor-verify", { state: { email: formData.email } });
       } else {
+        login(response.data.user);
+        toast.success("Login successful!");
         navigate("/student-dashboard");
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Login failed");
+      // Check if it's a mentor not verified error
+      if (error.response?.data?.message === "MENTOR_NOT_VERIFIED") {
+        toast.info("Your account is pending admin verification. Please wait for the admin to send you a verification code.");
+        navigate("/mentor-verify", { state: { email: formData.email } });
+      } else {
+        toast.error(error.response?.data?.message || "Login failed");
+      }
     } finally {
       setLoading(false);
     }
