@@ -55,6 +55,16 @@ public class InterviewExperience {
 
     private LocalDateTime submittedAt;
 
+    // Resource file attachment (supporting both naming conventions)
+    private String resourceFileName;
+    private String attachmentFileName; // alias for resourceFileName
+    
+    private String resourceFileUrl;
+    private String attachmentUrl; // alias for resourceFileUrl
+    
+    private Long resourceFileSize;
+    private Long attachmentSize; // alias for resourceFileSize
+
     // Constructors
     public InterviewExperience() {
         if (submittedAt == null) {
@@ -213,5 +223,79 @@ public class InterviewExperience {
 
     public void setSubmittedAt(LocalDateTime submittedAt) {
         this.submittedAt = submittedAt;
+    }
+
+    public String getResourceFileName() {
+        return resourceFileName;
+    }
+
+    public void setResourceFileName(String resourceFileName) {
+        this.resourceFileName = resourceFileName;
+    }
+
+    public String getResourceFileUrl() {
+        return resourceFileUrl;
+    }
+
+    public void setResourceFileUrl(String resourceFileUrl) {
+        this.resourceFileUrl = resourceFileUrl;
+    }
+
+    public Long getResourceFileSize() {
+        return resourceFileSize;
+    }
+
+    public void setResourceFileSize(Long resourceFileSize) {
+        this.resourceFileSize = resourceFileSize;
+    }
+
+    // Alias getters/setters for attachment fields
+    public String getAttachmentFileName() {
+        return attachmentFileName != null ? attachmentFileName : resourceFileName;
+    }
+
+    public void setAttachmentFileName(String attachmentFileName) {
+        this.attachmentFileName = attachmentFileName;
+        if (this.resourceFileName == null) {
+            this.resourceFileName = attachmentFileName;
+        }
+    }
+
+    public String getAttachmentUrl() {
+        return attachmentUrl != null ? attachmentUrl : resourceFileUrl;
+    }
+
+    public void setAttachmentUrl(String attachmentUrl) {
+        this.attachmentUrl = attachmentUrl;
+        if (this.resourceFileUrl == null) {
+            this.resourceFileUrl = attachmentUrl;
+        }
+    }
+
+    public Long getAttachmentSize() {
+        return attachmentSize != null ? attachmentSize : resourceFileSize;
+    }
+
+    public void setAttachmentSize(Long attachmentSize) {
+        this.attachmentSize = attachmentSize;
+        if (this.resourceFileSize == null) {
+            this.resourceFileSize = attachmentSize;
+        }
+    }
+
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getMentorId() {
+        return mentorId;
+    }
+
+    public void setMentorId(String mentorId) {
+        this.mentorId = mentorId;
     }
 }

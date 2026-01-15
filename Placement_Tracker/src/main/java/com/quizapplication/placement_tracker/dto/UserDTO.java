@@ -62,6 +62,9 @@ public class UserDTO {
     @Schema(description = "Mentor approval status", example = "false")
     private Boolean isApproved;
 
+    @Schema(description = "Account active status", example = "true")
+    private Boolean isActive;
+
     @Schema(description = "Account creation time")
     private LocalDateTime createdAt;
 
@@ -227,5 +230,13 @@ public class UserDTO {
 
     public void setIsApproved(Boolean isApproved) {
         this.isApproved = isApproved;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 }

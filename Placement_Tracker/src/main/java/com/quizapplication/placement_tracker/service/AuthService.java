@@ -45,6 +45,13 @@ public class AuthService {
             throw new ResourceAlreadyExistsException("User with email '" + registerDTO.getEmail() + "' already exists");
         }
 
+        // Validate LinkedIn profile for mentors (MANDATORY)
+        if (registerDTO.getRole() == UserRole.MENTOR) {
+            if (registerDTO.getLinkedinProfile() == null || registerDTO.getLinkedinProfile().trim().isEmpty()) {
+                throw new IllegalArgumentException("LinkedIn profile is mandatory for mentor registration");
+            }
+        }
+
         // Create user
         User user = new User();
         user.setEmail(registerDTO.getEmail());
@@ -78,15 +85,18 @@ public class AuthService {
             user.setRegistrationStatus("REGISTERED");  // Will become WAITING_FOR_CODE after admin sends code
             // Generate admin approval token for secure email link
             user.setAdminApprovalToken(generateSecureToken());
+            // Store temp password for sending in approval email
+            user.setTempPassword(registerDTO.getPassword());
         } else {
             user.setIsApproved(true);
         }
 
         User savedUser = userRepository.save(user);
 
-        // Send email notification to admin for mentor registration request
+        // Send email notification to admin for mentor registration request with ALL details
         if (registerDTO.getRole() == UserRole.MENTOR) {
             emailService.sendMentorRegistrationRequestToAdmin(savedUser);
+            System.out.println("✉️ Admin notification sent for mentor: " + savedUser.getFullName() + " (" + savedUser.getEmail() + ")");
         }
 
         return new AuthResponseDTO("Registration successful", convertToDTO(savedUser));
@@ -121,9 +131,9 @@ public class AuthService {
             throw new IllegalArgumentException("Account is deactivated");
         }
 
-        // Check if mentor has verified their code
-        if (user.getRole() == UserRole.MENTOR && !Boolean.TRUE.equals(user.getIsVerified())) {
-            throw new IllegalArgumentException("MENTOR_NOT_VERIFIED");
+        // Check if mentor is approved by admin
+        if (user.getRole() == UserRole.MENTOR && !Boolean.TRUE.equals(user.getIsApproved())) {
+            throw new IllegalArgumentException("MENTOR_NOT_APPROVED");
         }
 
         // Update last login
@@ -194,15 +204,22 @@ public class AuthService {
             throw new IllegalArgumentException("User is not a mentor");
         }
         
+        // Get the temp password before approval
+        String password = user.getTempPassword();
+        
         user.setIsApproved(true);
+        user.setIsVerified(true);
+        user.setRegistrationStatus("VERIFIED");
+        user.setTempPassword(null); // Clear temp password after use
+        user.setAdminApprovalToken(null);
         User updatedUser = userRepository.save(user);
         
         // Sync mentor data to mentors collection
         syncMentorToMentorsCollection(updatedUser);
         
-        // Send approval notification to mentor
+        // Send approval notification to mentor with credentials
         try {
-            emailService.sendMentorApprovalNotification(user.getEmail(), user.getFullName());
+            emailService.sendMentorApprovalNotification(user.getEmail(), user.getFullName(), password != null ? password : "[Use your registered password]");
         } catch (Exception e) {
             System.err.println("Failed to send approval notification: " + e.getMessage());
         }
@@ -220,6 +237,13 @@ public class AuthService {
         
         if (user.getRole() != UserRole.MENTOR) {
             throw new IllegalArgumentException("User is not a mentor");
+        }
+        
+        // Send rejection email before deleting
+        try {
+            emailService.sendMentorRejectionNotification(user.getEmail(), user.getFullName());
+        } catch (Exception e) {
+            System.err.println("Failed to send rejection notification: " + e.getMessage());
         }
         
         userRepository.delete(user);
@@ -241,16 +265,23 @@ public class AuthService {
             throw new IllegalArgumentException("Mentor is already approved");
         }
         
+        // Get the temp password before approval
+        String password = user.getTempPassword();
+        
         user.setIsApproved(true);
+        user.setIsVerified(true);
+        user.setRegistrationStatus("VERIFIED");
         user.setApprovalToken(null); // Clear the token after use
+        user.setTempPassword(null); // Clear temp password
+        user.setAdminApprovalToken(null);
         User updatedUser = userRepository.save(user);
         
         // Sync mentor data to mentors collection
         syncMentorToMentorsCollection(updatedUser);
         
-        // Send approval notification to mentor
+        // Send approval notification to mentor with credentials
         try {
-            emailService.sendMentorApprovalNotification(user.getEmail(), user.getFullName());
+            emailService.sendMentorApprovalNotification(user.getEmail(), user.getFullName(), password != null ? password : "[Use your registered password]");
         } catch (Exception e) {
             System.err.println("Failed to send approval notification: " + e.getMessage());
         }
@@ -268,6 +299,13 @@ public class AuthService {
         
         if (user.getRole() != UserRole.MENTOR) {
             throw new IllegalArgumentException("User is not a mentor");
+        }
+        
+        // Send rejection email before deleting
+        try {
+            emailService.sendMentorRejectionNotification(user.getEmail(), user.getFullName());
+        } catch (Exception e) {
+            System.err.println("Failed to send rejection notification: " + e.getMessage());
         }
         
         userRepository.delete(user);

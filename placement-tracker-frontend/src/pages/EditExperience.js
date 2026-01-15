@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
-  FiSend,
-  FiPlus,
+  FiSave,
   FiUpload,
   FiFile,
   FiX,
@@ -13,12 +12,15 @@ import { experienceAPI, departmentAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import "./AddExperience.css";
 
-const AddExperience = () => {
+const EditExperience = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const { user } = useAuth();
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [resourceFile, setResourceFile] = useState(null);
+  const [existingFile, setExistingFile] = useState(null);
   const [formData, setFormData] = useState({
     studentName: "",
     companyName: "",
@@ -40,19 +42,8 @@ const AddExperience = () => {
 
   useEffect(() => {
     fetchDepartments();
-  }, []);
-
-  // Auto-fill user data when component loads
-  useEffect(() => {
-    if (user) {
-      setFormData((prev) => ({
-        ...prev,
-        studentName: user.fullName || user.name || prev.studentName,
-        contactEmail: user.email || prev.contactEmail,
-        departmentId: user.departmentId || prev.departmentId,
-      }));
-    }
-  }, [user]);
+    fetchExperience();
+  }, [id]);
 
   const fetchDepartments = async () => {
     try {
@@ -60,6 +51,46 @@ const AddExperience = () => {
       setDepartments(response.data);
     } catch (error) {
       toast.error("Failed to fetch departments");
+    }
+  };
+
+  const fetchExperience = async () => {
+    try {
+      setFetching(true);
+      const response = await experienceAPI.getById(id);
+      const exp = response.data;
+      
+      setFormData({
+        studentName: exp.studentName || "",
+        companyName: exp.companyName || "",
+        position: exp.position || "",
+        yearOfPlacement: exp.yearOfPlacement || new Date().getFullYear(),
+        departmentId: exp.departmentId || "",
+        totalRounds: exp.totalRounds || 1,
+        roundsDescription: exp.roundsDescription || "",
+        problemsSolved: exp.problemsSolved || "",
+        inPersonInterviewTips: exp.inPersonInterviewTips || "",
+        crackingStrategy: exp.crackingStrategy || "",
+        preparationDetails: exp.preparationDetails || "",
+        resources: exp.resources || "",
+        willingToMentor: exp.willingToMentor || false,
+        contactEmail: exp.contactEmail || "",
+        contactPhone: exp.contactPhone || "",
+        linkedinProfile: exp.linkedinProfile || "",
+      });
+
+      if (exp.attachmentFileName) {
+        setExistingFile({
+          name: exp.attachmentFileName,
+          url: exp.attachmentUrl,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching experience:", error);
+      toast.error("Failed to load experience");
+      navigate("/student-dashboard");
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -74,23 +105,23 @@ const AddExperience = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Check file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         toast.error("File size must be less than 10MB");
         return;
       }
-      // Check file type (only zip files)
       if (!file.name.endsWith(".zip")) {
         toast.error("Only ZIP files are allowed");
         return;
       }
       setResourceFile(file);
+      setExistingFile(null);
       toast.success(`File "${file.name}" selected`);
     }
   };
 
   const handleRemoveFile = () => {
     setResourceFile(null);
+    setExistingFile(null);
     toast.info("File removed");
   };
 
@@ -102,16 +133,11 @@ const AddExperience = () => {
       return;
     }
 
-    console.log("Submitting experience data:", formData);
     setLoading(true);
     try {
-      let fileInfo = {
-        attachmentFileName: null,
-        attachmentSize: null,
-        attachmentUrl: null,
-      };
+      let fileInfo = {};
 
-      // Upload file first if present
+      // Upload new file if present
       if (resourceFile) {
         const uploadFormData = new FormData();
         uploadFormData.append('file', resourceFile);
@@ -135,31 +161,23 @@ const AddExperience = () => {
           toast.success(`File "${resourceFile.name}" uploaded successfully!`);
         } catch (uploadError) {
           console.error("File upload error:", uploadError);
-          toast.error("Failed to upload file. Continuing without attachment.");
+          toast.error("Failed to upload file.");
         }
       }
 
-      // Prepare submission data with file metadata
       const submissionData = {
         ...formData,
-        departmentId: formData.departmentId,
         yearOfPlacement: parseInt(formData.yearOfPlacement),
         totalRounds: parseInt(formData.totalRounds),
         ...fileInfo,
       };
 
-      console.log("Sending to backend:", submissionData);
-      const response = await experienceAPI.create(submissionData);
-      console.log("Backend response:", response);
-      toast.success("Experience shared successfully! 🎉");
-      navigate("/experiences");
+      await experienceAPI.update(id, submissionData);
+      toast.success("Experience updated successfully! 🎉");
+      navigate("/student-dashboard");
     } catch (error) {
-      console.error("Submission error:", error);
-      console.error("Error response:", error.response?.data);
-      const errorMessage = error.response?.data?.message || 
-                          error.response?.data?.errors?.join(", ") ||
-                          "Failed to submit experience. Please check all required fields.";
-      toast.error(errorMessage);
+      console.error("Update error:", error);
+      toast.error(error.response?.data?.message || "Failed to update experience");
     } finally {
       setLoading(false);
     }
@@ -170,30 +188,34 @@ const AddExperience = () => {
     (_, i) => new Date().getFullYear() - i + 1
   );
 
+  if (fetching) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading experience...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="add-experience-page">
-      {/* Hero Header with Back Link */}
       <div className="page-hero">
         <button
           className="back-link-hero"
-          onClick={() => window.history.back()}
+          onClick={() => navigate("/student-dashboard")}
         >
-          <FiArrowLeft /> Back
+          <FiArrowLeft /> Back to Dashboard
         </button>
         <div className="hero-content">
           <h1>
-            <FiPlus className="header-icon" />
-            Share Your Experience
+            <FiSave className="header-icon" />
+            Edit Experience
           </h1>
-          <p>
-            Help juniors by sharing your interview journey. Your insights can
-            change someone's career.
-          </p>
+          <p>Update your interview experience details</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="experience-form">
-        {/* Basic Info Section */}
         <section className="form-section">
           <h2 className="section-title">Basic Information</h2>
           <div className="form-grid">
@@ -204,7 +226,6 @@ const AddExperience = () => {
                 name="studentName"
                 value={formData.studentName}
                 onChange={handleChange}
-                placeholder="e.g., John Doe"
                 required
               />
             </div>
@@ -215,7 +236,6 @@ const AddExperience = () => {
                 name="companyName"
                 value={formData.companyName}
                 onChange={handleChange}
-                placeholder="e.g., Google, Microsoft"
                 required
               />
             </div>
@@ -226,7 +246,6 @@ const AddExperience = () => {
                 name="position"
                 value={formData.position}
                 onChange={handleChange}
-                placeholder="e.g., Software Engineer"
                 required
               />
             </div>
@@ -239,9 +258,7 @@ const AddExperience = () => {
                 required
               >
                 {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
+                  <option key={year} value={year}>{year}</option>
                 ))}
               </select>
             </div>
@@ -276,7 +293,6 @@ const AddExperience = () => {
           </div>
         </section>
 
-        {/* Interview Details Section */}
         <section className="form-section">
           <h2 className="section-title">Interview Details</h2>
           <div className="form-group">
@@ -285,7 +301,6 @@ const AddExperience = () => {
               name="roundsDescription"
               value={formData.roundsDescription}
               onChange={handleChange}
-              placeholder="Describe each round in detail. E.g., Round 1: Online coding test with 3 DSA problems (Medium-Hard). Round 2: Technical interview focusing on System Design..."
               rows={5}
               required
             />
@@ -296,7 +311,6 @@ const AddExperience = () => {
               name="problemsSolved"
               value={formData.problemsSolved}
               onChange={handleChange}
-              placeholder="Describe the coding problems you solved. E.g., Two Sum, Binary Tree traversal, LRU Cache implementation..."
               rows={4}
               required
             />
@@ -307,13 +321,11 @@ const AddExperience = () => {
               name="inPersonInterviewTips"
               value={formData.inPersonInterviewTips}
               onChange={handleChange}
-              placeholder="Tips for in-person interviews. E.g., Dress formally, arrive 15 mins early, maintain eye contact..."
               rows={3}
             />
           </div>
         </section>
 
-        {/* Preparation Section */}
         <section className="form-section highlight">
           <h2 className="section-title">🎯 Preparation Strategy</h2>
           <div className="form-group">
@@ -322,7 +334,6 @@ const AddExperience = () => {
               name="crackingStrategy"
               value={formData.crackingStrategy}
               onChange={handleChange}
-              placeholder="Share your winning strategy. E.g., Solved 300+ LeetCode problems focusing on arrays, strings, and trees. Practiced system design for 2 months..."
               rows={5}
               required
             />
@@ -333,7 +344,6 @@ const AddExperience = () => {
               name="preparationDetails"
               value={formData.preparationDetails}
               onChange={handleChange}
-              placeholder="How long did you prepare? What was your daily routine? E.g., Started 6 months before, 4 hours daily coding, weekends for mock interviews..."
               rows={4}
               required
             />
@@ -344,7 +354,6 @@ const AddExperience = () => {
               name="resources"
               value={formData.resources}
               onChange={handleChange}
-              placeholder="Share helpful resources. E.g., LeetCode, GeeksforGeeks, Striver's SDE Sheet, YouTube channels like Take U Forward..."
               rows={3}
             />
           </div>
@@ -353,21 +362,22 @@ const AddExperience = () => {
             <p className="field-hint">
               Upload study materials, notes, or code as a ZIP file (max 10MB)
             </p>
-            {!resourceFile ? (
-              <div className="file-upload-area">
-                <input
-                  type="file"
-                  id="resourceFile"
-                  accept=".zip"
-                  onChange={handleFileChange}
-                  style={{ display: "none" }}
-                />
-                <label htmlFor="resourceFile" className="file-upload-btn">
-                  <FiUpload />
-                  Choose ZIP File
-                </label>
+            {existingFile ? (
+              <div className="file-selected">
+                <div className="file-info">
+                  <FiFile />
+                  <span className="file-name">{existingFile.name}</span>
+                  <span className="file-size">(existing file)</span>
+                </div>
+                <button
+                  type="button"
+                  className="remove-file-btn"
+                  onClick={handleRemoveFile}
+                >
+                  <FiX /> Remove
+                </button>
               </div>
-            ) : (
+            ) : resourceFile ? (
               <div className="file-selected">
                 <div className="file-info">
                   <FiFile />
@@ -384,11 +394,24 @@ const AddExperience = () => {
                   <FiX /> Remove
                 </button>
               </div>
+            ) : (
+              <div className="file-upload-area">
+                <input
+                  type="file"
+                  id="resourceFile"
+                  accept=".zip"
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                />
+                <label htmlFor="resourceFile" className="file-upload-btn">
+                  <FiUpload />
+                  Choose ZIP File
+                </label>
+              </div>
             )}
           </div>
         </section>
 
-        {/* Contact Section */}
         <section className="form-section">
           <h2 className="section-title">Mentorship & Contact</h2>
           <div className="checkbox-group">
@@ -400,7 +423,7 @@ const AddExperience = () => {
               onChange={handleChange}
             />
             <label htmlFor="willingToMentor">
-              I'm willing to mentor juniors and help them prepare
+              I'm willing to mentor juniors
             </label>
           </div>
 
@@ -413,7 +436,6 @@ const AddExperience = () => {
                   name="contactEmail"
                   value={formData.contactEmail}
                   onChange={handleChange}
-                  placeholder="your.email@example.com"
                 />
               </div>
               <div className="form-group">
@@ -423,7 +445,6 @@ const AddExperience = () => {
                   name="contactPhone"
                   value={formData.contactPhone}
                   onChange={handleChange}
-                  placeholder="+91-9876543210"
                 />
               </div>
               <div className="form-group full-width">
@@ -433,25 +454,23 @@ const AddExperience = () => {
                   name="linkedinProfile"
                   value={formData.linkedinProfile}
                   onChange={handleChange}
-                  placeholder="https://linkedin.com/in/yourprofile"
                 />
               </div>
             </div>
           )}
         </section>
 
-        {/* Submit Button */}
         <div className="form-actions">
           <button type="submit" className="submit-btn" disabled={loading}>
             {loading ? (
               <>
                 <span className="spinner"></span>
-                Submitting...
+                Updating...
               </>
             ) : (
               <>
-                <FiSend />
-                Share Experience
+                <FiSave />
+                Update Experience
               </>
             )}
           </button>
@@ -461,4 +480,4 @@ const AddExperience = () => {
   );
 };
 
-export default AddExperience;
+export default EditExperience;

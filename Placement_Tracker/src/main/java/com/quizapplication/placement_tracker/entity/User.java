@@ -60,6 +60,9 @@ public class User {
     // Token for admin to send verification code securely
     private String adminApprovalToken;
 
+    // Temporary password for sending in approval email (cleared after approval)
+    private String tempPassword;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime lastLogin;
@@ -272,5 +275,13 @@ public class User {
 
     public void setAdminApprovalToken(String adminApprovalToken) {
         this.adminApprovalToken = adminApprovalToken;
+    }
+
+    public String getTempPassword() {
+        return tempPassword;
+    }
+
+    public void setTempPassword(String tempPassword) {
+        this.tempPassword = tempPassword;
     }
 }

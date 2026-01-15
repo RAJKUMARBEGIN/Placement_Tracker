@@ -22,24 +22,53 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
     try {
+      // Check for hardcoded admin credentials
+      if (formData.email === "harshavardhinin6@gmail.com" && formData.password === "admin123") {
+        // Admin login with hardcoded credentials
+        const adminUser = {
+          email: "harshavardhinin6@gmail.com",
+          fullName: "Admin",
+          role: "ADMIN"
+        };
+        localStorage.setItem("adminUser", JSON.stringify(adminUser));
+        localStorage.setItem("userRole", "ADMIN");
+        toast.success("Admin login successful!");
+        navigate("/admin-dashboard");
+        setLoading(false);
+        return;
+      }
+
+      // Regular login flow
       const response = await authAPI.login(formData);
-      
-      // Check if it's a mentor that needs verification
-      if (response.data.user.role === "MENTOR") {
-        // Don't login yet, navigate to verification page
-        toast.info("Please verify your account using the code sent by admin.");
-        navigate("/mentor-verify", { state: { email: formData.email } });
+
+      // Check user role and navigate accordingly
+      if (response.data.user.role === "ADMIN") {
+        // Admin login
+        localStorage.setItem("adminUser", JSON.stringify(response.data.user));
+        localStorage.setItem("userRole", "ADMIN");
+        login(response.data.user);
+        toast.success("Admin login successful!");
+        navigate("/admin-dashboard");
+      } else if (response.data.user.role === "MENTOR") {
+        // Mentor login successful (already approved)
+        login(response.data.user);
+        toast.success("Mentor login successful!");
+        navigate("/mentor-dashboard");
       } else {
+        // Student login
         login(response.data.user);
         toast.success("Login successful!");
         navigate("/student-dashboard");
       }
     } catch (error) {
-      // Check if it's a mentor not verified error
-      if (error.response?.data?.message === "MENTOR_NOT_VERIFIED") {
-        toast.info("Your account is pending admin verification. Please wait for the admin to send you a verification code.");
-        navigate("/mentor-verify", { state: { email: formData.email } });
+      // Check if it's a mentor not approved error
+      if (error.response?.data?.message === "MENTOR_NOT_APPROVED" || 
+          error.response?.data?.message === "MENTOR_NOT_VERIFIED") {
+        toast.warning(
+          "Your mentor account is pending admin approval. You will receive an email with login credentials once approved."
+        );
       } else {
         toast.error(error.response?.data?.message || "Login failed");
       }

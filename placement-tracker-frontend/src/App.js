@@ -21,6 +21,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ExperienceDetail from "./pages/ExperienceDetail";
 import TestAPI from "./pages/TestAPI";
 import Profile from "./pages/Profile";
+import AddExperience from "./pages/AddExperience";
+import EditExperience from "./pages/EditExperience";
 
 function App() {
   return (
@@ -43,6 +45,8 @@ function App() {
             <Route path="/mentor-verify" element={<MentorVerificationCode />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/student-dashboard" element={<StudentDashboard />} />
+            <Route path="/add-experience" element={<AddExperience />} />
+            <Route path="/edit-experience/:id" element={<EditExperience />} />
             <Route path="/mentor-dashboard" element={<MentorDashboard />} />
             <Route path="/experience/:id" element={<ExperienceDetail />} />
             <Route path="/admin-login" element={<AdminLogin />} />

@@ -10,12 +10,14 @@ function Navbar() {
   const handleLogout = () => {
     logout();
     navigate("/");
+    window.location.reload(); // Force reload to clear all state
   };
 
   const handleAdminLogout = () => {
-    localStorage.removeItem("adminUser");
-    localStorage.removeItem("userRole");
+    // Clear all localStorage items to ensure clean logout
+    localStorage.clear();
     navigate("/");
+    window.location.reload(); // Force reload to reset all state
   };
 
   const isLoggedIn = isAuthenticated();

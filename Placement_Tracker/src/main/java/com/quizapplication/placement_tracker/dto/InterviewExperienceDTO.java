@@ -23,43 +23,33 @@ public class InterviewExperienceDTO {
     @Schema(description = "Position applied for", example = "Software Engineer")
     private String position;
 
-    @NotNull(message = "Year of placement is required")
-    @Min(value = 2000, message = "Year must be after 2000")
-    @Max(value = 2100, message = "Year must be before 2100")
     @Schema(description = "Year of placement", example = "2025")
     private Integer yearOfPlacement;
 
-    @NotNull(message = "Department ID is required")
     @Schema(description = "Department ID", example = "1")
     private String departmentId;
 
     @Schema(description = "Department name", example = "Computer Science Engineering")
     private String departmentName;
 
-    @NotNull(message = "Total rounds is required")
-    @Min(value = 1, message = "Total rounds must be at least 1")
     @Schema(description = "Total number of interview rounds", example = "4")
     private Integer totalRounds;
 
-    @NotBlank(message = "Rounds description is required")
     @Schema(description = "Description of each round", example = "Round 1: Online Test, Round 2: Technical Interview...")
     private String roundsDescription;
 
     @Schema(description = "Questions asked in the interview", example = "Data structures, algorithms, system design...")
     private String questionsAsked;
 
-    @NotBlank(message = "Problems solved is required")
     @Schema(description = "Problems solved during interview", example = "Binary tree traversal, sorting algorithms...")
     private String problemsSolved;
 
     @Schema(description = "Tips for in-person interview", example = "Be confident, maintain eye contact...")
     private String inPersonInterviewTips;
 
-    @NotBlank(message = "Cracking strategy is required")
     @Schema(description = "Strategy used to crack the interview", example = "Practiced 300+ DSA problems...")
     private String crackingStrategy;
 
-    @NotBlank(message = "Preparation details is required")
     @Schema(description = "Preparation details", example = "Started preparation 6 months before...")
     private String preparationDetails;
 
@@ -81,6 +71,21 @@ public class InterviewExperienceDTO {
 
     @Schema(description = "Submission timestamp", example = "2025-12-25T10:30:00")
     private LocalDateTime submittedAt;
+
+    @Schema(description = "Resource file name", example = "interview-prep.zip")
+    private String resourceFileName;
+    @Schema(description = "Attachment file name (alias)", example = "interview-prep.zip")
+    private String attachmentFileName;
+    
+    @Schema(description = "Resource file URL", example = "/uploads/interview-prep.zip")
+    private String resourceFileUrl;
+    @Schema(description = "Attachment file URL (alias)", example = "/uploads/interview-prep.zip")
+    private String attachmentUrl;
+    
+    @Schema(description = "Resource file size in bytes", example = "1048576")
+    private Long resourceFileSize;
+    @Schema(description = "Attachment file size in bytes (alias)", example = "1048576")
+    private Long attachmentSize;
 
     // Constructors
     public InterviewExperienceDTO() {
@@ -245,5 +250,63 @@ public class InterviewExperienceDTO {
 
     public void setSubmittedAt(LocalDateTime submittedAt) {
         this.submittedAt = submittedAt;
+    }
+
+    public String getResourceFileName() {
+        return resourceFileName;
+    }
+
+    public void setResourceFileName(String resourceFileName) {
+        this.resourceFileName = resourceFileName;
+    }
+
+    public String getResourceFileUrl() {
+        return resourceFileUrl;
+    }
+
+    public void setResourceFileUrl(String resourceFileUrl) {
+        this.resourceFileUrl = resourceFileUrl;
+    }
+
+    public Long getResourceFileSize() {
+        return resourceFileSize;
+    }
+
+    public void setResourceFileSize(Long resourceFileSize) {
+        this.resourceFileSize = resourceFileSize;
+    }
+
+    // Alias getters/setters for attachment fields
+    public String getAttachmentFileName() {
+        return attachmentFileName != null ? attachmentFileName : resourceFileName;
+    }
+
+    public void setAttachmentFileName(String attachmentFileName) {
+        this.attachmentFileName = attachmentFileName;
+        if (this.resourceFileName == null) {
+            this.resourceFileName = attachmentFileName;
+        }
+    }
+
+    public String getAttachmentUrl() {
+        return attachmentUrl != null ? attachmentUrl : resourceFileUrl;
+    }
+
+    public void setAttachmentUrl(String attachmentUrl) {
+        this.attachmentUrl = attachmentUrl;
+        if (this.resourceFileUrl == null) {
+            this.resourceFileUrl = attachmentUrl;
+        }
+    }
+
+    public Long getAttachmentSize() {
+        return attachmentSize != null ? attachmentSize : resourceFileSize;
+    }
+
+    public void setAttachmentSize(Long attachmentSize) {
+        this.attachmentSize = attachmentSize;
+        if (this.resourceFileSize == null) {
+            this.resourceFileSize = attachmentSize;
+        }
     }
 }

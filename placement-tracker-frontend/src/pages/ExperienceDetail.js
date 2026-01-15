@@ -23,7 +23,7 @@ import {
   FiXCircle,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { placementAPI } from "../services/api";
+import { experienceAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import jsPDF from "jspdf";
 import "./ExperienceDetail.css";
@@ -38,10 +38,10 @@ const ExperienceDetail = () => {
   // Check if current user is the author of this experience
   const isAuthor = () => {
     if (!user || !experience) return false;
-    // Match by email (personalEmail in experience vs user's email)
+    // Match by email (contactEmail in experience vs user's email)
     return (
-      user.email === experience.personalEmail ||
-      user.collegeEmail === experience.personalEmail
+      user.email === experience.contactEmail ||
+      user.collegeEmail === experience.contactEmail
     );
   };
 
@@ -54,7 +54,7 @@ const ExperienceDetail = () => {
 
   const fetchExperience = async () => {
     try {
-      const response = await placementAPI.getById(id);
+      const response = await experienceAPI.getById(id);
       setExperience(response.data);
     } catch (error) {
       console.error("Fetch error:", error);
@@ -68,7 +68,7 @@ const ExperienceDetail = () => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this experience?")) {
       try {
-        await placementAPI.delete(id);
+        await experienceAPI.delete(id);
         toast.success("Experience deleted successfully!");
         navigate("/experiences");
       } catch (error) {
@@ -175,8 +175,8 @@ const ExperienceDetail = () => {
     addLabelValue("Name", experience.studentName);
     addLabelValue("Roll Number", experience.rollNumber);
     addLabelValue("Department", experience.department);
-    addLabelValue("Email", experience.personalEmail);
-    addLabelValue("Contact", experience.contactNumber);
+    addLabelValue("Email", experience.contactEmail);
+    addLabelValue("Contact", experience.contactPhone);
     addLabelValue("Placement Year", experience.placementYear);
 
     // ============ OFFER DETAILS ============
@@ -425,13 +425,30 @@ const ExperienceDetail = () => {
     }
 
     // ============ CONTACT INFORMATION ============
-    if (experience.personalEmail || experience.contactNumber) {
+    if (experience.contactEmail || experience.contactPhone) {
       addSectionHeader("CONTACT INFORMATION");
-      addLabelValue("Email", experience.personalEmail);
-      addLabelValue("Phone", experience.contactNumber);
+      addLabelValue("Email", experience.contactEmail);
+      addLabelValue("Phone", experience.contactPhone);
       if (experience.linkedinProfile) {
         addLabelValue("LinkedIn", experience.linkedinProfile);
       }
+    }
+
+    // ============ ATTACHED RESOURCES ============
+    if (experience.attachmentFileName) {
+      addSectionHeader("STUDY MATERIALS");
+      addLabelValue("Attached File", experience.attachmentFileName);
+      if (experience.attachmentSize) {
+        const sizeInMB = (experience.attachmentSize / 1024 / 1024).toFixed(2);
+        addLabelValue("File Size", `${sizeInMB} MB`);
+      }
+      if (experience.attachmentUrl) {
+        pdf.setFontSize(8);
+        pdf.setTextColor(100, 100, 100);
+        pdf.text("(Download available in web version)", margin + 5, yPosition);
+        yPosition += 5;
+      }
+      yPosition += 5;
     }
 
     // ============ FOOTER ============
@@ -508,21 +525,18 @@ const ExperienceDetail = () => {
         <div className="header-info">
           <div className="company-badge">{experience.companyName}</div>
           <h1>
-            {experience.placedPosition || experience.companyType || "Interview"}
+            {experience.position || "Interview Experience"}
           </h1>
           <div className="header-meta">
             <span>
               <FiUser /> {experience.studentName}
             </span>
             <span>
-              <FiMapPin /> {experience.department}
-            </span>
-            <span>
               <FiCalendar />{" "}
-              {experience.placementYear || new Date().getFullYear()}
+              {experience.yearOfPlacement || new Date().getFullYear()}
             </span>
             <span>
-              <FiLayers /> {experience.totalRounds} Rounds
+              <FiLayers /> {experience.totalRounds || 0} Rounds
             </span>
           </div>
         </div>
@@ -546,255 +560,196 @@ const ExperienceDetail = () => {
         <section className="content-section">
           <div className="section-header">
             <FiUser className="section-icon" />
-            <h2>Student Information</h2>
+            <h2>Interview Information</h2>
           </div>
           <div className="section-body info-grid">
             <div className="info-item">
-              <strong>Name:</strong> {experience.studentName}
+              <strong>Student:</strong> {experience.studentName}
             </div>
             <div className="info-item">
-              <strong>Roll Number:</strong> {experience.rollNumber || "N/A"}
+              <strong>Company:</strong> {experience.companyName}
             </div>
             <div className="info-item">
-              <strong>Department:</strong> {experience.department}
+              <strong>Position:</strong> {experience.position || "N/A"}
             </div>
             <div className="info-item">
-              <strong>Placement Year:</strong>{" "}
-              {experience.placementYear || new Date().getFullYear()}
+              <strong>Year:</strong>{" "}
+              {experience.yearOfPlacement || new Date().getFullYear()}
             </div>
           </div>
         </section>
 
-        {/* Salary & Offer Details */}
+        {/* Interview Process Overview */}
         <section className="content-section">
           <div className="section-header">
             <FiTarget className="section-icon" />
-            <h2>Offer Details</h2>
+            <h2>Interview Process</h2>
           </div>
           <div className="section-body info-grid">
             <div className="info-item">
-              <strong>Salary:</strong> {experience.salary || "N/A"}
+              <strong>Total Rounds:</strong> {experience.totalRounds || 0}
             </div>
             <div className="info-item">
-              <strong>Company Type:</strong> {experience.companyType || "N/A"}
-            </div>
-            <div className="info-item">
-              <strong>Intern Offered:</strong>{" "}
-              {experience.internOffered ? "Yes" : "No"}
-            </div>
-            <div className="info-item">
-              <strong>Bond:</strong>{" "}
-              {experience.hasBond ? experience.bondDetails || "Yes" : "No"}
-            </div>
-            <div className="info-item result-item">
-              <strong>Result:</strong>
-              <span
-                className={`result-badge ${experience.finalResult?.toLowerCase()}`}
-              >
-                {experience.finalResult || "Pending"}
-              </span>
+              <strong>Willing to Mentor:</strong>{" "}
+              {experience.willingToMentor ? "Yes" : "No"}
             </div>
           </div>
         </section>
 
         {/* Interview Rounds Section */}
-        {rounds.length > 0 && (
+        {experience.roundsDescription && (
           <section className="content-section rounds-section">
             <div className="section-header">
               <FiLayers className="section-icon" />
-              <h2>Interview Rounds ({rounds.length})</h2>
+              <h2>Interview Rounds Description</h2>
             </div>
             <div className="section-body">
-              <div className="rounds-list">
-                {rounds.map((round, idx) => (
-                  <div key={idx} className="round-card">
-                    <div className="round-header">
-                      <span className="round-number">
-                        Round {round.roundNumber || idx + 1}
-                      </span>
-                      <h3>{round.roundName || "Untitled Round"}</h3>
-                      <div className="round-badges">
-                        <span className="badge platform">{round.platform}</span>
-                        {round.duration && (
-                          <span className="badge duration">
-                            {round.duration}
-                          </span>
-                        )}
-                        <span
-                          className={`badge ${
-                            round.cleared ? "cleared" : "not-cleared"
-                          }`}
-                        >
-                          {round.cleared ? (
-                            <>
-                              <FiCheckCircle /> Cleared
-                            </>
-                          ) : (
-                            <>
-                              <FiXCircle /> Not Cleared
-                            </>
-                          )}
-                        </span>
-                      </div>
-                    </div>
-
-                    {round.roundDetails && (
-                      <div className="round-section">
-                        <h4>
-                          <FiFileText className="section-icon-small" /> Round
-                          Details
-                        </h4>
-                        <p>{round.roundDetails}</p>
-                      </div>
-                    )}
-
-                    {round.topicsCovered && (
-                      <div className="round-section">
-                        <h4>
-                          <FiList className="section-icon-small" /> Topics
-                          Covered
-                        </h4>
-                        <p>{round.topicsCovered}</p>
-                      </div>
-                    )}
-
-                    {round.comments && (
-                      <div className="round-section">
-                        <h4>
-                          <FiMessageCircle className="section-icon-small" />{" "}
-                          Tips & Comments
-                        </h4>
-                        <p>{round.comments}</p>
-                      </div>
-                    )}
-
-                    {round.studyLinks && (
-                      <div className="round-section">
-                        <h4>
-                          <FiLink className="section-icon-small" /> Study
-                          Resources
-                        </h4>
-                        <div className="study-links">
-                          {round.studyLinks
-                            .split("\n")
-                            .filter((link) => link.trim())
-                            .map((link, linkIdx) => (
-                              <a
-                                key={linkIdx}
-                                href={
-                                  link.trim().startsWith("http")
-                                    ? link.trim()
-                                    : `https://${link.trim()}`
-                                }
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="study-link"
-                              >
-                                {link.trim()}
-                              </a>
-                            ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {round.questions &&
-                      round.questions.length > 0 &&
-                      round.questions.some((q) => q.question) && (
-                        <div className="round-section">
-                          <h4>
-                            <FiHelpCircle className="section-icon-small" />{" "}
-                            Questions Asked
-                          </h4>
-                          <div className="questions-list">
-                            {round.questions
-                              .filter((q) => q.question)
-                              .map((q, qIdx) => (
-                                <div key={qIdx} className="question-item">
-                                  {q.domain && (
-                                    <span className="question-domain">
-                                      {q.domain}
-                                    </span>
-                                  )}
-                                  <p className="question-text">{q.question}</p>
-                                  {q.approach && (
-                                    <p className="question-approach">
-                                      <strong>Approach:</strong> {q.approach}
-                                    </p>
-                                  )}
-                                  {q.references && (
-                                    <p className="question-refs">
-                                      <strong>References:</strong>{" "}
-                                      {q.references}
-                                    </p>
-                                  )}
-                                </div>
-                              ))}
-                          </div>
-                        </div>
-                      )}
-                  </div>
-                ))}
-              </div>
+              <p className="interview-text">{experience.roundsDescription}</p>
             </div>
           </section>
         )}
 
-        {/* Overall Experience */}
-        {experience.overallExperience && (
-          <section className="content-section highlight">
-            <div className="section-header">
-              <FiBook className="section-icon" />
-              <h2>Overall Experience</h2>
-            </div>
-            <div className="section-body">
-              <p>{experience.overallExperience}</p>
-            </div>
-          </section>
-        )}
-
-        {/* General Tips */}
-        {experience.generalTips && (
+        {/* Questions Asked */}
+        {experience.questionsAsked && (
           <section className="content-section">
             <div className="section-header">
-              <FiMessageCircle className="section-icon" />
-              <h2>General Tips</h2>
+              <FiHelpCircle className="section-icon" />
+              <h2>Questions Asked</h2>
             </div>
             <div className="section-body">
-              <p>{experience.generalTips}</p>
+              <p className="interview-text">{experience.questionsAsked}</p>
             </div>
           </section>
         )}
 
-        {/* Areas to Prepare */}
-        {experience.areasToPrepareFinal && (
+        {/* Problems Solved */}
+        {experience.problemsSolved && (
           <section className="content-section">
             <div className="section-header">
               <FiTarget className="section-icon" />
-              <h2>Areas to Prepare</h2>
+              <h2>Problems Solved</h2>
             </div>
             <div className="section-body">
-              <p>{experience.areasToPrepareFinal}</p>
+              <p className="interview-text">{experience.problemsSolved}</p>
             </div>
           </section>
         )}
 
-        {/* Suggested Resources */}
-        {experience.suggestedResources && (
+        {/* In-Person Interview Tips */}
+        {experience.inPersonInterviewTips && (
+          <section className="content-section">
+            <div className="section-header">
+              <FiMessageCircle className="section-icon" />
+              <h2>In-Person Interview Tips</h2>
+            </div>
+            <div className="section-body">
+              <p className="interview-text">{experience.inPersonInterviewTips}</p>
+            </div>
+          </section>
+        )}
+
+        {/* Cracking Strategy */}
+        {experience.crackingStrategy && (
+          <section className="content-section highlight">
+            <div className="section-header">
+              <FiBook className="section-icon" />
+              <h2>Cracking Strategy</h2>
+            </div>
+            <div className="section-body">
+              <p className="interview-text">{experience.crackingStrategy}</p>
+            </div>
+          </section>
+        )}
+
+        {/* Preparation Details */}
+        {experience.preparationDetails && (
           <section className="content-section">
             <div className="section-header">
               <FiBook className="section-icon" />
-              <h2>Suggested Resources</h2>
+              <h2>Preparation Details</h2>
             </div>
             <div className="section-body">
-              <p>{experience.suggestedResources}</p>
+              <p className="interview-text">{experience.preparationDetails}</p>
+            </div>
+          </section>
+        )}
+
+        {/* Resources */}
+        {experience.resources && (
+          <section className="content-section">
+            <div className="section-header">
+              <FiBook className="section-icon" />
+              <h2>Resources</h2>
+            </div>
+            <div className="section-body">
+              <p className="interview-text">{experience.resources}</p>
+            </div>
+          </section>
+        )}
+
+        {/* Overall Experience - removed as it's not in InterviewExperience entity */}
+
+        {/* General Tips - removed as it's not in InterviewExperience entity */}
+
+        {/* Areas to Prepare - removed as it's not in InterviewExperience entity */}
+
+        {/* Suggested Resources - removed as it's not in InterviewExperience entity */}
+
+        {/* Attachments/Resources Download */}
+        {experience.attachmentFileName && (
+          <section className="content-section">
+            <div className="section-header">
+              <FiFileText className="section-icon" />
+              <h2>Study Materials</h2>
+            </div>
+            <div className="section-body">
+              <div className={`attachment-download-card ${!experience.attachmentUrl ? 'pending' : ''}`}>
+                <div className="attachment-info">
+                  <div className="attachment-icon">
+                    <FiFileText size={32} />
+                  </div>
+                  <div className="attachment-details">
+                    <h4>{experience.attachmentFileName}</h4>
+                    <p className="attachment-size">
+                      {experience.attachmentSize
+                        ? `${(experience.attachmentSize / 1024 / 1024).toFixed(2)} MB`
+                        : "Size unknown"}
+                    </p>
+                    <p className="attachment-description">
+                      Study materials, resources, and preparation guides shared by{" "}
+                      {experience.studentName}
+                    </p>
+                  </div>
+                </div>
+                {experience.attachmentUrl ? (
+                  <a
+                    href={`http://localhost:8080${experience.attachmentUrl}`}
+                    download={experience.attachmentFileName}
+                    className="btn-download-attachment"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.open(`http://localhost:8080${experience.attachmentUrl}`, "_blank");
+                      toast.success("Downloading file...");
+                    }}
+                  >
+                    <FiDownload size={20} />
+                    Download ZIP
+                  </a>
+                ) : (
+                  <button className="btn-download-attachment disabled">
+                    <FiFileText size={20} />
+                    No attachment available
+                  </button>
+                )}
+              </div>
             </div>
           </section>
         )}
       </div>
 
       {/* Contact Card */}
-      {(experience.personalEmail ||
-        experience.contactNumber ||
+      {(experience.contactEmail ||
+        experience.contactPhone ||
         experience.linkedinProfile) && (
         <div className="mentor-card">
           <div className="mentor-header">
@@ -803,22 +758,22 @@ const ExperienceDetail = () => {
             <p>Get in touch for guidance and mentorship</p>
           </div>
           <div className="contact-info">
-            {experience.personalEmail && (
+            {experience.contactEmail && (
               <a
-                href={`mailto:${experience.personalEmail}`}
+                href={`mailto:${experience.contactEmail}`}
                 className="contact-item"
               >
                 <FiMail />
-                {experience.personalEmail}
+                {experience.contactEmail}
               </a>
             )}
-            {experience.contactNumber && (
+            {experience.contactPhone && (
               <a
-                href={`tel:${experience.contactNumber}`}
+                href={`tel:${experience.contactPhone}`}
                 className="contact-item"
               >
                 <FiPhone />
-                {experience.contactNumber}
+                {experience.contactPhone}
               </a>
             )}
             {experience.linkedinProfile && (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { departmentAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import "./Home.css";
@@ -7,7 +7,28 @@ import "./Home.css";
 const Home = () => {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+
+  // Check if admin or regular user is logged in
+  const isAdmin = localStorage.getItem("userRole") === "ADMIN";
+  const isLoggedIn = isAuthenticated() || isAdmin;
+
+  // Get the correct dashboard URL based on user role
+  const getDashboardUrl = () => {
+    // Check if admin from localStorage
+    const userRole = localStorage.getItem("userRole");
+    if (userRole === "ADMIN") return "/admin-dashboard";
+
+    // Check user from context
+    if (!user) return "/login";
+    
+    if (user.role === "ADMIN") return "/admin-dashboard";
+    if (user.role === "STUDENT") return "/student-dashboard";
+    if (user.role === "MENTOR") return "/mentor-dashboard";
+
+    return "/login";
+  };
 
   useEffect(() => {
     fetchDepartments();
@@ -48,8 +69,8 @@ const Home = () => {
             dream company
           </p>
           <div className="hero-actions">
-            {isAuthenticated() ? (
-              <Link to="/dashboard" className="hero-btn primary">
+            {isLoggedIn ? (
+              <Link to={getDashboardUrl()} className="hero-btn primary">
                 Go to Dashboard
               </Link>
             ) : (

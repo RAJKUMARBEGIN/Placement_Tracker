@@ -138,7 +138,7 @@
 
 .company-card-dept .company-content {
   padding: 24px;
-  background: var(--primary);
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
   color: white;
 }
 

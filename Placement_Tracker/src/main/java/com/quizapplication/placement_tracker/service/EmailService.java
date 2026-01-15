@@ -190,15 +190,24 @@ public class EmailService {
     }
 
     /**
-     * Send mentor approval notification
+     * Send mentor approval notification with login credentials
      */
-    public void sendMentorApprovalNotification(String mentorEmail, String mentorName) {
-        String subject = "Your Mentor Account has been Approved - PlaceTrack";
+    public void sendMentorApprovalNotification(String mentorEmail, String mentorName, String password) {
+        String subject = "✅ Account Approved - GCT PlaceTrack";
         String text = "Dear " + mentorName + ",\n\n" +
-                "Congratulations! Your mentor account on GCT PlaceTrack has been approved.\n\n" +
-                "You can now log in and your profile will be visible to students " +
-                "who are seeking guidance for their placement journey.\n\n" +
-                "Thank you for being a mentor and helping our students!\n\n" +
+                "Congratulations! Your mentor account has been successfully authenticated by the admin.\n\n" +
+                "You can now sign in to GCT PlaceTrack using your email and password.\n\n" +
+                "═══════════════════════════════════════════════════════════\n" +
+                "YOUR LOGIN CREDENTIALS:\n" +
+                "═══════════════════════════════════════════════════════════\n\n" +
+                "📧 Email:    " + mentorEmail + "\n" +
+                "🔑 Password: " + password + "\n\n" +
+                "🔗 Login at: http://localhost:3000/login\n\n" +
+                "═══════════════════════════════════════════════════════════\n\n" +
+                "You can now:\n" +
+                "✓ Access your mentor dashboard\n" +
+                "✓ Share your placement experiences\n" +
+                "✓ Help guide junior students\n\n" +
                 "Best regards,\n" +
                 "GCT Placement Cell";
 
@@ -209,7 +218,7 @@ public class EmailService {
                 message.setSubject(subject);
                 message.setText(text);
                 mailSender.send(message);
-                System.out.println("Mentor approval notification sent to: " + mentorEmail);
+                System.out.println("✅ Mentor approval notification sent to: " + mentorEmail);
             } catch (Exception e) {
                 System.err.println("Failed to send mentor approval notification: " + e.getMessage());
             }
@@ -217,39 +226,99 @@ public class EmailService {
             System.out.println("DEV MODE - Mentor Approval Notification:");
             System.out.println("To: " + mentorEmail);
             System.out.println("Subject: " + subject);
+            System.out.println("Password: " + password);
+        }
+    }
+
+    /**
+     * Send mentor rejection notification
+     */
+    public void sendMentorRejectionNotification(String mentorEmail, String mentorName) {
+        String subject = "❌ Mentor Registration Update - PlaceTrack";
+        String text = "Dear " + mentorName + ",\n\n" +
+                "═══════════════════════════════════════════════════════════\n" +
+                "          MENTOR REGISTRATION UPDATE\n" +
+                "═══════════════════════════════════════════════════════════\n\n" +
+                "We regret to inform you that your mentor registration on GCT PlaceTrack\n" +
+                "has not been approved at this time.\n\n" +
+                "This could be due to one of the following reasons:\n" +
+                "• LinkedIn profile not provided or invalid\n" +
+                "• Incomplete information\n" +
+                "• Unable to verify placement details\n\n" +
+                "═══════════════════════════════════════════════════════════\n\n" +
+                "If you believe this was an error, please contact the admin at:\n" +
+                "📧 " + adminEmail + "\n\n" +
+                "You may also try registering again with complete and accurate information.\n\n" +
+                "Best regards,\n" +
+                "GCT Placement Cell";
+
+        if (mailSender != null) {
+            try {
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setTo(mentorEmail);
+                message.setSubject(subject);
+                message.setText(text);
+                mailSender.send(message);
+                System.out.println("❌ Mentor rejection notification sent to: " + mentorEmail);
+            } catch (Exception e) {
+                System.err.println("Failed to send mentor rejection notification: " + e.getMessage());
+            }
+        } else {
+            System.out.println("DEV MODE - Mentor Rejection Notification:");
+            System.out.println("To: " + mentorEmail);
+            System.out.println("Subject: " + subject);
         }
     }
 
     /**
      * Send mentor registration request to admin for approval
+     * Includes ALL mentor details for admin to review
      */
     public void sendMentorRegistrationRequestToAdmin(com.quizapplication.placement_tracker.entity.User mentor) {
-        String subject = "🔔 New Mentor Registration Request - PlaceTrack Admin";
+        String subject = "🔔 New Mentor Registration - Approval Required | " + mentor.getFullName();
         String mentorEmail = mentor.getEmail();
         String mentorName = mentor.getFullName();
         String mentorPhone = mentor.getPhoneNumber() != null ? mentor.getPhoneNumber() : "Not provided";
-        String approvalLink = baseUrl + "/api/auth/admin/send-mentor-code?token=" + mentor.getAdminApprovalToken() + "&email=" + mentorEmail;
+        String mentorLinkedIn = mentor.getLinkedinProfile() != null ? mentor.getLinkedinProfile() : "⚠️ NOT PROVIDED";
         
         String text = "Dear Admin,\n\n" +
-                "A new mentor has registered on GCT PlaceTrack and is awaiting approval.\n\n" +
-                "═══════════════════════════════════════════════════════════\n" +
-                "          MENTOR REGISTRATION DETAILS\n" +
-                "═══════════════════════════════════════════════════════════\n\n" +
-                "Name: " + mentorName + "\n" +
-                "Email: " + mentorEmail + "\n" +
-                "Phone: " + mentorPhone + "\n" +
-                "Company: " + (mentor.getPlacedCompany() != null ? mentor.getPlacedCompany() : "Not provided") + "\n" +
-                "Position: " + (mentor.getPlacedPosition() != null ? mentor.getPlacedPosition() : "Not provided") + "\n" +
-                "Location: " + (mentor.getLocation() != null ? mentor.getLocation() : "Not provided") + "\n\n" +
-                "═══════════════════════════════════════════════════════════\n\n" +
-                "SEND VERIFICATION CODE:\n" +
-                "Click the link below to send a verification code to the mentor:\n" +
-                approvalLink + "\n\n" +
-                "Once you click this link, a verification code will be generated and sent to the mentor's email.\n" +
-                "The mentor can then enter this code to access the platform.\n\n" +
-                "═══════════════════════════════════════════════════════════\n\n" +
+                "A new mentor has registered on GCT PlaceTrack and requires your approval.\n\n" +
+                "═══════════════════════════════════════════════════════════════════════\n" +
+                "                     MENTOR REGISTRATION DETAILS\n" +
+                "═══════════════════════════════════════════════════════════════════════\n\n" +
+                "★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★\n" +
+                "🔗 LINKEDIN PROFILE (MANDATORY):\n" +
+                "   " + mentorLinkedIn + "\n" +
+                "★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★\n\n" +
+                "👤 PERSONAL INFORMATION:\n" +
+                "─────────────────────────────────────────────────────────────────────────\n" +
+                "   Full Name:           " + mentorName + "\n" +
+                "   Email:               " + mentorEmail + "\n" +
+                "   Phone Number:        " + mentorPhone + "\n\n" +
+                "🏢 PLACEMENT INFORMATION:\n" +
+                "─────────────────────────────────────────────────────────────────────────\n" +
+                "   Company:             " + (mentor.getPlacedCompany() != null ? mentor.getPlacedCompany() : "Not provided") + "\n" +
+                "   Position:            " + (mentor.getPlacedPosition() != null ? mentor.getPlacedPosition() : "Not provided") + "\n" +
+                "   Placement Year:      " + (mentor.getPlacementYear() != null ? mentor.getPlacementYear().toString() : "Not provided") + "\n\n" +
+                "🎓 ACADEMIC INFORMATION:\n" +
+                "─────────────────────────────────────────────────────────────────────────\n" +
+                "   Department ID:       " + (mentor.getDepartmentId() != null ? mentor.getDepartmentId() : "Not provided") + "\n" +
+                "   Graduation Year:     " + (mentor.getGraduationYear() != null ? mentor.getGraduationYear().toString() : "Not provided") + "\n\n" +
+                "🔒 PRIVACY SETTINGS:\n" +
+                "─────────────────────────────────────────────────────────────────────────\n" +
+                "   Contact Visibility:  " + (mentor.getContactVisibility() != null ? mentor.getContactVisibility() : "PUBLIC") + "\n\n" +
+                "═══════════════════════════════════════════════════════════════════════\n\n" +
+                "⚠️ IMPORTANT NOTES:\n" +
+                "• LinkedIn profile is MANDATORY - verify before approving\n" +
+                "• Upon approval, mentor will receive login credentials via email\n" +
+                "• Upon rejection, mentor will be notified via email\n\n" +
+                "═══════════════════════════════════════════════════════════════════════\n\n" +
+                "📋 ACTION REQUIRED:\n\n" +
+                "Please log in to the Admin Dashboard to APPROVE or REJECT this mentor:\n" +
+                "🔗 Dashboard: http://localhost:3000/admin-dashboard\n\n" +
+                "═══════════════════════════════════════════════════════════════════════\n\n" +
                 "Best regards,\n" +
-                "GCT Placement Cell";
+                "GCT PlaceTrack System";
 
         if (mailSender != null) {
             try {
@@ -258,7 +327,7 @@ public class EmailService {
                 message.setSubject(subject);
                 message.setText(text);
                 mailSender.send(message);
-                System.out.println("Mentor registration request sent to admin: " + adminEmail);
+                System.out.println("✉️ Mentor registration request sent to admin: " + adminEmail);
             } catch (Exception e) {
                 System.err.println("Failed to send mentor registration request to admin: " + e.getMessage());
             }
@@ -267,7 +336,7 @@ public class EmailService {
             System.out.println("DEV MODE - Mentor Registration Request for Admin:");
             System.out.println("To: " + adminEmail);
             System.out.println("Subject: " + subject);
-            System.out.println("Approval Link: " + approvalLink);
+            System.out.println("LinkedIn: " + mentorLinkedIn);
         }
     }
 

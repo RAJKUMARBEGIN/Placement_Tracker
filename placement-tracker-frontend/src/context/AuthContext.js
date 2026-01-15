@@ -30,7 +30,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
+    // Clear all localStorage items to prevent any persistence issues
+    localStorage.clear();
   };
 
   const updateUser = (userData) => {

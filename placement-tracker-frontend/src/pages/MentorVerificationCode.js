@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
-import { useAuth } from "../context/AuthContext";
-import { authAPI } from "../services/api";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import "./VerificationCode.css";
 
 function MentorVerificationCode() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [resending, setResending] = useState(false);
-  const [verificationCode, setVerificationCode] = useState("");
   const [mentorEmail, setMentorEmail] = useState("");
-  const [codeReceived, setCodeReceived] = useState(false);
 
   useEffect(() => {
     // Get email from navigation state
@@ -24,121 +16,77 @@ function MentorVerificationCode() {
     }
   }, [location.state, navigate]);
 
-  const handleVerify = async (e) => {
-    e.preventDefault();
-
-    if (verificationCode.length !== 6) {
-      toast.error("Please enter a 6-digit code");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await authAPI.verifyMentorCode(
-        mentorEmail,
-        verificationCode
-      );
-
-      if (response.data.success) {
-        login(response.data.user);
-        toast.success("Email verified successfully!");
-        navigate("/mentor-dashboard");
-      }
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Verification failed. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendCode = async () => {
-    setResending(true);
-    try {
-      const response = await authAPI.sendMentorVerificationCode(mentorEmail);
-      if (response.data.success) {
-        toast.success("Verification code sent to your email!");
-        setVerificationCode("");
-        setCodeReceived(true);
-      }
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to request code"
-      );
-    } finally {
-      setResending(false);
-    }
-  };
-
   return (
     <div className="verification-page">
       <div className="verification-container">
         <div className="verification-header">
-          <div className="verification-icon">🔐</div>
-          <h1>Verify Your Account</h1>
-          <p>Your admin has approved your registration. Enter the verification code you received.</p>
+          <div className="verification-icon">✅</div>
+          <h1>Registration Submitted Successfully!</h1>
+          <p>Your mentor details have been sent to the admin for review</p>
         </div>
 
-        <div className="verification-email">
-          <p>Email: <strong>{mentorEmail}</strong></p>
+        <div className="verification-email" style={{
+          background: '#dbeafe',
+          padding: '16px',
+          borderRadius: '8px',
+          marginBottom: '24px'
+        }}>
+          <p style={{ margin: 0, color: '#1e40af', fontWeight: '600' }}>
+            Registered Email: <strong>{mentorEmail}</strong>
+          </p>
         </div>
 
-        {!codeReceived && (
-          <div className="waiting-for-code-message">
-            <p>⏳ Waiting for admin to send your verification code...</p>
-            <p className="sub-text">Once the admin sends the code, you can enter it below. The code does not expire.</p>
-          </div>
-        )}
-
-        <form className="verification-form" onSubmit={handleVerify}>
-          <div className="code-input-group">
-            <label>Verification Code</label>
-            <input
-              type="text"
-              maxLength="6"
-              placeholder="000000"
-              value={verificationCode}
-              onChange={(e) => {
-                const value = e.target.value.replace(/[^0-9]/g, "");
-                setVerificationCode(value);
-              }}
-              className="code-input"
-              required
-            />
-            <p className="code-helper">Enter the 6-digit code sent to your email</p>
-          </div>
-
-          <button
-            type="submit"
-            className="verify-btn"
-            disabled={loading || verificationCode.length !== 6}
-          >
-            {loading ? "Verifying..." : "Verify Code"}
-          </button>
-        </form>
-
-        <div className="resend-section">
-          <p>Didn't receive the code yet?</p>
-          <button
-            className="resend-btn"
-            onClick={handleResendCode}
-            disabled={resending}
-          >
-            {resending ? "Requesting..." : "Request Code"}
-          </button>
-          <p className="resend-info">Ask your admin to send the verification code if you haven't received it yet.</p>
-        </div>
-
-        <div className="verification-info">
-          <h3>How It Works</h3>
-          <ul>
-            <li>✓ Wait for your admin to send you the verification code</li>
-            <li>✓ Check your email (including spam folder) for the code</li>
-            <li>✓ The code does NOT expire - you can use it anytime</li>
-            <li>✓ Enter the 6-digit code in the field above</li>
-            <li>✓ After verification, you can access your mentor dashboard</li>
+        <div className="verification-info" style={{
+          background: '#f9fafb',
+          padding: '24px',
+          borderRadius: '8px',
+          border: '1px solid #e5e7eb'
+        }}>
+          <h3 style={{ marginTop: 0, color: '#111827', marginBottom: '16px' }}>What Happens Next?</h3>
+          <ul style={{ paddingLeft: '20px', margin: 0 }}>
+            <li style={{ marginBottom: '12px', color: '#4b5563' }}>
+              ✉️ <strong>Admin reviews your details</strong> - Your profile including LinkedIn will be verified
+            </li>
+            <li style={{ marginBottom: '12px', color: '#4b5563' }}>
+              📧 <strong>Email notification</strong> - You will receive an email once admin approves your registration
+            </li>
+            <li style={{ marginBottom: '12px', color: '#4b5563' }}>
+              🔑 <strong>Login credentials</strong> - The approval email will contain your login instructions
+            </li>
+            <li style={{ marginBottom: '0', color: '#4b5563' }}>
+              🚀 <strong>Sign in</strong> - Use your email and password to access the mentor dashboard
+            </li>
           </ul>
+        </div>
+
+        <div className="important-note" style={{
+          background: '#fef3c7',
+          border: '2px solid #fbbf24',
+          borderRadius: '8px',
+          padding: '16px',
+          marginTop: '24px',
+          marginBottom: '24px',
+          textAlign: 'center'
+        }}>
+          <p style={{ margin: 0, color: '#92400e', fontWeight: '600' }}>
+            ⏱️ Please wait for admin approval. Check your email regularly!
+          </p>
+        </div>
+
+        <div style={{ textAlign: 'center' }}>
+          <Link 
+            to="/" 
+            className="verify-btn"
+            style={{
+              display: 'inline-block',
+              textDecoration: 'none',
+              padding: '12px 32px',
+              fontSize: '16px',
+              fontWeight: '600'
+            }}
+          >
+            🏠 Back to Home
+          </Link>
         </div>
       </div>
     </div>

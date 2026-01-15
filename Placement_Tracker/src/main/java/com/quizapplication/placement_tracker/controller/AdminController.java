@@ -149,4 +149,60 @@ public class AdminController {
         List<MentorDTO> mentors = adminService.getMentorsByCompany(companyName);
         return ResponseEntity.ok(mentors);
     }
+
+    // User Management APIs (for managing students)
+    @GetMapping("/users")
+    @Operation(summary = "Get all users", description = "Retrieve list of all users (students)")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved users list")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = adminService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/users/{id}")
+    @Operation(summary = "Get user by ID", description = "Retrieve user details by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User found"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<UserDTO> getUserById(
+            @Parameter(description = "User ID") @PathVariable String id) {
+        UserDTO user = adminService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/users/{id}")
+    @Operation(summary = "Update user", description = "Update user details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<UserDTO> updateUser(
+            @Parameter(description = "User ID") @PathVariable String id,
+            @Valid @RequestBody UpdateUserDTO updateDTO) {
+        UserDTO user = adminService.updateUser(id, updateDTO);
+        return ResponseEntity.ok(user);
+    }
+
+    @DeleteMapping("/users/{id}")
+    @Operation(summary = "Delete user", description = "Delete a user by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<Void> deleteUser(
+            @Parameter(description = "User ID") @PathVariable String id) {
+        adminService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/users/{id}/activate")
+    @Operation(summary = "Activate/Deactivate user", description = "Toggle user active status")
+    @ApiResponse(responseCode = "200", description = "User status updated")
+    public ResponseEntity<UserDTO> toggleUserStatus(
+            @Parameter(description = "User ID") @PathVariable String id) {
+        UserDTO user = adminService.toggleUserStatus(id);
+        return ResponseEntity.ok(user);
+    }
 }
+

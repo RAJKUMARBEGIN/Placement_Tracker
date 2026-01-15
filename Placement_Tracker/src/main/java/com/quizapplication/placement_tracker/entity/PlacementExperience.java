@@ -51,6 +51,13 @@ public class PlacementExperience {
 
     private String suggestedResources;
 
+    // ============ ATTACHMENTS ============
+    private String attachmentFileName; // Original file name
+    
+    private String attachmentUrl; // URL or path to the file
+    
+    private Long attachmentSize; // File size in bytes
+
     // ============ STATUS ============
     private String finalResult; // SELECTED, REJECTED, PENDING
 
@@ -240,5 +247,29 @@ public class PlacementExperience {
 
     public void setPlacementYear(Integer placementYear) {
         this.placementYear = placementYear;
+    }
+
+    public String getAttachmentFileName() {
+        return attachmentFileName;
+    }
+
+    public void setAttachmentFileName(String attachmentFileName) {
+        this.attachmentFileName = attachmentFileName;
+    }
+
+    public String getAttachmentUrl() {
+        return attachmentUrl;
+    }
+
+    public void setAttachmentUrl(String attachmentUrl) {
+        this.attachmentUrl = attachmentUrl;
+    }
+
+    public Long getAttachmentSize() {
+        return attachmentSize;
+    }
+
+    public void setAttachmentSize(Long attachmentSize) {
+        this.attachmentSize = attachmentSize;
     }
 }

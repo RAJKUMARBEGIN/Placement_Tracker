@@ -49,6 +49,11 @@ public class InterviewExperienceService {
         experience.setContactEmail(dto.getContactEmail());
         experience.setContactPhone(dto.getContactPhone());
         experience.setLinkedinProfile(dto.getLinkedinProfile());
+        
+        // Set attachment fields
+        experience.setAttachmentFileName(dto.getAttachmentFileName());
+        experience.setAttachmentUrl(dto.getAttachmentUrl());
+        experience.setAttachmentSize(dto.getAttachmentSize());
 
         InterviewExperience savedExperience = experienceRepository.save(experience);
         return convertToDTO(savedExperience);
@@ -128,6 +133,11 @@ public class InterviewExperienceService {
         experience.setContactEmail(dto.getContactEmail());
         experience.setContactPhone(dto.getContactPhone());
         experience.setLinkedinProfile(dto.getLinkedinProfile());
+        
+        // Set attachment fields
+        experience.setAttachmentFileName(dto.getAttachmentFileName());
+        experience.setAttachmentUrl(dto.getAttachmentUrl());
+        experience.setAttachmentSize(dto.getAttachmentSize());
 
         InterviewExperience updatedExperience = experienceRepository.save(experience);
         return convertToDTO(updatedExperience);
@@ -167,6 +177,12 @@ public class InterviewExperienceService {
         dto.setContactPhone(experience.getContactPhone());
         dto.setLinkedinProfile(experience.getLinkedinProfile());
         dto.setSubmittedAt(experience.getSubmittedAt());
+        
+        // Set attachment fields
+        dto.setAttachmentFileName(experience.getAttachmentFileName());
+        dto.setAttachmentUrl(experience.getAttachmentUrl());
+        dto.setAttachmentSize(experience.getAttachmentSize());
+        
         return dto;
     }
 }

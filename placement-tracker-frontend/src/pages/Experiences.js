@@ -10,7 +10,7 @@ import {
   FiArrowLeft,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { placementAPI, departmentAPI } from "../services/api";
+import { experienceAPI, departmentAPI } from "../services/api";
 import "./Experiences.css";
 
 const Experiences = () => {
@@ -23,18 +23,14 @@ const Experiences = () => {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // Make direct fetch call
+      // Make direct fetch call - use experiences API (InterviewExperience)
       const expRes = await fetch(
-        "http://localhost:8080/api/placement-experiences"
+        "http://localhost:8080/api/experiences"
       );
       const deptRes = await fetch("http://localhost:8080/api/departments");
 
@@ -69,35 +65,63 @@ const Experiences = () => {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchTerm.trim()) {
-      fetchData();
-      return;
-    }
+  const handleFilterFromDepartment = async (companyName, departmentId) => {
     try {
       setLoading(true);
-      const response = await placementAPI.searchByCompany(searchTerm);
-      setExperiences(response.data);
+      console.log("Filtering for company:", companyName, "in department:", departmentId);
+      
+      // Fetch departments for the filter dropdown
+      const deptRes = await fetch("http://localhost:8080/api/departments");
+      const departmentsData = await deptRes.json();
+      const deptArray = Array.isArray(departmentsData)
+        ? departmentsData
+        : departmentsData.data || [];
+      setDepartments(deptArray);
+      
+      // Get experiences by department first
+      const response = await experienceAPI.getByDepartment(departmentId);
+      console.log("Got experiences from department:", response.data);
+      
+      let filteredExps = response.data || [];
+      
+      // Then filter by company name (exact match, case-insensitive)
+      if (companyName) {
+        console.log("Filtering by company name:", companyName);
+        filteredExps = filteredExps.filter(exp => {
+          const matches = exp.companyName?.toLowerCase() === companyName.toLowerCase();
+          console.log(`Comparing "${exp.companyName}" with "${companyName}": ${matches}`);
+          return matches;
+        });
+      }
+      
+      console.log("Filtered results:", filteredExps);
+      setExperiences(filteredExps);
     } catch (error) {
-      console.error("Search error:", error);
-      toast.error("Search failed");
+      console.error("Filter error:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  // Single useEffect to handle all initial loading scenarios
   useEffect(() => {
-    if (location.state?.searchCompany) {
+    console.log("Location state:", location.state);
+    
+    // If coming from department page with company filter, handle that case
+    if (location.state?.searchCompany && location.state?.departmentId) {
       setSearchTerm(location.state.searchCompany);
+      setSelectedDepartment(location.state.departmentId);
+      console.log("Calling handleFilterFromDepartment with:", location.state.searchCompany, location.state.departmentId);
+      handleFilterFromDepartment(location.state.searchCompany, location.state.departmentId);
+    } else {
+      fetchData();
     }
-    fetchData();
-  }, [location]);
+  }, []);
 
-  useEffect(() => {
-    if (location.state?.searchCompany && searchTerm) {
-      handleSearch();
+  const handleSearch = async () => { {
+      setLoading(false);
     }
-  }, [searchTerm]);
+  };
 
   const handleFilter = async () => {
     try {
@@ -106,26 +130,26 @@ const Experiences = () => {
 
       if (selectedDepartment && selectedYear) {
         // Filter by department and year
-        const allExp = await placementAPI.getAll();
+        const allExp = await experienceAPI.getAll();
         response = {
           data: allExp.data.filter(
             (exp) =>
-              exp.department === selectedDepartment &&
-              exp.placementYear === parseInt(selectedYear)
+              exp.departmentId === selectedDepartment &&
+              exp.yearOfPlacement === parseInt(selectedYear)
           ),
         };
       } else if (selectedDepartment) {
-        response = await placementAPI.searchByDepartment(selectedDepartment);
+        response = await experienceAPI.getByDepartment(selectedDepartment);
       } else if (selectedYear) {
         // Filter by year
-        const allExp = await placementAPI.getAll();
+        const allExp = await experienceAPI.getAll();
         response = {
           data: allExp.data.filter(
-            (exp) => exp.placementYear === parseInt(selectedYear)
+            (exp) => exp.yearOfPlacement === parseInt(selectedYear)
           ),
         };
       } else {
-        response = await placementAPI.getAll();
+        response = await experienceAPI.getAll();
       }
 
       setExperiences(response.data);
@@ -150,19 +174,8 @@ const Experiences = () => {
   );
 
   const getCompanyColor = (company) => {
-    const colors = {
-      google: "linear-gradient(135deg, #4285f4, #34a853)",
-      microsoft: "linear-gradient(135deg, #00a4ef, #7fba00)",
-      amazon: "linear-gradient(135deg, #ff9900, #146eb4)",
-      meta: "linear-gradient(135deg, #1877f2, #42b72a)",
-      apple: "linear-gradient(135deg, #555555, #000000)",
-      netflix: "linear-gradient(135deg, #e50914, #b81d24)",
-    };
-    const lowerCompany = company.toLowerCase();
-    for (const [key, value] of Object.entries(colors)) {
-      if (lowerCompany.includes(key)) return value;
-    }
-    return "linear-gradient(135deg, var(--primary), var(--primary-dark))";
+    // Professional balanced gradient matching the app theme
+    return "linear-gradient(135deg, #3b82f6, #1e40af)";
   };
 
   if (loading) {
@@ -187,9 +200,15 @@ const Experiences = () => {
         <div className="hero-content">
           <h1>
             <FiFileText className="header-icon" />
-            Interview Experiences
+            {location.state?.searchCompany 
+              ? `${location.state.searchCompany} Experiences`
+              : "Interview Experiences"}
           </h1>
-          <p>Learn from real interview experiences shared by placed students</p>
+          <p>
+            {location.state?.departmentName 
+              ? `Experiences from ${location.state.departmentName} department`
+              : "Learn from real interview experiences shared by placed students"}
+          </p>
         </div>
       </div>
 
@@ -283,34 +302,31 @@ const Experiences = () => {
               >
                 <span className="company-name">{exp.companyName}</span>
                 <span className="year-badge">
-                  {exp.placementYear || new Date().getFullYear()}
+                  {exp.yearOfPlacement || new Date().getFullYear()}
                 </span>
               </div>
               <div className="card-body">
                 <h3 className="position">
-                  {exp.placedPosition || exp.companyType || "Interview"}
+                  {exp.position || "Interview Experience"}
                 </h3>
                 <p className="student-name">by {exp.studentName}</p>
 
                 <div className="card-meta">
-                  <span className="meta-item">
-                    <FiMapPin />
-                    {exp.department}
-                  </span>
                   <span className="meta-item">
                     {exp.totalRounds || 0} Rounds
                   </span>
                 </div>
 
                 <p className="preview-text">
-                  {exp.generalTips?.substring(0, 100) ||
-                    exp.overallExperience?.substring(0, 100) ||
-                    "Experience shared"}
+                  {exp.crackingStrategy?.substring(0, 100) ||
+                    exp.inPersonInterviewTips?.substring(0, 100) ||
+                    exp.preparationDetails?.substring(0, 100) ||
+                    "Interview experience shared"}
                   ...
                 </p>
 
-                {exp.finalResult === "SELECTED" && (
-                  <span className="mentor-badge">Successfully Selected</span>
+                {exp.willingToMentor && (
+                  <span className="mentor-badge">Willing to Mentor</span>
                 )}
               </div>
               <div className="card-footer">

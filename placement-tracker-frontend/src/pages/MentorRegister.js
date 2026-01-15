@@ -28,6 +28,8 @@ const MentorRegister = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   useEffect(() => {
     fetchDepartments();
@@ -108,6 +110,12 @@ const MentorRegister = () => {
       return;
     }
 
+    // MANDATORY LinkedIn validation for mentors
+    if (!formData.linkedinProfile || formData.linkedinProfile.trim() === "") {
+      setError("LinkedIn profile is mandatory for mentor registration");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -131,9 +139,9 @@ const MentorRegister = () => {
       };
 
       const response = await authAPI.register(registerData);
-      // Mentor registered, redirect to verification page
-      toast.success("Registration successful! Your request has been sent to the admin.");
-      navigate("/mentor-verify", { state: { email: formData.email } });
+      // Show success card instead of navigating
+      setRegisteredEmail(formData.email);
+      setRegistrationSuccess(true);
     } catch (err) {
       setError(
         err.response?.data?.message || "Registration failed. Please try again."
@@ -160,6 +168,89 @@ const MentorRegister = () => {
     { length: currentYear - 2000 + 1 },
     (_, i) => currentYear - i
   );
+
+  // Show success card after registration
+  if (registrationSuccess) {
+    return (
+      <div className="register-container mentor-bg">
+        <div className="register-card mentor-card success-card">
+          <div className="success-icon-container">
+            <div className="success-icon-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <h1 style={{ color: '#22c55e', marginBottom: '16px' }}>Registration Submitted Successfully!</h1>
+          
+          <div className="success-message-box">
+            <div className="success-detail">
+              <span className="success-emoji">✉️</span>
+              <div>
+                <strong>Your mentor details have been sent to the admin</strong>
+                <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '4px' }}>
+                  Registered Email: <strong style={{ color: '#3b82f6' }}>{registeredEmail}</strong>
+                </p>
+              </div>
+            </div>
+            
+            <div className="success-detail">
+              <span className="success-emoji">👨‍💼</span>
+              <div>
+                <strong>Admin is reviewing your application</strong>
+                <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '4px' }}>
+                  Your profile details including LinkedIn will be verified
+                </p>
+              </div>
+            </div>
+            
+            <div className="success-detail">
+              <span className="success-emoji">📬</span>
+              <div>
+                <strong>You will receive an email notification</strong>
+                <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '4px' }}>
+                  Once admin approves, you'll get login credentials via email
+                </p>
+              </div>
+            </div>
+            
+            <div className="success-detail">
+              <span className="success-emoji">🔑</span>
+              <div>
+                <strong>Then you can sign in</strong>
+                <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '4px' }}>
+                  Use your email and password to access the mentor dashboard
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="important-note" style={{
+            background: '#fef3c7',
+            border: '2px solid #fbbf24',
+            borderRadius: '8px',
+            padding: '16px',
+            marginTop: '24px',
+            marginBottom: '24px'
+          }}>
+            <p style={{ margin: 0, color: '#92400e', fontWeight: '600' }}>
+              ⏱️ Please wait for admin approval. Check your email regularly!
+            </p>
+          </div>
+          
+          <div className="success-actions">
+            <Link to="/" className="btn-home">
+              🏠 Go to Home
+            </Link>
+            <Link to="/login" className="btn-login">
+              📧 Check Login
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="register-container mentor-bg">
@@ -300,14 +391,21 @@ const MentorRegister = () => {
                 />
               </div>
               <div className="form-group">
-                <label>LinkedIn Profile</label>
+                <label>LinkedIn Profile * (MANDATORY)</label>
                 <input
                   type="url"
                   name="linkedinProfile"
                   value={formData.linkedinProfile}
                   onChange={handleChange}
                   placeholder="https://linkedin.com/in/yourprofile"
+                  required
                 />
+                <small
+                  className="linkedin-hint"
+                  style={{ color: "#0066cc", fontSize: "12px" }}
+                >
+                  ⚠️ LinkedIn profile is mandatory for mentor approval
+                </small>
               </div>
             </div>
           </div>

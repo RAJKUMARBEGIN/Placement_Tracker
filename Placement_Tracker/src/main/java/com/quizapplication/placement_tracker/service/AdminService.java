@@ -4,11 +4,13 @@ import com.quizapplication.placement_tracker.dto.*;
 import com.quizapplication.placement_tracker.entity.Admin;
 import com.quizapplication.placement_tracker.entity.Department;
 import com.quizapplication.placement_tracker.entity.Mentor;
+import com.quizapplication.placement_tracker.entity.User;
 import com.quizapplication.placement_tracker.exception.ResourceAlreadyExistsException;
 import com.quizapplication.placement_tracker.exception.ResourceNotFoundException;
 import com.quizapplication.placement_tracker.repository.AdminRepository;
 import com.quizapplication.placement_tracker.repository.DepartmentRepository;
 import com.quizapplication.placement_tracker.repository.MentorRepository;
+import com.quizapplication.placement_tracker.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +26,16 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final MentorRepository mentorRepository;
     private final DepartmentRepository departmentRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public AdminService(AdminRepository adminRepository, MentorRepository mentorRepository,
-                       DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder) {
+                       DepartmentRepository departmentRepository, UserRepository userRepository,
+                       PasswordEncoder passwordEncoder) {
         this.adminRepository = adminRepository;
         this.mentorRepository = mentorRepository;
         this.departmentRepository = departmentRepository;
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -200,6 +205,87 @@ public class AdminService {
         );
     }
 
+    // User Management Methods
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::convertToUserDTO)
+                .collect(Collectors.toList());
+    }
+
+    public UserDTO getUserById(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        return convertToUserDTO(user);
+    }
+
+    public UserDTO updateUser(String id, UpdateUserDTO updateDTO) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        // Check if email is already taken by another user
+        if (!user.getEmail().equals(updateDTO.getEmail())) {
+            if (userRepository.findByEmail(updateDTO.getEmail()).isPresent()) {
+                throw new ResourceAlreadyExistsException("Email already exists");
+            }
+        }
+
+        user.setFullName(updateDTO.getFullName());
+        user.setEmail(updateDTO.getEmail());
+        user.setPhoneNumber(updateDTO.getPhoneNumber());
+        user.setRole(updateDTO.getRole());
+        
+        if (updateDTO.getDepartmentId() != null) {
+            Department department = departmentRepository.findById(updateDTO.getDepartmentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
+            user.setDepartmentId(updateDTO.getDepartmentId());
+        }
+
+        if (updateDTO.getIsActive() != null) {
+            user.setIsActive(updateDTO.getIsActive());
+        }
+        
+        if (updateDTO.getIsApproved() != null) {
+            user.setIsApproved(updateDTO.getIsApproved());
+        }
+
+        User updatedUser = userRepository.save(user);
+        return convertToUserDTO(updatedUser);
+    }
+
+    public void deleteUser(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        userRepository.delete(user);
+    }
+
+    public UserDTO toggleUserStatus(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        user.setIsActive(!user.getIsActive());
+        User updatedUser = userRepository.save(user);
+        return convertToUserDTO(updatedUser);
+    }
+
+    private UserDTO convertToUserDTO(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setFullName(user.getFullName());
+        dto.setEmail(user.getEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setRole(user.getRole());
+        dto.setDepartmentId(user.getDepartmentId());
+        dto.setIsActive(user.getIsActive());
+        dto.setIsApproved(user.getIsApproved());
+        dto.setCreatedAt(user.getCreatedAt());
+        
+        if (user.getDepartmentId() != null) {
+            departmentRepository.findById(user.getDepartmentId())
+                    .ifPresent(dept -> dto.setDepartmentName(dept.getDepartmentName()));
+        }
+        
+        return dto;
+    }
+
     private MentorDTO convertToMentorDTO(Mentor mentor) {
         MentorDTO dto = new MentorDTO();
         dto.setId(mentor.getId());
@@ -222,3 +308,4 @@ public class AdminService {
         return dto;
     }
 }
+

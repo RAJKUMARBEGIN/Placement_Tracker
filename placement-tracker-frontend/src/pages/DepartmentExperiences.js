@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { FiArrowLeft, FiUsers, FiFileText } from "react-icons/fi";
-import { placementAPI, departmentAPI, adminAPI } from "../services/api";
+import { experienceAPI, departmentAPI, adminAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import "./DepartmentExperiences.css";
 
@@ -27,16 +27,11 @@ const DepartmentExperiences = () => {
     try {
       const [deptRes, expRes, mentorsRes] = await Promise.all([
         departmentAPI.getById(id),
-        placementAPI.getAll(),
+        experienceAPI.getByDepartment(id),
         adminAPI.getMentorsByDepartment(id),
       ]);
       setDepartment(deptRes.data);
-      const deptExperiences = expRes.data.filter(
-        (exp) =>
-          exp.department === deptRes.data.departmentCode ||
-          exp.department === deptRes.data.departmentName
-      );
-      setExperiences(deptExperiences);
+      setExperiences(expRes.data);
       setMentors(mentorsRes.data);
     } catch (err) {
       console.error("Error:", err);
@@ -70,7 +65,7 @@ const DepartmentExperiences = () => {
     const years = [
       ...new Set(
         companyExps.map(
-          (exp) => exp.placementYear || new Date(exp.createdAt).getFullYear()
+          (exp) => exp.yearOfPlacement || new Date(exp.submittedAt).getFullYear()
         )
       ),
     ].sort((a, b) => b - a);
@@ -107,14 +102,14 @@ const DepartmentExperiences = () => {
     if (!selectedYear && years.length > 0) {
       return companyExps.filter((exp) => {
         const expYear =
-          exp.placementYear || new Date(exp.createdAt).getFullYear();
+          exp.yearOfPlacement || new Date(exp.submittedAt).getFullYear();
         return expYear.toString() === years[0].toString();
       });
     }
 
     return companyExps.filter((exp) => {
       const expYear =
-        exp.placementYear || new Date(exp.createdAt).getFullYear();
+        exp.yearOfPlacement || new Date(exp.submittedAt).getFullYear();
       return expYear.toString() === selectedYear;
     });
   };
@@ -327,7 +322,7 @@ const DepartmentExperiences = () => {
                   <Link
                     key={companyName}
                     to="/experiences"
-                    state={{ searchCompany: companyName }}
+                    state={{ searchCompany: companyName, departmentId: id, departmentName: department?.departmentName }}
                     className="company-card-dept"
                   >
                     <div className="company-content">
