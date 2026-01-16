@@ -173,7 +173,7 @@ const EditExperience = () => {
       };
 
       await experienceAPI.update(id, submissionData);
-      toast.success("Experience updated successfully! 🎉");
+      toast.success("Experience updated successfully!");
       navigate("/student-dashboard");
     } catch (error) {
       console.error("Update error:", error);
@@ -327,7 +327,7 @@ const EditExperience = () => {
         </section>
 
         <section className="form-section highlight">
-          <h2 className="section-title">🎯 Preparation Strategy</h2>
+          <h2 className="section-title">Preparation Strategy</h2>
           <div className="form-group">
             <label>How Did You Crack It? *</label>
             <textarea

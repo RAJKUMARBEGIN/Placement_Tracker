@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
-  console.log("🔍 AdminDashboard component rendering...");
+  console.log("AdminDashboard component rendering...");
   const navigate = useNavigate();
   const [mentors, setMentors] = useState([]);
   const [pendingMentors, setPendingMentors] = useState([]);
@@ -230,7 +230,7 @@ const AdminDashboard = () => {
       placedPosition: mentor.placedPosition || "",
       placementYear: mentor.placementYear || "",
       graduationYear: mentor.graduationYear || "",
-      departmentIds: mentor.departments.map((d) => d.id),
+      departmentIds: mentor.departments ? mentor.departments.map((d) => d.id) : [],
     });
     setShowMentorForm(true);
   };
@@ -307,7 +307,7 @@ const AdminDashboard = () => {
 
   // Show loading spinner while loading data
   if (loading) {
-    console.log("📊 Rendering loading state");
+    console.log("Rendering loading state");
     return (
       <div className="admin-dashboard">
         <div className="loading">
@@ -318,7 +318,7 @@ const AdminDashboard = () => {
     );
   }
 
-  console.log("✅ Rendering full dashboard with data:", {
+  console.log("Rendering full dashboard with data:", {
     mentors: mentors.length,
     users: users.length,
     departments: departments.length,
@@ -365,7 +365,7 @@ const AdminDashboard = () => {
       {pendingMentors.length > 0 && (
         <div className="pending-mentors-section">
           <div className="section-header">
-            <h2>⏳ Pending Mentor Approvals</h2>
+            <h2>Pending Mentor Approvals</h2>
             <span className="pending-count">
               {pendingMentors.length} awaiting approval
             </span>
@@ -379,22 +379,22 @@ const AdminDashboard = () => {
                   </div>
                   <div className="mentor-details">
                     <h4>{mentor.fullName}</h4>
-                    <p className="mentor-email">📧 {mentor.email}</p>
+                    <p className="mentor-email">{mentor.email}</p>
                     {mentor.phoneNumber && (
-                      <p className="mentor-phone">📱 {mentor.phoneNumber}</p>
+                      <p className="mentor-phone">{mentor.phoneNumber}</p>
                     )}
                     <p className="mentor-company">
-                      🏢 {mentor.placedCompany} -{" "}
+                      {mentor.placedCompany} -{" "}
                       {mentor.placedPosition || "Position not specified"}
                     </p>
                     {mentor.placementYear && (
                       <p className="mentor-year">
-                        📅 Placed in {mentor.placementYear}
+                        Placed in {mentor.placementYear}
                       </p>
                     )}
                     {mentor.graduationYear && (
                       <p className="mentor-grad">
-                        🎓 Graduated in {mentor.graduationYear}
+                        Graduated in {mentor.graduationYear}
                       </p>
                     )}
                     {mentor.linkedinProfile && (
@@ -404,12 +404,12 @@ const AdminDashboard = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          🔗 LinkedIn Profile
+                          LinkedIn Profile
                         </a>
                       </p>
                     )}
                     <p className="mentor-dept">
-                      🎯 {mentor.departmentName || "Department not specified"}
+                      {mentor.departmentName || "Department not specified"}
                     </p>
                   </div>
                 </div>
@@ -418,19 +418,19 @@ const AdminDashboard = () => {
                     className="btn-view-details"
                     onClick={() => setViewingMentor(mentor)}
                   >
-                    👁️ View Details
+                    View Details
                   </button>
                   <button
                     className="btn-approve"
                     onClick={() => handleApproveMentor(mentor.id)}
                   >
-                    ✓ Approve
+                    Approve
                   </button>
                   <button
                     className="btn-reject"
                     onClick={() => handleRejectMentor(mentor.id)}
                   >
-                    ✗ Reject
+                    Reject
                   </button>
                 </div>
               </div>
@@ -713,11 +713,15 @@ const AdminDashboard = () => {
                     <div className="departments-list">
                       <strong>Departments:</strong>
                       <div className="department-tags">
-                        {mentor.departments.map((dept) => (
-                          <span key={dept.id} className="dept-tag">
-                            {dept.departmentCode}
-                          </span>
-                        ))}
+                        {mentor.departments && mentor.departments.length > 0 ? (
+                          mentor.departments.map((dept) => (
+                            <span key={dept.id} className="dept-tag">
+                              {dept.departmentCode}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="dept-tag">No departments</span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -726,19 +730,19 @@ const AdminDashboard = () => {
                       onClick={() => setViewingMentor(mentor)}
                       className="btn-view"
                     >
-                      👁️ View
+                      View
                     </button>
                     <button
                       onClick={() => handleEditMentor(mentor)}
                       className="btn-edit"
                     >
-                      ✏️ Edit
+                      Edit
                     </button>
                     <button
                       onClick={() => handleDeleteMentor(mentor.id)}
                       className="btn-delete"
                     >
-                      🗑️ Delete
+                      Delete
                     </button>
                   </div>
                 </div>
@@ -763,9 +767,9 @@ const AdminDashboard = () => {
                 <div key={user.id} className="mentor-card">
                   <div className="mentor-info">
                     <h3>{user.fullName}</h3>
-                    <p className="email">📧 {user.email}</p>
+                    <p className="email">{user.email}</p>
                     {user.phoneNumber && (
-                      <p className="phone">📱 {user.phoneNumber}</p>
+                      <p className="phone">{user.phoneNumber}</p>
                     )}
                     <p className="role">
                       <strong>Role:</strong> {user.role}
@@ -781,7 +785,7 @@ const AdminDashboard = () => {
                           user.isActive ? "status-active" : "status-inactive"
                         }
                       >
-                        {user.isActive ? "🟢 Active" : "🔴 Inactive"}
+                        {user.isActive ? "Active" : "Inactive"}
                       </span>
                       {" | "}
                       <span
@@ -789,7 +793,7 @@ const AdminDashboard = () => {
                           user.isApproved ? "status-approved" : "status-pending"
                         }
                       >
-                        {user.isApproved ? "✅ Approved" : "⏳ Pending"}
+                        {user.isApproved ? "Approved" : "Pending"}
                       </span>
                     </div>
                   </div>
@@ -798,7 +802,7 @@ const AdminDashboard = () => {
                       onClick={() => setViewingUser(user)}
                       className="btn-view"
                     >
-                      👁️ View
+                      View
                     </button>
                     <button
                       onClick={() => handleToggleUserStatus(user.id)}
@@ -806,13 +810,13 @@ const AdminDashboard = () => {
                         user.isActive ? "btn-deactivate" : "btn-activate"
                       }
                     >
-                      {user.isActive ? "🚫 Deactivate" : "✅ Activate"}
+                      {user.isActive ? "Deactivate" : "Activate"}
                     </button>
                     <button
                       onClick={() => handleDeleteUser(user.id)}
                       className="btn-delete"
                     >
-                      🗑️ Delete
+                      Delete
                     </button>
                   </div>
                 </div>
@@ -869,7 +873,7 @@ const AdminDashboard = () => {
               </div>
 
               <div className="detail-section">
-                <h3>💼 Placement Information</h3>
+                <h3>Placement Information</h3>
                 <div className="detail-item">
                   <strong>Company:</strong>
                   <span>{viewingMentor.placedCompany}</span>
@@ -897,7 +901,7 @@ const AdminDashboard = () => {
                   </div>
                 )}
                 {viewingMentor.departments &&
-                viewingMentor.departments.length > 0 ? (
+                viewingMentor.departments && viewingMentor.departments.length > 0 ? (
                   <div className="detail-item">
                     <strong>Departments:</strong>
                     <div className="departments-badges">
@@ -927,7 +931,7 @@ const AdminDashboard = () => {
                         : "status-pending"
                     }
                   >
-                    {viewingMentor.isApproved ? "✅ Approved" : "⏳ Pending"}
+                    {viewingMentor.isApproved ? "Approved" : "Pending"}
                   </span>
                 </div>
                 <div className="detail-item">
@@ -939,7 +943,7 @@ const AdminDashboard = () => {
                         : "status-inactive"
                     }
                   >
-                    {viewingMentor.isActive ? "🟢 Active" : "🔴 Inactive"}
+                    {viewingMentor.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
                 {viewingMentor.id && (
@@ -960,7 +964,7 @@ const AdminDashboard = () => {
                       setViewingMentor(null);
                     }}
                   >
-                    ✓ Approve Mentor
+                    Approve Mentor
                   </button>
                   <button
                     className="btn-reject"
@@ -969,7 +973,7 @@ const AdminDashboard = () => {
                       setViewingMentor(null);
                     }}
                   >
-                    ✗ Reject Mentor
+                    Reject Mentor
                   </button>
                 </>
               )}
@@ -982,7 +986,7 @@ const AdminDashboard = () => {
                       setViewingMentor(null);
                     }}
                   >
-                    ✏️ Edit Mentor
+                    Edit Mentor
                   </button>
                   <button
                     className="btn-delete"
@@ -991,7 +995,7 @@ const AdminDashboard = () => {
                       setViewingMentor(null);
                     }}
                   >
-                    🗑️ Delete Mentor
+                    Delete Mentor
                   </button>
                 </>
               )}
@@ -1011,7 +1015,7 @@ const AdminDashboard = () => {
         <div className="mentor-form-overlay">
           <div className="mentor-detail-modal">
             <div className="modal-header">
-              <h2>👨‍🎓 User Details</h2>
+              <h2>User Details</h2>
               <button
                 className="btn-close-modal"
                 onClick={() => setViewingUser(null)}
@@ -1063,7 +1067,7 @@ const AdminDashboard = () => {
                       viewingUser.isActive ? "status-active" : "status-inactive"
                     }
                   >
-                    {viewingUser.isActive ? "🟢 Active" : "🔴 Inactive"}
+                    {viewingUser.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
                 <div className="detail-item">

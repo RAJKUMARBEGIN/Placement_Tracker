@@ -196,7 +196,7 @@ const MentorRegister = () => {
             </div>
             
             <div className="success-detail">
-              <span className="success-emoji">👨‍💼</span>
+              <span className="success-emoji">✓</span>
               <div>
                 <strong>Admin is reviewing your application</strong>
                 <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '4px' }}>
@@ -206,7 +206,7 @@ const MentorRegister = () => {
             </div>
             
             <div className="success-detail">
-              <span className="success-emoji">📬</span>
+              <span className="success-emoji">✓</span>
               <div>
                 <strong>You will receive an email notification</strong>
                 <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '4px' }}>
@@ -216,7 +216,7 @@ const MentorRegister = () => {
             </div>
             
             <div className="success-detail">
-              <span className="success-emoji">🔑</span>
+              <span className="success-emoji">✓</span>
               <div>
                 <strong>Then you can sign in</strong>
                 <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '4px' }}>
@@ -235,16 +235,16 @@ const MentorRegister = () => {
             marginBottom: '24px'
           }}>
             <p style={{ margin: 0, color: '#92400e', fontWeight: '600' }}>
-              ⏱️ Please wait for admin approval. Check your email regularly!
+              Please wait for admin approval. Check your email regularly!
             </p>
           </div>
           
           <div className="success-actions">
             <Link to="/" className="btn-home">
-              🏠 Go to Home
+              Go to Home
             </Link>
             <Link to="/login" className="btn-login">
-              📧 Check Login
+              Check Login
             </Link>
           </div>
         </div>
@@ -257,7 +257,7 @@ const MentorRegister = () => {
       <div className="register-card mentor-card">
         <div className="register-header">
           <div className="role-badge mentor-badge">
-            <span className="badge-icon">👨‍💼</span>
+            <span className="badge-icon">M</span>
             Mentor Registration
           </div>
           <h1>Become a Mentor</h1>
@@ -266,7 +266,7 @@ const MentorRegister = () => {
 
         {error && (
           <div className="error-message">
-            <span className="error-icon">⚠️</span>
+            <span className="error-icon">!</span>
             {error}
           </div>
         )}
@@ -404,7 +404,7 @@ const MentorRegister = () => {
                   className="linkedin-hint"
                   style={{ color: "#0066cc", fontSize: "12px" }}
                 >
-                  ⚠️ LinkedIn profile is mandatory for mentor approval
+                  LinkedIn profile is mandatory for mentor approval
                 </small>
               </div>
             </div>

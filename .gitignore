@@ -22,6 +22,9 @@ Thumbs.db
 .env.local
 .env.*.local
 
+# Sensitive configuration files (use .example templates instead)
+Placement_Tracker/src/main/resources/application.properties
+
 # Log files
 *.log
 npm-debug.log*
@@ -32,3 +35,7 @@ npm-debug.log*
 # Compiled output
 dist/
 build/
+
+# Uploaded files
+Placement_Tracker/uploads/
+uploads/

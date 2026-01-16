@@ -232,7 +232,7 @@ function Mentors() {
 
                   <div className="modal-body">
                     <div className="modal-section">
-                      <h4>📋 Details</h4>
+                      <h4>Details</h4>
                       <div className="detail-row">
                         <span className="detail-label">Department:</span>
                         <span className="detail-value">
@@ -254,7 +254,7 @@ function Mentors() {
                     </div>
 
                     <div className="modal-section">
-                      <h4>📞 Contact Information</h4>
+                      <h4>Contact Information</h4>
                       {canViewContactInfo(selectedMentor) ? (
                         <>
                           <div className="detail-row">
@@ -327,7 +327,7 @@ function Mentors() {
                             href={`mailto:${selectedMentor.email}`}
                             className="action-btn email-btn"
                           >
-                            📧 Send Email
+                            Send Email
                           </a>
                         )}
                         {selectedMentor.phoneNumber && (
@@ -335,7 +335,7 @@ function Mentors() {
                             href={`tel:${selectedMentor.phoneNumber}`}
                             className="action-btn call-btn"
                           >
-                            📞 Call Now
+                            Call Now
                           </a>
                         )}
                         {selectedMentor.linkedinProfile && (
@@ -349,7 +349,7 @@ function Mentors() {
                             rel="noopener noreferrer"
                             className="action-btn linkedin-btn"
                           >
-                            💼 LinkedIn
+                            LinkedIn
                           </a>
                         )}
                       </>

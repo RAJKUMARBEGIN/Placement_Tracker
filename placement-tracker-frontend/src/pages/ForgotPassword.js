@@ -41,7 +41,7 @@ function ForgotPassword() {
       ).length;
 
       if (strength === 4) {
-        setPasswordStrength("Strong ✓");
+        setPasswordStrength("Strong");
       } else if (strength >= 2) {
         setPasswordStrength("Medium");
       } else {
@@ -225,7 +225,7 @@ function ForgotPassword() {
                 {formData.newPassword && (
                   <small
                     className={`password-strength ${
-                      passwordStrength.includes("✓") ? "strong" : ""
+                      passwordStrength.includes("Strong") ? "strong" : ""
                     }`}
                   >
                     Strength: {passwordStrength}

@@ -151,7 +151,7 @@ const AddExperience = () => {
       console.log("Sending to backend:", submissionData);
       const response = await experienceAPI.create(submissionData);
       console.log("Backend response:", response);
-      toast.success("Experience shared successfully! 🎉");
+      toast.success("Experience shared successfully!");
       navigate("/experiences");
     } catch (error) {
       console.error("Submission error:", error);
@@ -315,7 +315,7 @@ const AddExperience = () => {
 
         {/* Preparation Section */}
         <section className="form-section highlight">
-          <h2 className="section-title">🎯 Preparation Strategy</h2>
+          <h2 className="section-title">Preparation Strategy</h2>
           <div className="form-group">
             <label>How Did You Crack It? *</label>
             <textarea

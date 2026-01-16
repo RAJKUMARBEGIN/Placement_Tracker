@@ -235,7 +235,8 @@ public class AdminService {
         user.setRole(updateDTO.getRole());
         
         if (updateDTO.getDepartmentId() != null) {
-            Department department = departmentRepository.findById(updateDTO.getDepartmentId())
+            // Validate department exists
+            departmentRepository.findById(updateDTO.getDepartmentId())
                     .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
             user.setDepartmentId(updateDTO.getDepartmentId());
         }

@@ -1,5 +1,6 @@
 package com.quizapplication.placement_tracker.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -11,6 +12,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@Slf4j
 public class EmailService {
 
     @Autowired(required = false)
@@ -83,14 +85,14 @@ public class EmailService {
                 mailSender.send(message);
                 return otp; // Return OTP for dev display
             } catch (Exception e) {
-                System.err.println("Failed to send email: " + e.getMessage());
+                log.error("Failed to send email: {}", e.getMessage());
                 // For development, still return OTP
-                System.out.println("DEV MODE - OTP for " + email + ": " + otp);
+                log.info("DEV MODE - OTP for {}: {}", email, otp);
                 return otp;
             }
         } else {
             // Development mode - email not configured
-            System.out.println("DEV MODE - OTP for " + email + ": " + otp);
+            log.info("DEV MODE - OTP for {}: {}", email, otp);
             return otp;
         }
     }
@@ -140,29 +142,29 @@ public class EmailService {
         String approveLink = baseUrl + "/api/auth/mentors/approve-via-email?token=" + approvalToken;
         String rejectLink = baseUrl + "/api/auth/mentors/reject-via-email?token=" + approvalToken;
         
-        String subject = "🎓 New Mentor Registration - Approval Required | PlaceTrack";
+        String subject = "New Mentor Registration - Approval Required | PlaceTrack";
         String text = "Dear Admin,\n\n" +
                 "═══════════════════════════════════════════════════════════\n" +
                 "          NEW MENTOR REGISTRATION - APPROVAL REQUIRED\n" +
                 "═══════════════════════════════════════════════════════════\n\n" +
                 "A new mentor has registered on GCT PlaceTrack and is awaiting your approval.\n\n" +
-                "📋 MENTOR DETAILS:\n" +
+                "MENTOR DETAILS:\n" +
                 "─────────────────────────────────────────────────────────────\n" +
-                "👤 Full Name:        " + mentorName + "\n" +
-                "📧 Email:            " + mentorEmail + "\n" +
-                "🏢 Company:          " + (company != null ? company : "Not specified") + "\n" +
-                "💼 Position:         " + (position != null ? position : "Not specified") + "\n" +
-                "🎓 Department:       " + (departmentName != null ? departmentName : "Not specified") + "\n" +
-                "📞 Phone:            " + (phoneNumber != null ? phoneNumber : "Not provided") + "\n" +
-                "🔗 LinkedIn:         " + (linkedinProfile != null ? linkedinProfile : "Not provided") + "\n" +
-                "📅 Graduation Year:  " + (graduationYear != null ? graduationYear.toString() : "Not specified") + "\n" +
-                "📅 Placement Year:   " + (placementYear != null ? placementYear.toString() : "Not specified") + "\n" +
-                "🔒 Contact Visibility: " + (contactVisibility != null ? contactVisibility : "PUBLIC") + "\n" +
+                "Full Name:        " + mentorName + "\n" +
+                "Email:            " + mentorEmail + "\n" +
+                "Company:          " + (company != null ? company : "Not specified") + "\n" +
+                "Position:         " + (position != null ? position : "Not specified") + "\n" +
+                "Department:       " + (departmentName != null ? departmentName : "Not specified") + "\n" +
+                "Phone:            " + (phoneNumber != null ? phoneNumber : "Not provided") + "\n" +
+                "LinkedIn:         " + (linkedinProfile != null ? linkedinProfile : "Not provided") + "\n" +
+                "Graduation Year:  " + (graduationYear != null ? graduationYear.toString() : "Not specified") + "\n" +
+                "Placement Year:   " + (placementYear != null ? placementYear.toString() : "Not specified") + "\n" +
+                "Contact Visibility: " + (contactVisibility != null ? contactVisibility : "PUBLIC") + "\n" +
                 "─────────────────────────────────────────────────────────────\n\n" +
-                "📌 ACTIONS:\n\n" +
-                "✅ APPROVE this mentor:\n" +
+                "ACTIONS:\n\n" +
+                "[APPROVE] this mentor:\n" +
                 approveLink + "\n\n" +
-                "❌ REJECT this mentor:\n" +
+                "[REJECT] this mentor:\n" +
                 rejectLink + "\n\n" +
                 "═══════════════════════════════════════════════════════════\n" +
                 "NOTE: You can also manage this request from the Admin Dashboard.\n" +
@@ -177,15 +179,15 @@ public class EmailService {
                 message.setSubject(subject);
                 message.setText(text);
                 mailSender.send(message);
-                System.out.println("Mentor registration notification with approve link sent to: " + adminEmail);
+                log.info("Mentor registration notification with approve link sent to: {}", adminEmail);
             } catch (Exception e) {
-                System.err.println("Failed to send mentor registration notification: " + e.getMessage());
+                log.error("Failed to send mentor registration notification: {}", e.getMessage());
             }
         } else {
-            System.out.println("DEV MODE - Mentor Registration Notification:");
-            System.out.println("To: " + adminEmail);
-            System.out.println("Subject: " + subject);
-            System.out.println("Body: " + text);
+            log.info("DEV MODE - Mentor Registration Notification:");
+            log.info("To: {}", adminEmail);
+            log.info("Subject: {}", subject);
+            log.debug("Body: {}", text);
         }
     }
 
@@ -193,21 +195,21 @@ public class EmailService {
      * Send mentor approval notification with login credentials
      */
     public void sendMentorApprovalNotification(String mentorEmail, String mentorName, String password) {
-        String subject = "✅ Account Approved - GCT PlaceTrack";
+        String subject = "Account Approved - GCT PlaceTrack";
         String text = "Dear " + mentorName + ",\n\n" +
                 "Congratulations! Your mentor account has been successfully authenticated by the admin.\n\n" +
                 "You can now sign in to GCT PlaceTrack using your email and password.\n\n" +
                 "═══════════════════════════════════════════════════════════\n" +
                 "YOUR LOGIN CREDENTIALS:\n" +
                 "═══════════════════════════════════════════════════════════\n\n" +
-                "📧 Email:    " + mentorEmail + "\n" +
-                "🔑 Password: " + password + "\n\n" +
-                "🔗 Login at: http://localhost:3000/login\n\n" +
+                "Email:    " + mentorEmail + "\n" +
+                "Password: " + password + "\n\n" +
+                "Login at: http://localhost:3000/login\n\n" +
                 "═══════════════════════════════════════════════════════════\n\n" +
                 "You can now:\n" +
-                "✓ Access your mentor dashboard\n" +
-                "✓ Share your placement experiences\n" +
-                "✓ Help guide junior students\n\n" +
+                "- Access your mentor dashboard\n" +
+                "- Share your placement experiences\n" +
+                "- Help guide junior students\n\n" +
                 "Best regards,\n" +
                 "GCT Placement Cell";
 
@@ -218,15 +220,15 @@ public class EmailService {
                 message.setSubject(subject);
                 message.setText(text);
                 mailSender.send(message);
-                System.out.println("✅ Mentor approval notification sent to: " + mentorEmail);
+                log.info("Mentor approval notification sent to: {}", mentorEmail);
             } catch (Exception e) {
-                System.err.println("Failed to send mentor approval notification: " + e.getMessage());
+                log.error("Failed to send mentor approval notification: {}", e.getMessage());
             }
         } else {
-            System.out.println("DEV MODE - Mentor Approval Notification:");
-            System.out.println("To: " + mentorEmail);
-            System.out.println("Subject: " + subject);
-            System.out.println("Password: " + password);
+            log.info("DEV MODE - Mentor Approval Notification:");
+            log.info("To: {}", mentorEmail);
+            log.info("Subject: {}", subject);
+            log.warn("Password: {}", password);
         }
     }
 
@@ -234,7 +236,7 @@ public class EmailService {
      * Send mentor rejection notification
      */
     public void sendMentorRejectionNotification(String mentorEmail, String mentorName) {
-        String subject = "❌ Mentor Registration Update - PlaceTrack";
+        String subject = "Mentor Registration Update - PlaceTrack";
         String text = "Dear " + mentorName + ",\n\n" +
                 "═══════════════════════════════════════════════════════════\n" +
                 "          MENTOR REGISTRATION UPDATE\n" +
@@ -259,14 +261,14 @@ public class EmailService {
                 message.setSubject(subject);
                 message.setText(text);
                 mailSender.send(message);
-                System.out.println("❌ Mentor rejection notification sent to: " + mentorEmail);
+                log.info("Mentor rejection notification sent to: {}", mentorEmail);
             } catch (Exception e) {
-                System.err.println("Failed to send mentor rejection notification: " + e.getMessage());
+                log.error("Failed to send mentor rejection notification: {}", e.getMessage());
             }
         } else {
-            System.out.println("DEV MODE - Mentor Rejection Notification:");
-            System.out.println("To: " + mentorEmail);
-            System.out.println("Subject: " + subject);
+            log.info("DEV MODE - Mentor Rejection Notification:");
+            log.info("To: {}", mentorEmail);
+            log.info("Subject: {}", subject);
         }
     }
 
@@ -275,11 +277,11 @@ public class EmailService {
      * Includes ALL mentor details for admin to review
      */
     public void sendMentorRegistrationRequestToAdmin(com.quizapplication.placement_tracker.entity.User mentor) {
-        String subject = "🔔 New Mentor Registration - Approval Required | " + mentor.getFullName();
+        String subject = "New Mentor Registration - Approval Required | " + mentor.getFullName();
         String mentorEmail = mentor.getEmail();
         String mentorName = mentor.getFullName();
         String mentorPhone = mentor.getPhoneNumber() != null ? mentor.getPhoneNumber() : "Not provided";
-        String mentorLinkedIn = mentor.getLinkedinProfile() != null ? mentor.getLinkedinProfile() : "⚠️ NOT PROVIDED";
+        String mentorLinkedIn = mentor.getLinkedinProfile() != null ? mentor.getLinkedinProfile() : "NOT PROVIDED";
         
         String text = "Dear Admin,\n\n" +
                 "A new mentor has registered on GCT PlaceTrack and requires your approval.\n\n" +
@@ -327,16 +329,16 @@ public class EmailService {
                 message.setSubject(subject);
                 message.setText(text);
                 mailSender.send(message);
-                System.out.println("✉️ Mentor registration request sent to admin: " + adminEmail);
+                log.info("Mentor registration request sent to admin: {}", adminEmail);
             } catch (Exception e) {
-                System.err.println("Failed to send mentor registration request to admin: " + e.getMessage());
+                log.error("Failed to send mentor registration request to admin: {}", e.getMessage());
             }
         } else {
             // Development mode - email not configured
-            System.out.println("DEV MODE - Mentor Registration Request for Admin:");
-            System.out.println("To: " + adminEmail);
-            System.out.println("Subject: " + subject);
-            System.out.println("LinkedIn: " + mentorLinkedIn);
+            log.info("DEV MODE - Mentor Registration Request for Admin:");
+            log.info("To: {}", adminEmail);
+            log.info("Subject: {}", subject);
+            log.info("LinkedIn: {}", mentorLinkedIn);
         }
     }
 
@@ -344,7 +346,7 @@ public class EmailService {
      * Send verification code to mentor email
      */
     public void sendMentorVerificationCode(String mentorName, String mentorEmail, String verificationCode) {
-        String subject = "🔐 Your Mentor Verification Code - PlaceTrack";
+        String subject = "Your Mentor Verification Code - PlaceTrack";
         String text = "Dear " + mentorName + ",\n\n" +
                 "Your admin has approved your mentor registration and sent you a verification code.\n\n" +
                 "═══════════════════════════════════════════════════════════\n" +
@@ -371,14 +373,14 @@ public class EmailService {
                 message.setSubject(subject);
                 message.setText(text);
                 mailSender.send(message);
-                System.out.println("Mentor verification code sent to: " + mentorEmail);
+                log.info("Mentor verification code sent to: {}", mentorEmail);
             } catch (Exception e) {
-                System.err.println("Failed to send mentor verification code: " + e.getMessage());
-                System.out.println("DEV MODE - Verification Code for " + mentorEmail + ": " + verificationCode);
+                log.error("Failed to send mentor verification code: {}", e.getMessage());
+                log.info("DEV MODE - Verification Code for {}: {}", mentorEmail, verificationCode);
             }
         } else {
             // Development mode - email not configured
-            System.out.println("DEV MODE - Mentor Verification Code for " + mentorEmail + ": " + verificationCode);
+            log.info("DEV MODE - Mentor Verification Code for {}: {}", mentorEmail, verificationCode);
         }
     }
 }

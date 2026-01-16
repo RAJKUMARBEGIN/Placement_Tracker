@@ -205,13 +205,13 @@ function Register() {
 
       <div className="role-selection-cards">
         <div className="role-card" onClick={() => handleRoleSelect("STUDENT")}>
-          <div className="role-icon">🎓</div>
+          <div className="role-icon">S</div>
           <h3>Student</h3>
           <p>Current GCT student looking for placement guidance</p>
         </div>
 
         <div className="role-card" onClick={() => handleRoleSelect("MENTOR")}>
-          <div className="role-icon">💼</div>
+          <div className="role-icon">M</div>
           <h3>Mentor</h3>
           <p>Alumni who got placed and wants to guide juniors</p>
         </div>
@@ -219,7 +219,7 @@ function Register() {
 
       <div className="admin-note">
         <p>
-          📝 Note: Students need GCT email verification. Mentors can register
+          Note: Students need GCT email verification. Mentors can register
           with any email.
         </p>
       </div>

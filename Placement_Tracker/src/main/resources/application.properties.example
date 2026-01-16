@@ -20,8 +20,8 @@ springdoc.swagger-ui.url=/v3/api-docs
 # Email Configuration (Gmail SMTP)
 spring.mail.host=smtp.gmail.com
 spring.mail.port=587
-spring.mail.username=${MAIL_USERNAME:harshavardhinin6@gmail.com}
-spring.mail.password=${MAIL_PASSWORD:qntw bjez nxce elwu}
+spring.mail.username=${MAIL_USERNAME:your-email@gmail.com}
+spring.mail.password=${MAIL_PASSWORD:your-app-password}
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
 spring.mail.properties.mail.smtp.starttls.required=true
@@ -30,10 +30,11 @@ spring.mail.properties.mail.smtp.starttls.required=true
 app.gct.email.domain=gct.ac.in
 
 # Admin Email for notifications
-app.admin.email=${ADMIN_EMAIL:harshavardhinin6@gmail.com}
+app.admin.email=${ADMIN_EMAIL:admin@gct.ac.in}
 
 # Base URL for email links
 app.base.url=${BASE_URL:http://localhost:8080}
+
 # File Upload Configuration
 file.upload-dir=uploads
 spring.servlet.multipart.enabled=true

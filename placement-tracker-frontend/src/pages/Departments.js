@@ -116,7 +116,7 @@ const Departments = () => {
 
       {departments.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📋</div>
+          <div className="empty-icon">!</div>
           <h3>No departments yet</h3>
           <p>Get started by adding your first department</p>
           <button className="btn btn-primary" onClick={() => openModal()}>

@@ -1,7 +1,6 @@
 package com.quizapplication.placement_tracker.service;
 
 import com.quizapplication.placement_tracker.dto.*;
-import com.quizapplication.placement_tracker.entity.Department;
 import com.quizapplication.placement_tracker.entity.Mentor;
 import com.quizapplication.placement_tracker.entity.User;
 import com.quizapplication.placement_tracker.entity.UserRole;
@@ -96,7 +95,7 @@ public class AuthService {
         // Send email notification to admin for mentor registration request with ALL details
         if (registerDTO.getRole() == UserRole.MENTOR) {
             emailService.sendMentorRegistrationRequestToAdmin(savedUser);
-            System.out.println("✉️ Admin notification sent for mentor: " + savedUser.getFullName() + " (" + savedUser.getEmail() + ")");
+            System.out.println("Admin notification sent for mentor: " + savedUser.getFullName() + " (" + savedUser.getEmail() + ")");
         }
 
         return new AuthResponseDTO("Registration successful", convertToDTO(savedUser));
@@ -105,6 +104,7 @@ public class AuthService {
     /**
      * Send verification code to mentor email
      */
+    @SuppressWarnings("unused")
     private void sendMentorVerificationCode(User mentor) {
         try {
             emailService.sendMentorVerificationCode(

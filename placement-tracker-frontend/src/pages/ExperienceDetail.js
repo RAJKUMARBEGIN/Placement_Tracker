@@ -753,7 +753,7 @@ const ExperienceDetail = () => {
         experience.linkedinProfile) && (
         <div className="mentor-card">
           <div className="mentor-header">
-            <span className="mentor-badge">✨ Connect with Them</span>
+            <span className="mentor-badge">Connect with Them</span>
             <h3>{experience.studentName}</h3>
             <p>Get in touch for guidance and mentorship</p>
           </div>

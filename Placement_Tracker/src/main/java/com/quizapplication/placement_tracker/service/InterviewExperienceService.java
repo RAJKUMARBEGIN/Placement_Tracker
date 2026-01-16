@@ -1,7 +1,6 @@
 package com.quizapplication.placement_tracker.service;
 
 import com.quizapplication.placement_tracker.dto.InterviewExperienceDTO;
-import com.quizapplication.placement_tracker.entity.Department;
 import com.quizapplication.placement_tracker.entity.InterviewExperience;
 import com.quizapplication.placement_tracker.exception.ResourceNotFoundException;
 import com.quizapplication.placement_tracker.repository.DepartmentRepository;

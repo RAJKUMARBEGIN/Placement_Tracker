@@ -25,7 +25,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/files")
 @Tag(name = "File Management", description = "APIs for uploading and downloading resource files")
-@CrossOrigin(origins = "*")
 public class FileUploadController {
 
     @Value("${file.upload-dir:uploads}")
@@ -41,7 +40,6 @@ public class FileUploadController {
             }
 
             // Validate file type (only ZIP files)
-            String contentType = file.getContentType();
             String originalFilename = file.getOriginalFilename();
             
             if (originalFilename == null || !originalFilename.toLowerCase().endsWith(".zip")) {
