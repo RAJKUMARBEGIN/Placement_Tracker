@@ -194,37 +194,63 @@ function StudentDashboard() {
     setEditing(exp);
     setCurrentStep(1);
 
-    // Create a simple round from the experience data
-    const round = {
-      roundNumber: 1,
-      roundName: "Interview Round",
-      duration: "",
-      roundDetails: exp.roundsDescription || "",
-      howSolved: exp.problemsSolved || "",
-    };
+    // Parse rounds from JSON if available, otherwise create default round
+    let rounds = [];
+    if (exp.roundsJson) {
+      try {
+        rounds = JSON.parse(exp.roundsJson);
+        // Ensure rounds have the correct structure
+        rounds = rounds.map((r, idx) => ({
+          roundNumber: idx + 1,
+          roundName: r.roundName || "",
+          duration: r.duration || "",
+          roundDetails: r.roundDetails || "",
+          howSolved: r.howSolved || "",
+        }));
+      } catch (error) {
+        console.error("Error parsing roundsJson:", error);
+        // Fallback to creating a default round
+        rounds = [{
+          roundNumber: 1,
+          roundName: "Interview Round",
+          duration: "",
+          roundDetails: exp.roundsDescription || "",
+          howSolved: exp.problemsSolved || "",
+        }];
+      }
+    } else {
+      // Create a simple round from the experience data
+      rounds = [{
+        roundNumber: 1,
+        roundName: "Interview Round",
+        duration: "",
+        roundDetails: exp.roundsDescription || "",
+        howSolved: exp.problemsSolved || "",
+      }];
+    }
 
     // Find department code from departmentId
     const dept = departments.find(d => d.id === exp.departmentId);
 
-    // Set form data with experience values
+    // Set form data with experience values - populate ALL fields from exp
     setFormData({
       studentName: exp.studentName || "",
-      rollNumber: "",
-      department: dept?.departmentCode || "",
-      personalEmail: exp.contactEmail || "",
-      contactNumber: exp.contactPhone || "",
+      rollNumber: exp.rollNumber || "",
+      department: dept?.departmentCode || exp.department || "",
+      personalEmail: exp.personalEmail || exp.contactEmail || "",
+      contactNumber: exp.contactNumber || exp.contactPhone || "",
       companyName: exp.companyName || "",
       position: exp.position || "",
-      salary: "",
-      internOffered: false,
-      hasBond: false,
-      bondDetails: "",
-      totalRounds: exp.totalRounds || 1,
-      rounds: [round],
-      overallExperience: exp.crackingStrategy || "",
-      areasToPrepareFinal: exp.preparationDetails || "",
-      suggestedResources: exp.resources || "",
-      finalResult: exp.willingToMentor ? "SELECTED" : "PENDING",
+      salary: exp.salary || "",
+      internOffered: exp.internOffered || false,
+      hasBond: exp.hasBond || false,
+      bondDetails: exp.bondDetails || "",
+      totalRounds: rounds.length,
+      rounds: rounds,
+      overallExperience: exp.overallExperience || exp.crackingStrategy || "",
+      areasToPrepareFinal: exp.areasToPrepareFinal || exp.preparationDetails || "",
+      suggestedResources: exp.suggestedResources || exp.resources || "",
+      finalResult: exp.finalResult || (exp.willingToMentor ? "SELECTED" : "PENDING"),
     });
     
     // Show modal last
@@ -280,25 +306,49 @@ function StudentDashboard() {
       // Find department ID from department code
       const dept = departments.find(d => d.departmentCode === formData.department);
       
-      // Map form fields to InterviewExperience API fields
+      // Map form fields to both InterviewExperience AND PlacementExperience API fields
       const payload = {
+        // Basic info
         studentName: formData.studentName,
+        rollNumber: formData.rollNumber,
+        department: formData.department,
+        personalEmail: formData.personalEmail,
+        contactNumber: formData.contactNumber,
+        
+        // Company info
         companyName: formData.companyName,
         position: formData.position,
+        salary: formData.salary,
+        internOffered: formData.internOffered,
+        hasBond: formData.hasBond,
+        bondDetails: formData.bondDetails,
+        
+        // For InterviewExperience model compatibility
         yearOfPlacement: new Date().getFullYear(),
         departmentId: dept?.id || user?.departmentId,
         departmentName: dept?.departmentName || "",
+        contactEmail: formData.personalEmail,
+        contactPhone: formData.contactNumber,
+        
+        // Interview rounds
         totalRounds: formData.rounds.length,
+        roundsJson: JSON.stringify(formData.rounds), // Store rounds as JSON
         roundsDescription: formData.rounds.map((round, idx) => 
           `Round ${idx + 1}: ${round.roundName} - ${round.roundDetails}`
         ).join('\n'),
         problemsSolved: formData.rounds.map((round) => round.howSolved).filter(Boolean).join('\n') || "N/A",
+        
+        // Summary & preparation
+        overallExperience: formData.overallExperience,
+        areasToPrepareFinal: formData.areasToPrepareFinal,
+        suggestedResources: formData.suggestedResources,
+        finalResult: formData.finalResult,
+        
+        // Legacy compatibility
         crackingStrategy: formData.overallExperience,
         preparationDetails: formData.areasToPrepareFinal,
         resources: formData.suggestedResources,
         willingToMentor: formData.finalResult === "SELECTED",
-        contactEmail: formData.personalEmail,
-        contactPhone: formData.contactNumber,
       };
 
       // Upload file if present
@@ -348,8 +398,62 @@ function StudentDashboard() {
     }
   };
 
-  const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 3));
-  const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
+  const validateCurrentStep = () => {
+    if (currentStep === 1) {
+      // Validate Step 1: Basic Info
+      const requiredFields = [
+        { field: "studentName", label: "Student Name" },
+        { field: "rollNumber", label: "Roll Number" },
+        { field: "department", label: "Department" },
+        { field: "personalEmail", label: "Personal Email" },
+        { field: "contactNumber", label: "Contact Number" },
+        { field: "companyName", label: "Company Name" },
+        { field: "position", label: "Position/Role" },
+        { field: "finalResult", label: "Result Status" },
+      ];
+
+      for (const { field, label } of requiredFields) {
+        if (!formData[field] || formData[field].toString().trim() === "") {
+          toast.error(`${label} is required to proceed`);
+          return false;
+        }
+      }
+      return true;
+    } else if (currentStep === 2) {
+      // Validate Step 2: Interview Rounds
+      for (let i = 0; i < formData.rounds.length; i++) {
+        const round = formData.rounds[i];
+        if (!round.roundName || round.roundName.trim() === "") {
+          toast.error(`Round ${i + 1} name is required`);
+          return false;
+        }
+        if (!round.roundDetails || round.roundDetails.trim() === "") {
+          toast.error(`Round ${i + 1} details are required`);
+          return false;
+        }
+      }
+      return true;
+    }
+    return true;
+  };
+
+  const nextStep = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (validateCurrentStep()) {
+      setCurrentStep((prev) => Math.min(prev + 1, 3));
+    }
+  };
+  
+  const prevStep = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
 
   if (loading) {
     return (

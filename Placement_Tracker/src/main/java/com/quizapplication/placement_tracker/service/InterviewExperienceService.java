@@ -32,11 +32,20 @@ public class InterviewExperienceService {
 
         InterviewExperience experience = new InterviewExperience();
         experience.setStudentName(dto.getStudentName());
+        experience.setRollNumber(dto.getRollNumber());
+        experience.setDepartment(dto.getDepartment());
+        experience.setPersonalEmail(dto.getPersonalEmail());
+        experience.setContactNumber(dto.getContactNumber());
         experience.setCompanyName(dto.getCompanyName());
         experience.setPosition(dto.getPosition());
         experience.setYearOfPlacement(dto.getYearOfPlacement());
         experience.setDepartmentId(dto.getDepartmentId());
+        experience.setSalary(dto.getSalary());
+        experience.setInternOffered(dto.getInternOffered());
+        experience.setHasBond(dto.getHasBond());
+        experience.setBondDetails(dto.getBondDetails());
         experience.setTotalRounds(dto.getTotalRounds());
+        experience.setRoundsJson(dto.getRoundsJson());
         experience.setRoundsDescription(dto.getRoundsDescription());
         experience.setQuestionsAsked(dto.getQuestionsAsked());
         experience.setProblemsSolved(dto.getProblemsSolved());
@@ -44,6 +53,10 @@ public class InterviewExperienceService {
         experience.setCrackingStrategy(dto.getCrackingStrategy());
         experience.setPreparationDetails(dto.getPreparationDetails());
         experience.setResources(dto.getResources());
+        experience.setOverallExperience(dto.getOverallExperience());
+        experience.setAreasToPrepareFinal(dto.getAreasToPrepareFinal());
+        experience.setSuggestedResources(dto.getSuggestedResources());
+        experience.setFinalResult(dto.getFinalResult());
         experience.setWillingToMentor(dto.getWillingToMentor() != null ? dto.getWillingToMentor() : false);
         experience.setContactEmail(dto.getContactEmail());
         experience.setContactPhone(dto.getContactPhone());
@@ -116,11 +129,20 @@ public class InterviewExperienceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + dto.getDepartmentId()));
 
         experience.setStudentName(dto.getStudentName());
+        experience.setRollNumber(dto.getRollNumber());
+        experience.setDepartment(dto.getDepartment());
+        experience.setPersonalEmail(dto.getPersonalEmail());
+        experience.setContactNumber(dto.getContactNumber());
         experience.setCompanyName(dto.getCompanyName());
         experience.setPosition(dto.getPosition());
         experience.setYearOfPlacement(dto.getYearOfPlacement());
         experience.setDepartmentId(dto.getDepartmentId());
+        experience.setSalary(dto.getSalary());
+        experience.setInternOffered(dto.getInternOffered());
+        experience.setHasBond(dto.getHasBond());
+        experience.setBondDetails(dto.getBondDetails());
         experience.setTotalRounds(dto.getTotalRounds());
+        experience.setRoundsJson(dto.getRoundsJson());
         experience.setRoundsDescription(dto.getRoundsDescription());
         experience.setQuestionsAsked(dto.getQuestionsAsked());
         experience.setProblemsSolved(dto.getProblemsSolved());
@@ -128,6 +150,10 @@ public class InterviewExperienceService {
         experience.setCrackingStrategy(dto.getCrackingStrategy());
         experience.setPreparationDetails(dto.getPreparationDetails());
         experience.setResources(dto.getResources());
+        experience.setOverallExperience(dto.getOverallExperience());
+        experience.setAreasToPrepareFinal(dto.getAreasToPrepareFinal());
+        experience.setSuggestedResources(dto.getSuggestedResources());
+        experience.setFinalResult(dto.getFinalResult());
         experience.setWillingToMentor(dto.getWillingToMentor() != null ? dto.getWillingToMentor() : false);
         experience.setContactEmail(dto.getContactEmail());
         experience.setContactPhone(dto.getContactPhone());
@@ -154,6 +180,10 @@ public class InterviewExperienceService {
         InterviewExperienceDTO dto = new InterviewExperienceDTO();
         dto.setId(experience.getId());
         dto.setStudentName(experience.getStudentName());
+        dto.setRollNumber(experience.getRollNumber());
+        dto.setDepartment(experience.getDepartment());
+        dto.setPersonalEmail(experience.getPersonalEmail());
+        dto.setContactNumber(experience.getContactNumber());
         dto.setCompanyName(experience.getCompanyName());
         dto.setPosition(experience.getPosition());
         dto.setYearOfPlacement(experience.getYearOfPlacement());
@@ -163,7 +193,12 @@ public class InterviewExperienceService {
         departmentRepository.findById(experience.getDepartmentId())
                 .ifPresent(dept -> dto.setDepartmentName(dept.getDepartmentName()));
         
+        dto.setSalary(experience.getSalary());
+        dto.setInternOffered(experience.getInternOffered());
+        dto.setHasBond(experience.getHasBond());
+        dto.setBondDetails(experience.getBondDetails());
         dto.setTotalRounds(experience.getTotalRounds());
+        dto.setRoundsJson(experience.getRoundsJson());
         dto.setRoundsDescription(experience.getRoundsDescription());
         dto.setQuestionsAsked(experience.getQuestionsAsked());
         dto.setProblemsSolved(experience.getProblemsSolved());
@@ -171,6 +206,10 @@ public class InterviewExperienceService {
         dto.setCrackingStrategy(experience.getCrackingStrategy());
         dto.setPreparationDetails(experience.getPreparationDetails());
         dto.setResources(experience.getResources());
+        dto.setOverallExperience(experience.getOverallExperience());
+        dto.setAreasToPrepareFinal(experience.getAreasToPrepareFinal());
+        dto.setSuggestedResources(experience.getSuggestedResources());
+        dto.setFinalResult(experience.getFinalResult());
         dto.setWillingToMentor(experience.getWillingToMentor());
         dto.setContactEmail(experience.getContactEmail());
         dto.setContactPhone(experience.getContactPhone());

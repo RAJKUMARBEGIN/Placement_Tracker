@@ -14,6 +14,19 @@ public class InterviewExperienceDTO {
     @NotBlank(message = "Student name is required")
     @Schema(description = "Student name", example = "John Doe")
     private String studentName;
+    
+    @Schema(description = "Roll number", example = "20CS001")
+    private String rollNumber;
+    
+    @Schema(description = "Department", example = "CSE")
+    private String department;
+    
+    @Email(message = "Invalid email format")
+    @Schema(description = "Personal email", example = "john.doe@example.com")
+    private String personalEmail;
+    
+    @Schema(description = "Contact number", example = "9876543210")
+    private String contactNumber;
 
     @NotBlank(message = "Company name is required")
     @Schema(description = "Company name", example = "Google")
@@ -31,9 +44,24 @@ public class InterviewExperienceDTO {
 
     @Schema(description = "Department name", example = "Computer Science Engineering")
     private String departmentName;
+    
+    @Schema(description = "Salary/CTC", example = "12 LPA")
+    private String salary;
+    
+    @Schema(description = "Intern offered", example = "true")
+    private Boolean internOffered;
+    
+    @Schema(description = "Has bond", example = "false")
+    private Boolean hasBond;
+    
+    @Schema(description = "Bond details", example = "2 years, 1.5 LPA penalty")
+    private String bondDetails;
 
     @Schema(description = "Total number of interview rounds", example = "4")
     private Integer totalRounds;
+    
+    @Schema(description = "Interview rounds as JSON", example = "[{...}]")
+    private String roundsJson;
 
     @Schema(description = "Description of each round", example = "Round 1: Online Test, Round 2: Technical Interview...")
     private String roundsDescription;
@@ -55,6 +83,18 @@ public class InterviewExperienceDTO {
 
     @Schema(description = "Resources used for preparation", example = "LeetCode, GeeksforGeeks, YouTube channels...")
     private String resources;
+    
+    @Schema(description = "Overall experience summary", example = "Great learning experience...")
+    private String overallExperience;
+    
+    @Schema(description = "Areas to prepare", example = "DSA, System Design...")
+    private String areasToPrepareFinal;
+    
+    @Schema(description = "Suggested resources", example = "LeetCode premium...")
+    private String suggestedResources;
+    
+    @Schema(description = "Final result", example = "SELECTED")
+    private String finalResult;
 
     @Schema(description = "Willing to mentor juniors", example = "true")
     private Boolean willingToMentor;
@@ -107,6 +147,38 @@ public class InterviewExperienceDTO {
     public void setStudentName(String studentName) {
         this.studentName = studentName;
     }
+    
+    public String getRollNumber() {
+        return rollNumber;
+    }
+
+    public void setRollNumber(String rollNumber) {
+        this.rollNumber = rollNumber;
+    }
+    
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+    
+    public String getPersonalEmail() {
+        return personalEmail;
+    }
+
+    public void setPersonalEmail(String personalEmail) {
+        this.personalEmail = personalEmail;
+    }
+    
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
 
     public String getCompanyName() {
         return companyName;
@@ -147,6 +219,38 @@ public class InterviewExperienceDTO {
     public void setDepartmentName(String departmentName) {
         this.departmentName = departmentName;
     }
+    
+    public String getSalary() {
+        return salary;
+    }
+
+    public void setSalary(String salary) {
+        this.salary = salary;
+    }
+    
+    public Boolean getInternOffered() {
+        return internOffered;
+    }
+
+    public void setInternOffered(Boolean internOffered) {
+        this.internOffered = internOffered;
+    }
+    
+    public Boolean getHasBond() {
+        return hasBond;
+    }
+
+    public void setHasBond(Boolean hasBond) {
+        this.hasBond = hasBond;
+    }
+    
+    public String getBondDetails() {
+        return bondDetails;
+    }
+
+    public void setBondDetails(String bondDetails) {
+        this.bondDetails = bondDetails;
+    }
 
     public Integer getTotalRounds() {
         return totalRounds;
@@ -154,6 +258,14 @@ public class InterviewExperienceDTO {
 
     public void setTotalRounds(Integer totalRounds) {
         this.totalRounds = totalRounds;
+    }
+    
+    public String getRoundsJson() {
+        return roundsJson;
+    }
+
+    public void setRoundsJson(String roundsJson) {
+        this.roundsJson = roundsJson;
     }
 
     public String getRoundsDescription() {
@@ -210,6 +322,38 @@ public class InterviewExperienceDTO {
 
     public void setResources(String resources) {
         this.resources = resources;
+    }
+    
+    public String getOverallExperience() {
+        return overallExperience;
+    }
+
+    public void setOverallExperience(String overallExperience) {
+        this.overallExperience = overallExperience;
+    }
+    
+    public String getAreasToPrepareFinal() {
+        return areasToPrepareFinal;
+    }
+
+    public void setAreasToPrepareFinal(String areasToPrepareFinal) {
+        this.areasToPrepareFinal = areasToPrepareFinal;
+    }
+    
+    public String getSuggestedResources() {
+        return suggestedResources;
+    }
+
+    public void setSuggestedResources(String suggestedResources) {
+        this.suggestedResources = suggestedResources;
+    }
+    
+    public String getFinalResult() {
+        return finalResult;
+    }
+
+    public void setFinalResult(String finalResult) {
+        this.finalResult = finalResult;
     }
 
     public Boolean getWillingToMentor() {

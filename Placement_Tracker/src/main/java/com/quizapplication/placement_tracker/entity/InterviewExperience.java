@@ -13,6 +13,14 @@ public class InterviewExperience {
     private String id;
 
     private String studentName;
+    
+    private String rollNumber;
+    
+    private String department;
+    
+    private String personalEmail;
+    
+    private String contactNumber;
 
     private String companyName;
 
@@ -28,8 +36,18 @@ public class InterviewExperience {
 
     @JsonIgnore
     private String departmentId;
+    
+    private String salary;
+    
+    private Boolean internOffered;
+    
+    private Boolean hasBond;
+    
+    private String bondDetails;
 
     private Integer totalRounds;
+    
+    private String roundsJson;
 
     private String roundsDescription;
 
@@ -44,6 +62,14 @@ public class InterviewExperience {
     private String preparationDetails;
 
     private String resources;
+    
+    private String overallExperience;
+    
+    private String areasToPrepareFinal;
+    
+    private String suggestedResources;
+    
+    private String finalResult;
 
     private Boolean willingToMentor = false;
 
@@ -88,6 +114,38 @@ public class InterviewExperience {
     public void setStudentName(String studentName) {
         this.studentName = studentName;
     }
+    
+    public String getRollNumber() {
+        return rollNumber;
+    }
+
+    public void setRollNumber(String rollNumber) {
+        this.rollNumber = rollNumber;
+    }
+    
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+    
+    public String getPersonalEmail() {
+        return personalEmail;
+    }
+
+    public void setPersonalEmail(String personalEmail) {
+        this.personalEmail = personalEmail;
+    }
+    
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
 
     public String getCompanyName() {
         return companyName;
@@ -120,6 +178,38 @@ public class InterviewExperience {
     public void setDepartmentId(String departmentId) {
         this.departmentId = departmentId;
     }
+    
+    public String getSalary() {
+        return salary;
+    }
+
+    public void setSalary(String salary) {
+        this.salary = salary;
+    }
+    
+    public Boolean getInternOffered() {
+        return internOffered;
+    }
+
+    public void setInternOffered(Boolean internOffered) {
+        this.internOffered = internOffered;
+    }
+    
+    public Boolean getHasBond() {
+        return hasBond;
+    }
+
+    public void setHasBond(Boolean hasBond) {
+        this.hasBond = hasBond;
+    }
+    
+    public String getBondDetails() {
+        return bondDetails;
+    }
+
+    public void setBondDetails(String bondDetails) {
+        this.bondDetails = bondDetails;
+    }
 
     public Integer getTotalRounds() {
         return totalRounds;
@@ -127,6 +217,14 @@ public class InterviewExperience {
 
     public void setTotalRounds(Integer totalRounds) {
         this.totalRounds = totalRounds;
+    }
+    
+    public String getRoundsJson() {
+        return roundsJson;
+    }
+
+    public void setRoundsJson(String roundsJson) {
+        this.roundsJson = roundsJson;
     }
 
     public String getRoundsDescription() {
@@ -183,6 +281,38 @@ public class InterviewExperience {
 
     public void setResources(String resources) {
         this.resources = resources;
+    }
+    
+    public String getOverallExperience() {
+        return overallExperience;
+    }
+
+    public void setOverallExperience(String overallExperience) {
+        this.overallExperience = overallExperience;
+    }
+    
+    public String getAreasToPrepareFinal() {
+        return areasToPrepareFinal;
+    }
+
+    public void setAreasToPrepareFinal(String areasToPrepareFinal) {
+        this.areasToPrepareFinal = areasToPrepareFinal;
+    }
+    
+    public String getSuggestedResources() {
+        return suggestedResources;
+    }
+
+    public void setSuggestedResources(String suggestedResources) {
+        this.suggestedResources = suggestedResources;
+    }
+    
+    public String getFinalResult() {
+        return finalResult;
+    }
+
+    public void setFinalResult(String finalResult) {
+        this.finalResult = finalResult;
     }
 
     public Boolean getWillingToMentor() {
