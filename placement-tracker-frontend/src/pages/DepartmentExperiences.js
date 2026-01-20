@@ -190,9 +190,6 @@ const DepartmentExperiences = () => {
           <FiArrowLeft /> Back
         </button>
         <div className="hero-content">
-          <div className="dept-badge">
-            {department?.departmentCode}
-          </div>
           <h1>{department?.departmentName}</h1>
           <p>{experiences.length} interview experiences shared</p>
           {department?.departmentCode === "IT" && (
