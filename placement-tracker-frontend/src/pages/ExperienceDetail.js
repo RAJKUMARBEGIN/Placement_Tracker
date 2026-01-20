@@ -630,7 +630,26 @@ const ExperienceDetail = () => {
               <h2>Problems Solved</h2>
             </div>
             <div className="section-body">
-              <p className="interview-text">{experience.problemsSolved}</p>
+              {rounds && rounds.length > 0 ? (
+                <div className="rounds-list">
+                  {rounds.map((round, index) => (
+                    <div key={index} className="round-item">
+                      <h3 className="round-title">Round {round.roundNumber || index + 1}: {round.roundName || 'Interview Round'}</h3>
+                      {round.duration && (
+                        <p className="round-detail"><strong>Duration:</strong> {round.duration}</p>
+                      )}
+                      {round.roundDetails && (
+                        <p className="round-detail"><strong>Details:</strong> {round.roundDetails}</p>
+                      )}
+                      {round.howSolved && (
+                        <p className="round-detail"><strong>How Solved:</strong> {round.howSolved}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="interview-text">{experience.problemsSolved}</p>
+              )}
             </div>
           </section>
         )}
