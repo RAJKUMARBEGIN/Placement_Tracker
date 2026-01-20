@@ -9,7 +9,7 @@ import {
   FiArrowLeft,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { experienceAPI, departmentAPI } from "../services/api";
+import { experienceAPI, departmentAPI, uploadFile } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import "./AddExperience.css";
 
@@ -113,20 +113,8 @@ const AddExperience = () => {
 
       // Upload file first if present
       if (resourceFile) {
-        const uploadFormData = new FormData();
-        uploadFormData.append('file', resourceFile);
-
         try {
-          const uploadResponse = await fetch('http://localhost:8080/api/files/upload', {
-            method: 'POST',
-            body: uploadFormData,
-          });
-
-          if (!uploadResponse.ok) {
-            throw new Error('File upload failed');
-          }
-
-          const uploadData = await uploadResponse.json();
+          const uploadData = await uploadFile(resourceFile);
           fileInfo = {
             attachmentFileName: uploadData.fileName,
             attachmentSize: uploadData.fileSize,

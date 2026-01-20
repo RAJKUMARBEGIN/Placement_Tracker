@@ -3,6 +3,29 @@ import axios from "axios";
 // Use environment variable for production, fallback to localhost for development
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
+// Export the base URL (without /api) for file URLs
+export const getBaseUrl = () => {
+  const url = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+  return url.replace('/api', '');
+};
+
+// File upload helper
+export const uploadFile = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  const response = await fetch(`${getBaseUrl()}/api/files/upload`, {
+    method: 'POST',
+    body: formData
+  });
+  
+  if (!response.ok) {
+    throw new Error('File upload failed');
+  }
+  
+  return response.json();
+};
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {

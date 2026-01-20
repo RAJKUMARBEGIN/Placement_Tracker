@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
-import { experienceAPI, departmentAPI, authAPI } from "../services/api";
+import { experienceAPI, departmentAPI, authAPI, uploadFile } from "../services/api";
 import "./Dashboard.css";
 
 function StudentDashboard() {
@@ -353,19 +353,11 @@ function StudentDashboard() {
 
       // Upload file if present
       if (resourceFile) {
-        const uploadFormData = new FormData();
-        uploadFormData.append('file', resourceFile);
         try {
-          const uploadResponse = await fetch('http://localhost:8080/api/files/upload', {
-            method: 'POST',
-            body: uploadFormData,
-          });
-          if (uploadResponse.ok) {
-            const uploadData = await uploadResponse.json();
-            payload.attachmentFileName = uploadData.fileName;
-            payload.attachmentSize = uploadData.fileSize;
-            payload.attachmentUrl = uploadData.fileUrl;
-          }
+          const uploadData = await uploadFile(resourceFile);
+          payload.attachmentFileName = uploadData.fileName;
+          payload.attachmentSize = uploadData.fileSize;
+          payload.attachmentUrl = uploadData.fileUrl;
         } catch (uploadError) {
           console.error("File upload error:", uploadError);
         }

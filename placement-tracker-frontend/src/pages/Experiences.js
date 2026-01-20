@@ -28,27 +28,17 @@ const Experiences = () => {
     setError(null);
 
     try {
-      // Make direct fetch call - use experiences API (InterviewExperience)
-      const expRes = await fetch(
-        "http://localhost:8080/api/experiences"
-      );
-      const deptRes = await fetch("http://localhost:8080/api/departments");
-
-      if (!expRes.ok)
-        throw new Error(`Experiences API Error: ${expRes.status}`);
-      if (!deptRes.ok)
-        throw new Error(`Departments API Error: ${deptRes.status}`);
-
-      const experiencesData = await expRes.json();
-      const departmentsData = await deptRes.json();
+      // Use API service for proper URL handling
+      const expRes = await experienceAPI.getAll();
+      const deptRes = await departmentAPI.getAll();
 
       // Handle both array and object with data property
-      const expArray = Array.isArray(experiencesData)
-        ? experiencesData
-        : experiencesData.data || [];
-      const deptArray = Array.isArray(departmentsData)
-        ? departmentsData
-        : departmentsData.data || [];
+      const expArray = Array.isArray(expRes.data)
+        ? expRes.data
+        : expRes.data?.data || [];
+      const deptArray = Array.isArray(deptRes.data)
+        ? deptRes.data
+        : deptRes.data?.data || [];
 
       setExperiences(expArray);
       setDepartments(deptArray);
@@ -142,11 +132,19 @@ const Experiences = () => {
       const response = await experienceAPI.getAll();
       let filtered = response.data || [];
       
-      // Filter by search term (company name) - case insensitive partial match
+      // Normalize function for company names
+      const normalizeCompany = (name) => {
+        return (name || '').toLowerCase().trim().replace(/\s+/g, ' ').replace(/[.,]/g, '');
+      };
+      
+      // Filter by search term (company name) - exact match after normalization
       if (searchTerm.trim()) {
-        filtered = filtered.filter(exp => 
-          exp.companyName?.toLowerCase().includes(searchTerm.toLowerCase().trim())
-        );
+        const normalizedSearch = normalizeCompany(searchTerm);
+        filtered = filtered.filter(exp => {
+          const expCompany = normalizeCompany(exp.companyName);
+          // Exact match only
+          return expCompany === normalizedSearch;
+        });
       }
       
       // Filter by department if selected

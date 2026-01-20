@@ -23,7 +23,7 @@ import {
   FiXCircle,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { experienceAPI } from "../services/api";
+import { experienceAPI, getBaseUrl } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import jsPDF from "jspdf";
 import "./ExperienceDetail.css";
@@ -723,12 +723,12 @@ const ExperienceDetail = () => {
                 </div>
                 {experience.attachmentUrl ? (
                   <a
-                    href={`http://localhost:8080${experience.attachmentUrl}`}
+                    href={`${getBaseUrl()}${experience.attachmentUrl}`}
                     download={experience.attachmentFileName}
                     className="btn-download-attachment"
                     onClick={(e) => {
                       e.preventDefault();
-                      window.open(`http://localhost:8080${experience.attachmentUrl}`, "_blank");
+                      window.open(`${getBaseUrl()}${experience.attachmentUrl}`, "_blank");
                       toast.success("Downloading file...");
                     }}
                   >
