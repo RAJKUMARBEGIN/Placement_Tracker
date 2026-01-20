@@ -1,25 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { FiArrowLeft, FiUsers, FiFileText, FiMonitor, FiCpu, FiSettings, FiZap, FiDatabase, FiLayers, FiTool, FiHome, FiActivity } from "react-icons/fi";
+import { FiArrowLeft, FiUsers, FiFileText } from "react-icons/fi";
 import { experienceAPI, departmentAPI, adminAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import "./DepartmentExperiences.css";
-
-// Get icon based on department code
-const getDepartmentIcon = (code) => {
-  const icons = {
-    'CSE': FiMonitor,
-    'IT': FiDatabase,
-    'ECE': FiCpu,
-    'EEE': FiZap,
-    'EIE': FiActivity,
-    'MECH': FiSettings,
-    'PROD': FiTool,
-    'CIVIL': FiHome,
-    'BIOTECH': FiLayers
-  };
-  return icons[code] || FiLayers;
-};
 
 const DepartmentExperiences = () => {
   const { id } = useParams();
@@ -207,7 +191,7 @@ const DepartmentExperiences = () => {
         </button>
         <div className="hero-content">
           <div className="dept-badge">
-            {React.createElement(getDepartmentIcon(department?.departmentCode))}
+            {department?.departmentCode}
           </div>
           <h1>{department?.departmentName}</h1>
           <p>{experiences.length} interview experiences shared</p>
