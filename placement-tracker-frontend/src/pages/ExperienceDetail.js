@@ -597,17 +597,27 @@ const ExperienceDetail = () => {
         </section>
 
         {/* Interview Rounds Section */}
-        {experience.roundsDescription && (
+        {(rounds && rounds.length > 0) || experience.roundsDescription ? (
           <section className="content-section rounds-section">
             <div className="section-header">
               <FiLayers className="section-icon" />
               <h2>Interview Rounds Description</h2>
             </div>
             <div className="section-body">
-              <p className="interview-text">{experience.roundsDescription}</p>
+              {rounds && rounds.length > 0 ? (
+                <div className="rounds-summary">
+                  {rounds.map((round, index) => (
+                    <div key={index} className="round-summary-item">
+                      <strong>Round {round.roundNumber || index + 1}:</strong> {round.roundName || 'Interview Round'}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="interview-text">{experience.roundsDescription}</p>
+              )}
             </div>
           </section>
-        )}
+        ) : null}
 
         {/* Questions Asked */}
         {experience.questionsAsked && (
