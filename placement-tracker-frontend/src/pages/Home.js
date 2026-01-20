@@ -1,8 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FiMonitor, FiCpu, FiSettings, FiZap, FiDatabase, FiLayers, FiTool, FiHome, FiActivity } from "react-icons/fi";
 import { departmentAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import "./Home.css";
+
+// Get icon component based on department code
+const getDepartmentIcon = (code) => {
+  const icons = {
+    'CSE': FiMonitor,
+    'IT': FiDatabase,
+    'ECE': FiCpu,
+    'EEE': FiZap,
+    'EIE': FiActivity,
+    'MECH': FiSettings,
+    'PROD': FiTool,
+    'CIVIL': FiHome,
+    'BIOTECH': FiLayers
+  };
+  return icons[code] || FiLayers;
+};
 
 const Home = () => {
   const [departments, setDepartments] = useState([]);
@@ -46,8 +63,9 @@ const Home = () => {
   };
 
   // Department icons - using text abbreviations for professional look
-  const getDepartmentIcon = (code) => {
-    return null; // No icons for cleaner look
+  const getIconComponent = (code) => {
+    const IconComponent = getDepartmentIcon(code);
+    return <IconComponent />;
   };
 
   if (loading) {
@@ -63,7 +81,7 @@ const Home = () => {
     <div className="home-page">
       <section className="hero-section">
         <div className="hero-content">
-          <h1>GCT Placement Cell</h1>
+          <h1>GCT Placement</h1>
           <p>
             Explore interview experiences from your seniors and prepare for your
             dream company
@@ -97,6 +115,9 @@ const Home = () => {
               key={dept.id}
               className="department-card"
             >
+              <div className="dept-icon-wrapper">
+                {getIconComponent(dept.departmentCode)}
+              </div>
               <div className="dept-code">{dept.departmentCode}</div>
               <p className="dept-name">{dept.departmentName}</p>
             </Link>

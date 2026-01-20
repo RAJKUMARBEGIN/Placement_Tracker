@@ -79,12 +79,12 @@ const Departments = () => {
   };
 
   const departmentColors = [
-    "linear-gradient(135deg, #6366f1, #8b5cf6)",
     "linear-gradient(135deg, #10b981, #34d399)",
     "linear-gradient(135deg, #f59e0b, #fbbf24)",
     "linear-gradient(135deg, #ef4444, #f87171)",
     "linear-gradient(135deg, #3b82f6, #60a5fa)",
     "linear-gradient(135deg, #ec4899, #f472b6)",
+    "linear-gradient(135deg, #14b8a6, #2dd4bf)",
   ];
 
   if (loading) {

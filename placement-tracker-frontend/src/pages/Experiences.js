@@ -71,11 +71,10 @@ const Experiences = () => {
       console.log("Filtering for company:", companyName, "in department:", departmentId);
       
       // Fetch departments for the filter dropdown
-      const deptRes = await fetch("http://localhost:8080/api/departments");
-      const departmentsData = await deptRes.json();
-      const deptArray = Array.isArray(departmentsData)
-        ? departmentsData
-        : departmentsData.data || [];
+      const deptResponse = await departmentAPI.getAll();
+      const deptArray = Array.isArray(deptResponse.data)
+        ? deptResponse.data
+        : deptResponse.data?.data || [];
       setDepartments(deptArray);
       
       // Get experiences by department first
@@ -84,12 +83,21 @@ const Experiences = () => {
       
       let filteredExps = response.data || [];
       
-      // Then filter by company name (exact match, case-insensitive)
+      // Then filter by company name (exact match after normalization)
       if (companyName) {
-        console.log("Filtering by company name:", companyName);
+        // Normalize: lowercase, trim, and collapse multiple spaces
+        const normalizeCompany = (name) => {
+          return (name || '').toLowerCase().trim().replace(/\s+/g, ' ').replace(/[.,]/g, '');
+        };
+        
+        const normalizedSearch = normalizeCompany(companyName);
+        console.log("Filtering by normalized company name:", normalizedSearch);
+        
         filteredExps = filteredExps.filter(exp => {
-          const matches = exp.companyName?.toLowerCase() === companyName.toLowerCase();
-          console.log(`Comparing "${exp.companyName}" with "${companyName}": ${matches}`);
+          const expCompany = normalizeCompany(exp.companyName);
+          // Exact match only after normalization
+          const matches = expCompany === normalizedSearch;
+          console.log(`Comparing "${expCompany}" with "${normalizedSearch}": ${matches}`);
           return matches;
         });
       }
@@ -118,7 +126,44 @@ const Experiences = () => {
     }
   }, []);
 
-  const handleSearch = async () => { {
+  // Auto-filter when department or year selection changes
+  useEffect(() => {
+    if (!location.state?.searchCompany) {
+      // Only auto-filter if we have data and user has interacted with filters
+      if (experiences.length > 0 || selectedDepartment || selectedYear) {
+        handleFilter();
+      }
+    }
+  }, [selectedDepartment, selectedYear]);
+
+  const handleSearch = async () => {
+    try {
+      setLoading(true);
+      const response = await experienceAPI.getAll();
+      let filtered = response.data || [];
+      
+      // Filter by search term (company name) - case insensitive partial match
+      if (searchTerm.trim()) {
+        filtered = filtered.filter(exp => 
+          exp.companyName?.toLowerCase().includes(searchTerm.toLowerCase().trim())
+        );
+      }
+      
+      // Filter by department if selected
+      if (selectedDepartment) {
+        filtered = filtered.filter(exp => exp.departmentId === selectedDepartment);
+      }
+      
+      // Filter by year if selected
+      if (selectedYear) {
+        filtered = filtered.filter(exp => exp.yearOfPlacement === parseInt(selectedYear));
+      }
+      
+      setExperiences(filtered);
+    } catch (error) {
+      console.error("Search error:", error);
+      toast.error("Search failed");
+    } finally {
       setLoading(false);
     }
   };
