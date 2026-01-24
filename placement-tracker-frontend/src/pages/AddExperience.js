@@ -9,7 +9,7 @@ import {
   FiArrowLeft,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { experienceAPI, departmentAPI, uploadFile } from "../services/api";
+import { experienceAPI, departmentAPI, uploadFile1 } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import "./AddExperience.css";
 
