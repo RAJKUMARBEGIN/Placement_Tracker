@@ -19,7 +19,7 @@ const [mentorsRes, deptsRes, pendingRes, usersRes] = await Promise.all([
   adminAPI.getAllMentors(),
   departmentAPI.getAll(),
   authAPI.getPendingMentors(),
-  adminAPI.getAllUsers1(),
+  adminAPI.getAllUsers(),
 ]);
 ```
 
